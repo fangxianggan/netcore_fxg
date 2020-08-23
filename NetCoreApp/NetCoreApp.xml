@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NetCoreApp</name>
+    </assembly>
+    <members>
+        <member name="T:NetCoreApp.Controllers.FileUploadController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Controllers.FileUploadController.#ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            
+            </summary>
+            <param name="hostingEnvironment"></param>
+        </member>
+        <member name="M:NetCoreApp.Controllers.FileUploadController.FormSingleFileUpload(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Form表单之单文件上传
+            </summary>
+            <param name="formFile">form表单文件流信息</param>
+            <returns></returns>
+            
+        </member>
+        <member name="M:NetCoreApp.Controllers.FileUploadController.GetMaxChunk(System.String,System.String)">
+            <summary>
+            获取指定文件的已上传的最大文件块
+            </summary>
+            <param name="md5">文件唯一值</param>
+            <param name="ext">文件后缀</param>
+            <returns></returns>
+        </member>
+        <member name="M:NetCoreApp.Controllers.FileUploadController.ChunkUpload(System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            检查 断点续传 和 秒传
+            </summary>
+            <param name="chunkNumber"></param>
+            <param name="chunkSize"></param>
+            <param name="currentChunkSize"></param>
+            <param name="totalSize"></param>
+            <param name="identifier"></param>
+            <param name="filename"></param>
+            <param name="relativePath"></param>
+            <param name="totalChunks"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetCoreApp.Controllers.FileUploadController.ChunkUpload(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            文件分块上传
+            </summary>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetCoreApp.Controllers.FileUploadController.MergeFiles(System.String,System.String)">
+            <summary>
+            合并文件
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="T:NetCoreApp.Controllers.JobsController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NetCoreApp.Controllers.LoginController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Controllers.LoginController.#ctor(NetCore.Services.IServices.IUserLoginServices)">
+            <summary>
+            
+            </summary>
+            <param name="userLoginServices"></param>
+        </member>
+        <member name="M:NetCoreApp.Controllers.LoginController.GetValidateLogon(NetCore.DTO.RequestViewModel.UserLoginViewModel)">
+            <summary>
+            登录验证
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+            
+        </member>
+        <member name="M:NetCoreApp.Controllers.LoginController.GetUserInfoData(System.String)">
+            <summary>
+            获取用户信息
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetCoreApp.Controllers.LoginController.GetLogout(System.String)">
+            <summary>
+            退出
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:NetCoreApp.Controllers.TestController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Controllers.TestController.#ctor(NetCore.IServices.ITestServices)">
+            <summary>
+            
+            </summary>
+            <param name="testService"></param>
+        </member>
+        <member name="M:NetCoreApp.Controllers.TestController.GetT">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NetCoreApp.Controllers.TestController.GetTT">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+            
+        </member>
+        <member name="T:NetCoreApp.Extensions.AutoMapperSetup">
+            <summary>
+            AutoMapper 的启动服务
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Extensions.AutoMapperSetup.AddAutoMapperSetup(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="T:NetCoreApp.Filters.CustomerExceptionFilter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Filters.CustomerExceptionFilter.#ctor(Microsoft.AspNetCore.Hosting.IHostingEnvironment,Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider)">
+            <summary>
+            异常处理
+            </summary>
+            <param name="hostingEnvironment"></param>
+            <param name="modelMetadataProvider"></param>
+        </member>
+        <member name="M:NetCoreApp.Filters.CustomerExceptionFilter.OnException(Microsoft.AspNetCore.Mvc.Filters.ExceptionContext)">
+            <summary>
+            发生异常进入
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:NetCoreApp.Filters.CustomerExceptionFilter.OnExceptionAsync(Microsoft.AspNetCore.Mvc.Filters.ExceptionContext)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NetCoreApp.Startup">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            /
+            </summary>
+            <param name="configuration"></param>
+        </member>
+        <member name="P:NetCoreApp.Startup.Configuration">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NetCoreApp.Startup.repository">
+            <summary>
+            log4 接口
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NetCoreApp.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IHostingEnvironment)">
+            <summary>
+            
+            </summary>
+            <param name="app"></param>
+            <param name="env"></param>
+        </member>
+        <member name="T:NetCoreApp.Startup.LowerCasePropertyNamesContractResolver">
+            <summary>
+            小写输出
+            </summary>
+        </member>
+        <member name="M:NetCoreApp.Startup.LowerCasePropertyNamesContractResolver.ResolvePropertyName(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

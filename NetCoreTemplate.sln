@@ -1,0 +1,114 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.902
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B112CDAA-F4E0-46B1-A45C-6722A3C22560}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{70CC2D5D-D2CF-404B-9EE8-EE3C29BAA123}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "html", "html", "{FE5C1E6D-8B84-40E2-B806-E6B94A782585}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{811AEFE0-890D-4EBB-859D-076798AC332A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{8CBA781A-5200-4D09-9936-86DFBD89FC71}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructrue", "Infrastructrue", "{FB7DDD0E-2483-453A-BCE2-0959B83116AE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{F27BDF8A-4BBE-460E-A8F0-FF7B42BEC575}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCoreApp", "NetCoreApp\NetCoreApp.csproj", "{5083DB24-4682-4385-9D63-F97A2337020F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Domain", "NetCore.Domain\NetCore.Domain.csproj", "{C5B545C5-70EE-4877-899A-1DD76F0B21C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.EntityFrameworkCore", "NetCore.EntityFrameworkCore\NetCore.EntityFrameworkCore.csproj", "{85B01596-3AD6-4065-815E-661CE87A97EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.DTO", "NetCore.DTO\NetCore.DTO.csproj", "{69B7582D-029A-4EE8-AE0A-06CA2D28FDE9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Repository", "NetCore.Repository\NetCore.Repository.csproj", "{E6BDE285-17EE-4AE8-B767-21A962C6A19D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Services", "NetCore.Services\NetCore.Services.csproj", "{03BF7C57-4F6D-4CCD-89F1-33845F7A50E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Core", "NetCore.Core\NetCore.Core.csproj", "{1B7BE426-6D04-4E37-94B4-FE14295BB93C}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "vue-admin-template", "vue-admin-template\", "{138DADD2-5821-443B-9A4D-96604A33E6AC}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_55326"
+		Debug.AspNetCompiler.PhysicalPath = "vue-admin-template\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55326\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_55326"
+		Release.AspNetCompiler.PhysicalPath = "vue-admin-template\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55326\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "55326"
+		SlnRelativePath = "vue-admin-template\"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5083DB24-4682-4385-9D63-F97A2337020F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5083DB24-4682-4385-9D63-F97A2337020F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5083DB24-4682-4385-9D63-F97A2337020F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5083DB24-4682-4385-9D63-F97A2337020F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5B545C5-70EE-4877-899A-1DD76F0B21C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5B545C5-70EE-4877-899A-1DD76F0B21C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5B545C5-70EE-4877-899A-1DD76F0B21C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5B545C5-70EE-4877-899A-1DD76F0B21C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85B01596-3AD6-4065-815E-661CE87A97EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85B01596-3AD6-4065-815E-661CE87A97EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85B01596-3AD6-4065-815E-661CE87A97EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85B01596-3AD6-4065-815E-661CE87A97EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69B7582D-029A-4EE8-AE0A-06CA2D28FDE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69B7582D-029A-4EE8-AE0A-06CA2D28FDE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69B7582D-029A-4EE8-AE0A-06CA2D28FDE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69B7582D-029A-4EE8-AE0A-06CA2D28FDE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6BDE285-17EE-4AE8-B767-21A962C6A19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6BDE285-17EE-4AE8-B767-21A962C6A19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6BDE285-17EE-4AE8-B767-21A962C6A19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6BDE285-17EE-4AE8-B767-21A962C6A19D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03BF7C57-4F6D-4CCD-89F1-33845F7A50E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03BF7C57-4F6D-4CCD-89F1-33845F7A50E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03BF7C57-4F6D-4CCD-89F1-33845F7A50E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03BF7C57-4F6D-4CCD-89F1-33845F7A50E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B7BE426-6D04-4E37-94B4-FE14295BB93C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7BE426-6D04-4E37-94B4-FE14295BB93C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B7BE426-6D04-4E37-94B4-FE14295BB93C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7BE426-6D04-4E37-94B4-FE14295BB93C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{138DADD2-5821-443B-9A4D-96604A33E6AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{138DADD2-5821-443B-9A4D-96604A33E6AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{138DADD2-5821-443B-9A4D-96604A33E6AC}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{138DADD2-5821-443B-9A4D-96604A33E6AC}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{811AEFE0-890D-4EBB-859D-076798AC332A} = {B112CDAA-F4E0-46B1-A45C-6722A3C22560}
+		{8CBA781A-5200-4D09-9936-86DFBD89FC71} = {B112CDAA-F4E0-46B1-A45C-6722A3C22560}
+		{FB7DDD0E-2483-453A-BCE2-0959B83116AE} = {B112CDAA-F4E0-46B1-A45C-6722A3C22560}
+		{F27BDF8A-4BBE-460E-A8F0-FF7B42BEC575} = {B112CDAA-F4E0-46B1-A45C-6722A3C22560}
+		{5083DB24-4682-4385-9D63-F97A2337020F} = {F27BDF8A-4BBE-460E-A8F0-FF7B42BEC575}
+		{C5B545C5-70EE-4877-899A-1DD76F0B21C5} = {8CBA781A-5200-4D09-9936-86DFBD89FC71}
+		{85B01596-3AD6-4065-815E-661CE87A97EA} = {FB7DDD0E-2483-453A-BCE2-0959B83116AE}
+		{69B7582D-029A-4EE8-AE0A-06CA2D28FDE9} = {811AEFE0-890D-4EBB-859D-076798AC332A}
+		{E6BDE285-17EE-4AE8-B767-21A962C6A19D} = {FB7DDD0E-2483-453A-BCE2-0959B83116AE}
+		{03BF7C57-4F6D-4CCD-89F1-33845F7A50E7} = {811AEFE0-890D-4EBB-859D-076798AC332A}
+		{1B7BE426-6D04-4E37-94B4-FE14295BB93C} = {FB7DDD0E-2483-453A-BCE2-0959B83116AE}
+		{138DADD2-5821-443B-9A4D-96604A33E6AC} = {FE5C1E6D-8B84-40E2-B806-E6B94A782585}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CB23531D-4FE0-4AF9-BAB0-C8073F4D2F90}
+	EndGlobalSection
+EndGlobal

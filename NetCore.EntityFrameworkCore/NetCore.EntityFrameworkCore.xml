@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NetCore.EntityFrameworkCore</name>
+    </assembly>
+    <members>
+        <member name="T:NetCore.EntityFrameworkCore.Context.DBContext">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:NetCore.EntityFrameworkCore.Context.DBContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{NetCore.EntityFrameworkCore.Context.DBContext})">
+            <summary>
+            
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Context.DBContext.TaskJobs">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NetCore.EntityFrameworkCore.EntityModels.BaseEntity`1">
+            <summary>
+            基础类
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.EntityModels.BaseEntity`1.CreateTime">
+            <summary>
+            添加时间
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.EntityModels.BaseEntity`1.CreateBy">
+            <summary>
+            添加人
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.EntityModels.BaseEntity`1.UpdateTime">
+            <summary>
+            修改时间
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.EntityModels.BaseEntity`1.UpdateBy">
+            <summary>
+            修改人
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Interface.ISoftDelete.IsDelete">
+            <summary>
+            是否删除
+            </summary>
+            
+        </member>
+        <member name="T:NetCore.EntityFrameworkCore.Models.TaskJob">
+            <summary>
+            任务的类
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.TaskGroup">
+            <summary>
+            任务组
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.TaskName">
+            <summary>
+            任务名称
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.Description">
+            <summary>
+            任务的描述
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.ApiUrl">
+            <summary>
+            接口地址
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.RequestType">
+            <summary>
+            请求类型
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.RequestHead">
+            <summary>
+            请求头
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.RequestParams">
+            <summary>
+            请求的参数 以json形式传入
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.ExceptionMsg">
+            <summary>
+            异常信息说明
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.CronExpression">
+            <summary>
+            Cron 表达式
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.CronExpressionDescription">
+             <summary>
+            Cron 表达式描述
+             </summary>
+             
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.StartRunTime">
+            <summary>
+            开始执行时间
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.EndRunTime">
+            <summary>
+            结束时间
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.RunCount">
+            <summary>
+            运行次数
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.TaskState">
+            <summary>
+            任务状态
+            </summary>
+            
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.Models.TaskJob.IsDelete">
+             <summary>
+            是否 删除
+             </summary>
+        </member>
+        <member name="T:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo">
+            <summary>
+            T4实体模型信息类
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.UseModuleDir">
+            <summary>
+            获取 是否使用模块文件夹
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.ModuleName">
+            <summary>
+            获取 模型所在模块名称
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.Name">
+            <summary>
+            获取 模型名称
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo._Name">
+            <summary>
+            获取 模型名称 以驼峰法命名
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.Description">
+            <summary>
+            获取 模型描述
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.KeyType">
+            <summary>
+            主键类型
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.KeyTypeName">
+            <summary>
+            主键类型名称
+            </summary>
+        </member>
+        <member name="P:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.KeyName">
+            <summary>
+            主键名称
+            </summary>
+        </member>
+        <member name="M:NetCore.EntityFrameworkCore.T4Models.T4ModelInfo.#ctor(System.Type,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="modelType"></param>
+            <param name="useModuleDir"></param>
+        </member>
+    </members>
+</doc>
