@@ -1,11 +1,11 @@
-﻿using System;
+﻿using NetCore.EntityModel.QueryModels;
+using NetCore.Repository.Dapper.Entity;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NetCore.Domain.Interface
 {
-  public  interface IBaseDomain<T> where T : class
+    public  interface IBaseDomain<T> where T : class
     {
         /// <summary>
         /// 新增
@@ -14,6 +14,13 @@ namespace NetCore.Domain.Interface
         /// <returns></returns>
         Task<bool> AddDomain(T entity);
 
+       
+
         Task<bool> AddListDomain(List<T> entity);
+
+
+        Task<PageData<T>> GetPageList(QueryModel queryModel);
+       
+
     }
 }

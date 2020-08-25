@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NetCore.DTO.RequestViewModel
+namespace NetCore.DTO.RequestViewModel.FileUpload
 {
 
     /// <summary>
@@ -58,5 +58,14 @@ namespace NetCore.DTO.RequestViewModel
         /// </summary>
         public IFormFile File { set; get; }
 
+        /// <summary>
+        /// 文件后缀名
+        /// </summary>
+        public string FileExt { set; get; }
+
+        /// <summary>
+        /// 文件类型
+        /// </summary>
+        public string FileType { set; get; }
     }
 }

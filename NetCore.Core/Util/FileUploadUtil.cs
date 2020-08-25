@@ -54,9 +54,8 @@ namespace NetCore.Core.Util
         /// </summary>
         /// <param name="targetPath"></param>
         /// <returns>返回文件对象</returns>
-        public static bool OwnBusiness(string webRootPath, string targetPath, string fileName)
+        public static string newFilePath(string webRootPath, string targetPath, string fileName)
         {
-            var fileResult = true;
 
             var filePath = GetPath(webRootPath);
             if (!Directory.Exists(filePath))
@@ -73,7 +72,7 @@ namespace NetCore.Core.Util
             }
             file.MoveTo(newFilePath);
 
-            return fileResult;
+            return newFilePath;
         }
 
         /// <summary>

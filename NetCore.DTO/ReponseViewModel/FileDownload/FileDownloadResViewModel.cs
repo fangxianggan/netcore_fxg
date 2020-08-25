@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NetCore.DTO.ReponseViewModel
+namespace NetCore.DTO.ReponseViewModel.FileDownload
 {
     public class FileDownloadResViewModel
     {

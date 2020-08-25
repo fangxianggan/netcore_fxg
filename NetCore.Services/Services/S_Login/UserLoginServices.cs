@@ -1,11 +1,12 @@
 ﻿using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.Core.Enum;
-using NetCore.DTO.ReponseViewModel;
-using NetCore.DTO.RequestViewModel;
+using NetCore.DTO.ReponseViewModel.Login;
+using NetCore.DTO.RequestViewModel.Login;
 using NetCore.Services.IServices;
+using NetCore.Services.IServices.I_Login;
 using System.Collections.Generic;
 
-namespace NetCore.Services.Services
+namespace NetCore.Services.Services.S_Login
 {
     public class UserLoginServices : IUserLoginServices
     {
@@ -71,5 +72,8 @@ namespace NetCore.Services.Services
             };
         }
 
+       
+
+      
     }
 }

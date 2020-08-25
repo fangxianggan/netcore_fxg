@@ -28,5 +28,7 @@ namespace NetCore.EntityFrameworkCore.Context
         public DbSet<TaskJob> TaskJobs { get; set; }
 
         public DbSet<Test> Tests { get; set; }
+
+        public DbSet<StoreFiles> StoreFiles { get; set; }
     }
 }

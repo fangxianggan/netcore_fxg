@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NetCore.EntityFrameworkCore\NetCore.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\NetCore.Repository\NetCore.Repository.csproj" />
   </ItemGroup>
 

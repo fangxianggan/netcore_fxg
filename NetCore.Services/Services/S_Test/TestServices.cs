@@ -1,18 +1,19 @@
-﻿using NetCore.Core.Extensions;
+﻿using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.Core.Extensions;
 using NetCore.Domain.Interface;
 using NetCore.DTO.TestModel;
 using NetCore.EntityFrameworkCore.Models;
-using NetCore.IServices;
-using NetCore.Repository.AspectCore;
+using NetCore.EntityModel.QueryModels;
+using NetCore.IServices.I_Test;
+using NetCore.Services.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NetCore.Services
+namespace NetCore.Services.S_Test
 {
     public class TestServices : ITestServices
     {
         private readonly IBaseDomain<Test> _userDomain;
-      
         public TestServices(IBaseDomain<Test> userDomain)
         {
             _userDomain = userDomain;
@@ -24,7 +25,6 @@ namespace NetCore.Services
 
             var t1 = entity.MapTo<Test>();
             var dd = await _userDomain.AddDomain(t1);
-
 
             var t2 = entity.MapTo<Test>();
             var d3 = await _userDomain.AddDomain(t1);
@@ -42,5 +42,10 @@ namespace NetCore.Services
             return true;
         }
 
+
+        Task<HttpReponseViewModel<List<TestViewModel>>> IBaseServices<TestViewModel>.GetPageListService(QueryModel queryModel)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NetCore.DTO.ReponseViewModel
+namespace NetCore.DTO.ReponseViewModel.FileUpload
 {
     /// <summary>
     /// 分片上传 vue simple-uploader  

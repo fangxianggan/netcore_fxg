@@ -1,22 +1,29 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using NetCore.Core.EntityModel.ReponseModels;
+﻿using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.Core.Extensions;
 using NetCore.Core.Util;
-using NetCore.DTO.ReponseViewModel;
-using NetCore.DTO.RequestViewModel;
+using NetCore.Domain.Interface;
+using NetCore.DTO.ReponseViewModel.FileUpload;
+using NetCore.DTO.RequestViewModel.FileUpload;
+using NetCore.EntityFrameworkCore.Models;
 using NetCore.Services.IServices;
+using NetCore.Services.IServices.I_StoreFiles;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NetCore.Services.Services
+namespace NetCore.Services.Services.S_StoreFiles
 {
     public class FileUploadServices : IFileUploadServices
     {
+        private readonly IBaseDomain<StoreFiles>  _baseDomain;
+
+        public FileUploadServices(IBaseDomain<StoreFiles> baseDomain)
+        {
+            _baseDomain = baseDomain;
+        }
+
         public HttpReponseViewModel<FileUploadResViewModel> CheckFileState(FileUploadReqViewModel fileUpload)
         {
             FileUploadResViewModel fileUploadRes = new FileUploadResViewModel();
@@ -51,6 +58,8 @@ namespace NetCore.Services.Services
                 Flag = true
             };
         }
+
+       
 
         public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(FileUploadReqViewModel fileUpload)
         {
@@ -108,7 +117,7 @@ namespace NetCore.Services.Services
             return res;
         }
 
-
+     
 
         public HttpReponseViewModel<int> GetMaxChunk(FileUploadCheckChunkViewModel model)
         {
@@ -156,6 +165,8 @@ namespace NetCore.Services.Services
             return res;
         }
 
+    
+
         public HttpReponseViewModel<FileUploadResViewModel> MergeFiles(FileUploadReqViewModel fileUpload)
         {
             HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
@@ -184,7 +195,18 @@ namespace NetCore.Services.Services
                 var valid = this.VaildMergeFile(fileUpload);
                 FileUploadUtil.DeleteFolder(sourcePath);
 
-                var fileResult = FileUploadUtil.OwnBusiness("", targetFilePath, fileName);
+                //返回文件新的路径
+                var newFilePath = FileUploadUtil.newFilePath("", targetFilePath, fileName);
+                //存储成功
+                if (newFilePath != "")
+                {
+                    StoreFiles storeFiles = fileUpload.MapTo<StoreFiles>();
+                    storeFiles.ID = Guid.NewGuid();
+                    storeFiles.RelationFilePath = newFilePath;
+                    storeFiles.CreateBy = "";
+                    _baseDomain.AddDomain(storeFiles);
+                }
+
                 res.Code = 20000;
                 res.Data = new FileUploadResViewModel()
                 {
@@ -199,6 +221,8 @@ namespace NetCore.Services.Services
 
 
         }
+
+      
 
         public bool VaildMergeFile(FileUploadReqViewModel chunkFile)
         {
@@ -230,5 +254,7 @@ namespace NetCore.Services.Services
                 return false;
             }
         }
+
+      
     }
 }

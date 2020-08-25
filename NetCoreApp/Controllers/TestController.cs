@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.DTO.TestModel;
-using NetCore.IServices;
+using NetCore.IServices.I_Test;
 using NetCoreApp.Filters;
 
 namespace NetCoreApp.Controllers

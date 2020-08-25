@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Net.Http.Headers;
 using NetCore.DTO.ReponseViewModel;
+using NetCore.DTO.ReponseViewModel.FileDownload;
 using NetCore.Services.IServices;
+using NetCore.Services.IServices.I_StoreFiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NetCore.Services.Services
+namespace NetCore.Services.Services.S_StoreFiles
 {
     public class FileDownloadServices : IFileDownloadServices
     {

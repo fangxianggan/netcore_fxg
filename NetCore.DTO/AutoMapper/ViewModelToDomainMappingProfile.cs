@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using NetCore.DTO.RequestViewModel;
+using NetCore.DTO.RequestViewModel.FileUpload;
 using NetCore.DTO.TestModel;
 using NetCore.EntityFrameworkCore.Models;
 
@@ -33,7 +35,13 @@ namespace NetCore.DTO.AutoMapper
 
            // CreateMap<UserViewModel, User>();
             CreateMap<TestViewModel, Test>();
-           
+
+            CreateMap<FileUploadReqViewModel, StoreFiles > ()
+             .ForMember(d => d.FileBytes, o => o.MapFrom(s => s.TotalSize))
+              .ForMember(d => d.RelationFilePath, o => o.MapFrom(s => s.RelativePath))
+              .ForMember(d => d.FileType, o => o.MapFrom(s => s.FileType))
+             .ForMember(d => d.FileExt, o => o.MapFrom(s => s.FileExt));
+
         }
     }
 }

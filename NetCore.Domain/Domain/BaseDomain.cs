@@ -1,4 +1,6 @@
 ﻿using NetCore.Domain.Interface;
+using NetCore.EntityModel.QueryModels;
+using NetCore.Repository.Dapper.Entity;
 using NetCore.Repository.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,6 +25,12 @@ namespace NetCore.Domain.Domain
         {
             var dd = await _repository.AddList(entity)>0?true:false;
             return dd;
+        }
+
+        public async Task<PageData<T>> GetPageList(QueryModel queryModel)
+        {
+            var list = await _repository.GetPageList(queryModel);
+            return list;
         }
     }
 }

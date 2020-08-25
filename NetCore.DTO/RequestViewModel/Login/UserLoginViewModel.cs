@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NetCore.DTO.RequestViewModel
+namespace NetCore.DTO.RequestViewModel.Login
 {
    public  class UserLoginViewModel
     {

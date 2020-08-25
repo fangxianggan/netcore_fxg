@@ -1,4 +1,6 @@
 ﻿
+using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.EntityModel.QueryModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,5 +16,7 @@ namespace NetCore.Services.Interface
         Task<bool> AddService(T entity);
 
         Task<bool> AddListService(List<T> entity);
+
+        Task<HttpReponseViewModel<List<T>>> GetPageListService(QueryModel queryModel);
     }
 }

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using NetCore.DTO.ReponseViewModel;
+using NetCore.DTO.ReponseViewModel.StoreFiles;
 using NetCore.DTO.TestModel;
 using NetCore.EntityFrameworkCore.Models;
 
@@ -20,7 +22,11 @@ namespace NetCore.DTO.AutoMapper
 
             CreateMap<Test, TestViewModel>();
 
-           
+
+            CreateMap<StoreFiles, StoreFilesViewModel>()
+                .ForMember(d => d.Uploader, o => o.MapFrom(s => s.CreateBy))
+                .ForMember(d => d.UploadTime, o => o.MapFrom(s => s.CreateTime));
+
 
         }
     }

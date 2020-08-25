@@ -1,12 +1,9 @@
 ﻿using NetCore.Core.EntityModel.ReponseModels;
-using NetCore.DTO.ReponseViewModel;
-using NetCore.DTO.RequestViewModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using NetCore.DTO.ReponseViewModel.FileUpload;
+using NetCore.DTO.RequestViewModel.FileUpload;
 using System.Threading.Tasks;
 
-namespace NetCore.Services.IServices
+namespace NetCore.Services.IServices.I_StoreFiles
 {
     public interface IFileUploadServices
     {

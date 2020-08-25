@@ -283,7 +283,8 @@ namespace NetCore.Repository.Dapper
             return new PageData<T>()
             {
                 DataList = result.ToList(),
-                Total = cr.DataCount
+                Total = cr.DataCount,
+                EXESql=sqlQuery.PageSql
             };
         }
 

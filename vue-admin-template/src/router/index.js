@@ -93,13 +93,21 @@ export const constantRoutes = [
   {
     path: '/upload',
     component: Layout,
+    name: '文件操作',
+    meta: { title: '文件操作', icon: 'el-icon-s-help' },
     children: [
       {
         path: 'index',
         name: 'upload',
         component: () => import('@/views/upload/index'),
         meta: { title: 'upload', icon: 'form' }
-      }
+      },
+      {
+        path: 'indextest',
+        name: 'indextest',
+        component: () => import('@/views/upload/indextest'),
+        meta: { title: 'indextest', icon: 'form' }
+      },
     ]
   },
 

@@ -1,19 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.IO.MemoryMappedFiles;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.Core.Util;
-using NetCore.DTO.ReponseViewModel;
-using NetCore.Services.IServices;
+using NetCore.DTO.ReponseViewModel.FileDownload;
+using NetCore.Services.IServices.I_StoreFiles;
 
 namespace NetCoreApp.Controllers
 {

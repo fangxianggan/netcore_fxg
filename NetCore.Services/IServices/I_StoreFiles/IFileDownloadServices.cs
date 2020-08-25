@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NetCore.DTO.ReponseViewModel;
+using NetCore.DTO.ReponseViewModel.FileDownload;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NetCore.Services.IServices
+namespace NetCore.Services.IServices.I_StoreFiles
 {
     public interface IFileDownloadServices
     {

@@ -11,9 +11,12 @@ using Microsoft.IdentityModel.Xml;
 using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.Core.Util;
 using NetCore.DTO.ReponseViewModel;
+using NetCore.DTO.ReponseViewModel.FileUpload;
 using NetCore.DTO.RequestViewModel;
+using NetCore.DTO.RequestViewModel.FileUpload;
 using NetCore.DTO.TestModel;
 using NetCore.Services.IServices;
+using NetCore.Services.IServices.I_StoreFiles;
 
 namespace NetCoreApp.Controllers
 {

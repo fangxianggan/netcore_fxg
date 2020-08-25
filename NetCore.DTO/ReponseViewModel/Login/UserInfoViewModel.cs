@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NetCore.DTO.ReponseViewModel
+namespace NetCore.DTO.ReponseViewModel.Login
 {
    public  class UserInfoViewModel
     {

@@ -1,11 +1,8 @@
 ﻿using NetCore.Core.EntityModel.ReponseModels;
-using NetCore.DTO.ReponseViewModel;
-using NetCore.DTO.RequestViewModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using NetCore.DTO.ReponseViewModel.Login;
+using NetCore.DTO.RequestViewModel.Login;
 
-namespace NetCore.Services.IServices
+namespace NetCore.Services.IServices.I_Login
 {
     public interface IUserLoginServices
     {
