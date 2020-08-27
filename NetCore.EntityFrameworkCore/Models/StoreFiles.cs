@@ -52,12 +52,7 @@ namespace NetCore.EntityFrameworkCore.Models
         public string FileType { set; get; }
 
 
-        /// <summary>
-        /// 测试
-        /// </summary>
-        [DisplayName("测试"), MaxLength(16)]
-        public string test { set; get; }
-
+        
 
 
 

@@ -371,7 +371,7 @@ namespace NetCore.Repository.Dapper.Entity
                     }
                     else
                     {
-                        sqlPage = string.Format("SELECT * FROM {0} {1} {2} LIMIT {1} OFFSET {2}",
+                        sqlPage = string.Format("SELECT * FROM {0} {1} {2} LIMIT {4} OFFSET {3}",
                             _ModelDes.TableName, WhereSql, orderStr, (_PageIndex - 1) * _PageSize, (_PageIndex - 1) * _PageSize + _PageSize);
                     }
                 }

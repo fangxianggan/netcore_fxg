@@ -278,7 +278,7 @@ namespace NetCore.Repository.Dapper
             sqlQuery._Sql = new StringBuilder(where);
             sqlQuery = sqlQuery.Page(queryModel.PageIndex, queryModel.PageSize);
             var para = sqlQuery.Param;
-            var cr = await db.QueryFirstOrDefault(sqlQuery.CountSql, para);
+            var cr = await db.QueryFirstOrDefaultAsync<dynamic>(sqlQuery.CountSql, para);
             var result = await db.QueryAsync<T>(sqlQuery.PageSql, para);
             return new PageData<T>()
             {
@@ -474,4 +474,6 @@ namespace NetCore.Repository.Dapper
         #endregion
 
     }
+
+  
 }

@@ -1,4 +1,5 @@
-﻿using NetCore.Core.EntityModel.ReponseModels;
+﻿using Microsoft.AspNetCore.Http;
+using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.Core.Extensions;
 using NetCore.Core.Util;
 using NetCore.Domain.Interface;
@@ -17,7 +18,7 @@ namespace NetCore.Services.Services.S_StoreFiles
 {
     public class FileUploadServices : IFileUploadServices
     {
-        private readonly IBaseDomain<StoreFiles>  _baseDomain;
+        private readonly IBaseDomain<StoreFiles> _baseDomain;
 
         public FileUploadServices(IBaseDomain<StoreFiles> baseDomain)
         {
@@ -48,7 +49,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                         fileUploadRes.FState = 2;//已经存在该文件
                         fileUploadRes.SecondTransmission = true;
                         fileUploadRes.FilePathUrl = path;
-                    }  
+                    }
                 }
             }
             return new HttpReponseViewModel<FileUploadResViewModel>
@@ -59,16 +60,16 @@ namespace NetCore.Services.Services.S_StoreFiles
             };
         }
 
-       
+
 
         public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(FileUploadReqViewModel fileUpload)
         {
             HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
             FileUploadResViewModel viewModel = new FileUploadResViewModel()
             {
-                NeedMerge = false, 
-                FileName=fileUpload.FileName,
-                Identifier=fileUpload.Identifier
+                NeedMerge = false,
+                FileName = fileUpload.FileName,
+                Identifier = fileUpload.Identifier
             };
             var md5Folder = FileUploadUtil.GetFileMd5Folder("", fileUpload.Identifier);
             var filePath = "";  // 要保存的文件路径// 存在分片参数,并且，最大的片数大于1片时     
@@ -101,8 +102,8 @@ namespace NetCore.Services.Services.S_StoreFiles
             {
                 var qfileName = fileUpload?.FileName;
                 //没有分片直接保存
-                filePath = md5Folder+  Path.GetExtension(qfileName);
-                viewModel.NeedMerge= true;
+                filePath = md5Folder + Path.GetExtension(qfileName);
+                viewModel.NeedMerge = true;
             }
 
             // 写入文件
@@ -117,7 +118,115 @@ namespace NetCore.Services.Services.S_StoreFiles
             return res;
         }
 
-     
+        public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(IFormFile file, HttpRequest request)
+        {
+            HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
+            string identifier = "";
+            int chunkNumber = 0;
+            int totalChunks = 0;
+            string fileName = "";
+            int currentChunkSize = 0;
+            int chunkSize = 0;
+            int totalSize = 0;
+            string relativePath = "";
+            foreach (var item in request.Form.Keys)
+            {
+                if (item == "chunkNumber")
+                {
+                    chunkNumber = Convert.ToInt32(request.Form["chunkNumber"].ToString());
+                }
+                if (item == "identifier")
+                {
+                    identifier = request.Form["identifier"].ToString();
+                }
+                if (item == "totalChunks")
+                {
+                    totalChunks = Convert.ToInt32(request.Form["totalChunks"].ToString());
+                }
+                if (item == "filename")
+                {
+                    fileName = request.Form["filename"].ToString();
+                }
+                if (item == "chunkSize")
+                {
+                    chunkSize = Convert.ToInt32(request.Form["chunkSize"].ToString());
+                }
+                if (item == "currentChunkSize")
+                {
+                    currentChunkSize = Convert.ToInt32(request.Form["currentChunkSize"].ToString());
+                }
+                if (item == "totalSize")
+                {
+                    totalSize = Convert.ToInt32(request.Form["totalSize"].ToString());
+                }
+                if (item == "relativePath")
+                {
+                    relativePath = request.Form["relativePath"].ToString();
+                }
+            }
+
+            FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
+            fileUpload.Identifier = identifier;
+            fileUpload.FileName = fileName;
+            fileUpload.ChunkNumber = chunkNumber;
+            fileUpload.ChunkSize = chunkSize;
+            fileUpload.CurrentChunkSize = currentChunkSize;
+            fileUpload.RelativePath = relativePath;
+            fileUpload.TotalChunks = totalChunks;
+            fileUpload.TotalSize = totalSize;
+            fileUpload.File = file;
+
+            FileUploadResViewModel viewModel = new FileUploadResViewModel()
+            {
+                NeedMerge = false,
+                FileName = fileUpload.FileName,
+                Identifier = fileUpload.Identifier
+            };
+            var md5Folder = FileUploadUtil.GetFileMd5Folder("", fileUpload.Identifier);
+            var filePath = "";  // 要保存的文件路径// 存在分片参数,并且，最大的片数大于1片时     
+            if (fileUpload.TotalChunks > 1)
+            {
+                var uploadNumsOfLoop = 10;
+                // 是10的倍数就休眠几秒（数据库设置的秒数）
+                if (fileUpload.ChunkNumber % uploadNumsOfLoop == 0)
+                {
+                    var timesOfLoop = 10;   //休眠毫秒,可从数据库取值
+                    Thread.Sleep(timesOfLoop);
+                }
+                //建立临时传输文件夹
+                if (!Directory.Exists(md5Folder))
+                {
+                    Directory.CreateDirectory(md5Folder);
+                }
+                filePath = md5Folder + "/" + fileUpload.ChunkNumber;
+                if (fileUpload.TotalChunks == fileUpload.ChunkNumber)
+                {
+                    viewModel.NeedMerge = true;
+                }
+                else
+                {
+                    viewModel.NeedMerge = false;
+                }
+            }
+            else
+            {
+                var qfileName = fileUpload?.FileName;
+                //没有分片直接保存
+                filePath = md5Folder + Path.GetExtension(qfileName);
+                viewModel.NeedMerge = true;
+            }
+
+            // 写入文件
+            using (var addFile = new FileStream(filePath, FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.ReadWrite))
+            {
+                if (fileUpload.File != null)
+                {
+                    await fileUpload.File.CopyToAsync(addFile);
+                }
+            }
+            res.Data = viewModel;
+            return res;
+        }
 
         public HttpReponseViewModel<int> GetMaxChunk(FileUploadCheckChunkViewModel model)
         {
@@ -165,7 +274,7 @@ namespace NetCore.Services.Services.S_StoreFiles
             return res;
         }
 
-    
+
 
         public HttpReponseViewModel<FileUploadResViewModel> MergeFiles(FileUploadReqViewModel fileUpload)
         {
@@ -179,7 +288,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 string sourcePath = FileUploadUtil.GetFileMd5Folder("", identifier);
                 //合并后的文件路径
                 string targetFilePath = sourcePath + Path.GetExtension(fileName);
-                
+
                 // 目标文件不存在，则需要合并
                 if (!System.IO.File.Exists(targetFilePath))
                 {
@@ -222,7 +331,7 @@ namespace NetCore.Services.Services.S_StoreFiles
 
         }
 
-      
+
 
         public bool VaildMergeFile(FileUploadReqViewModel chunkFile)
         {
@@ -240,7 +349,7 @@ namespace NetCore.Services.Services.S_StoreFiles
 
                 // 对文件进行 MD5 唯一验证
                 var identifier = chunkFile.Identifier;
-                var fileMd5 =FileUploadUtil.GetMD5HashFromFile(chunkFile.RelativePath);
+                var fileMd5 = FileUploadUtil.GetMD5HashFromFile(chunkFile.RelativePath);
                 if (!fileMd5.Equals(identifier))
                 {
                     throw new Exception("[" + clientFileName + "],文件MD5值不对等");
@@ -255,6 +364,6 @@ namespace NetCore.Services.Services.S_StoreFiles
             }
         }
 
-      
+
     }
 }

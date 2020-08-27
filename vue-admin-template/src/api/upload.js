@@ -2,12 +2,12 @@ import axios from 'axios'
 import request from '@/utils/request'
 
 //上传url地址
-const chunkUploadUrl = process.env.VUE_APP_BASE_API+ "/FileUpload/ChunkUpload";
+const chunkUploadUrl = process.env.VUE_APP_BASE_API + "/StoreFiles/ChunkUpload";
 
 //合并的fun
 export function mergeFiles(data) {
   return request({
-    url: '/FileUpload/MergeFiles',
+    url: '/StoreFiles/MergeFiles',
     method: 'post',
     data
   })
@@ -16,7 +16,7 @@ export function mergeFiles(data) {
 //拆分文件的分片信息
 export function getMD5ToBurstData() {
   return request({
-    url: '/FileDownload/GetMD5ToBurstData',
+    url: '/StoreFiles/GetMD5ToBurstData',
     method: 'get',
     params: { }
   })

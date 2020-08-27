@@ -1,8 +1,6 @@
 
 
-import *as validates from '@/validate/validate'
-
-
+import * as validates from '@/validate/validate'
 
 /**
  *
@@ -445,8 +443,6 @@ let myAction = {
     }
     return result;
   }
-
-
 
 }
 

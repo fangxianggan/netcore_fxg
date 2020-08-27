@@ -9,7 +9,7 @@ namespace NetCore.Repository.Dapper.Entity
 
         public List<T> DataList { set; get; }
 
-        public int Total { set; get; }
+        public long Total { set; get; }
 
         public string EXESql { set; get; }
     }

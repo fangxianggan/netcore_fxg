@@ -21,6 +21,10 @@ import uploader from 'vue-simple-uploader'
 //上传组件
 Vue.use(uploader)
 
+//拖动 dialog
+import elDragDialog from '@/directive/el-drag-dialog'
+Vue.use(elDragDialog)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

@@ -27,8 +27,8 @@ using log4net.Config;
 using log4net.Repository;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Http;
+using NetCore.Core.Util;
 
 namespace NetCoreApp
 {
@@ -53,6 +53,9 @@ namespace NetCoreApp
             BasicConfigurator.Configure(repository);
 
             Configuration = configuration;
+
+            //初始化自己配置的config文件
+            AppConfigUtil.InitConfig(configuration);
         }
 
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -116,7 +119,7 @@ namespace NetCoreApp
             services.AddAutoMapperSetup();
             #endregion
 
-            #region  DBContext
+            #region  DBContext   code-first使用
             //读取aoosettings.json里配置的数据库连接语句需要的代码
             var connection = Configuration.GetConnectionString("MySqlConnection");
             services.AddDbContext<DBContext>(options => options.UseMySql(connection));

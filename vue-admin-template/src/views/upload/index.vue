@@ -1,96 +1,195 @@
 <template>
   <div class="app-container">
-    <!--<el-table v-loading="listLoading"
+    <div class="filter-container">
+      <el-collapse accordion v-model="activeName">
+        <el-collapse-item title="查询条件" name="1">
+          <el-form :inline="true" :model="filterModel">
+            <el-form-item label="配置名称">
+              <el-input v-model="filterModel.value.value"
+                        placeholder="配置名称"
+                        class="filter-item"
+                        @keyup.enter.native="handleFilter" />
+            </el-form-item>
+            <el-form-item label="添加时间">
+              <el-date-picker v-model="filterModel.createTime.value"
+                              :picker-options="daterangeOptions"
+                              value-format="yyyy-MM-dd"
+                              range-separator="至"
+                              start-placeholder="开始时间"
+                              end-placeholder="结束时间"
+                              style="width: 250px;"
+                              type="daterange"
+                              placement="bottom-end"
+                              @keyup.enter.native="handleFilter" />
+            </el-form-item>
+          </el-form>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <el-row class="el-table-header-buttom">
+      <el-button v-waves
+                 class="filter-item"
+                 type="primary"
+                 icon="el-icon-search"
+                 @click="handleFilter">查询</el-button>
+
+      <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleUpload">上传</el-button>
+    </el-row>
+    <el-table :key="tableKey"
+              v-loading="listLoading"
               :data="list"
-              element-loading-text="Loading"
               border
               fit
-              highlight-current-row>
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
+              highlight-current-row
+              style="width: 100%;"
+              @sort-change="sortChange">
+      <el-table-column label="文件名称" prop="fileName" sortable="custom" width="180">
+        <template slot-scope="{row}">
+          <span>{{ row.fileName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
+      <el-table-column label="文件类型" prop="fileType" sortable="custom" width="180">
+        <template slot-scope="{row}">
+          <span>{{ row.fileType }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+      <el-table-column label="文件大小" prop="fileBytes" sortable="custom" width="180px">
+        <template slot-scope="{row}">
+          <span>{{ row.fileBytes}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+      <el-table-column label="上传时间" width="180px">
+        <template slot-scope="{row}">
+          <span>{{ row.uploadTime|formatTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+      <el-table-column label="上传人" min-width="100px">
+        <template slot-scope="{row}">
+          <span>{{ row.uploader }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
-        </template>
-      </el-table-column>
-    </el-table>-->
 
-    <uploader :options="options"
-              class="uploader-example"
-              ref="uploader"
-              :autoStart="false"
-              @file-added="onFileAdded"
-              @file-success="onFileSuccess"
-              @file-progress="onFileProgress"
-              @file-error="onFileError"
-              style="width: 100%;">
-      <uploader-unsupport></uploader-unsupport>
-      <uploader-drop>
-        <p>欢迎来到上传界面</p>
-        <uploader-btn :attrs="attrs">选择文件</uploader-btn>
-        <uploader-btn :attrs="attrs">选择图片</uploader-btn>
-        <uploader-btn :attrs="attrs" :directory="true">选择目录</uploader-btn>
-      </uploader-drop>
-      <uploader-list>
-        <ul class="file-list" slot-scope="props">
-          <li v-for="file in props.fileList" :key="file.id">
-            <uploader-file :class="'file_' + file.id" ref="files" :file="file" :list="true"></uploader-file>
-          </li>
-          <div class="no-file" v-if="!props.fileList.length"><i class="nucfont inuc-empty-file"></i> 暂无待上传文件</div>
-        </ul>
-      </uploader-list>
-      <div class="login-container">
-        <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="testdownload">下载</el-button>
-      </div>
-      <div id="dcontent" class="dcontent">
-        <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="testdownload2">下载2222</el-button>
-        <br />
-        <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" status="success"></el-progress>
+      <el-table-column label="操作" width="250" class-name="small-padding fixed-width">
+        <template slot-scope="{row,$index}">
+          <el-button type="primary" size="mini" @click="handleDown(row)">下载</el-button>
 
-        <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="convertFile">合成文件流</el-button>
-        <br />
+          <el-button v-if="row.status!='deleted'"
+                     size="mini"
+                     type="danger"
+                     @click="handleDelete(row,$index)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination v-show="total>0"
+                :total="total"
+                :page.sync="listQuery.page"
+                :limit.sync="listQuery.limit"
+                @pagination="getList" />
+
+    <el-dialog v-el-drag-dialog
+               :title="dialogTitle"
+               :visible.sync="dialogFormVisible"
+               fit
+               width="60%"
+               :destroy-on-close="true"
+               :fullscreen="false">
+
+
+      <uploader :options="options"
+                class="uploader-example"
+                ref="uploader"
+                :autoStart="false"
+                @file-added="onFileAdded"
+                @file-success="onFileSuccess"
+                @file-progress="onFileProgress"
+                @file-error="onFileError"
+                style="width: 100%;">
+        <uploader-unsupport></uploader-unsupport>
+        <uploader-drop>
+          <uploader-btn :attrs="attrs">选择文件</uploader-btn>
+          <uploader-btn :attrs="attrs">选择图片</uploader-btn>
+          <uploader-btn :attrs="attrs" :directory="true">选择目录</uploader-btn>
+        </uploader-drop>
+        <uploader-list>
+          <ul class="file-list" slot-scope="props">
+            <li v-for="file in props.fileList" :key="file.id">
+              <uploader-file :class="'file_' + file.id" ref="files" :file="file" :list="true"></uploader-file>
+            </li>
+
+          </ul>
+        </uploader-list>
+        <!--<div class="login-container">
+          <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="testdownload">下载</el-button>
+        </div>
+        <div id="dcontent" class="dcontent">
+          <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="testdownload2">下载2222</el-button>
+          <br />
+          <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" status="success"></el-progress>
+
+          <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="convertFile">合成文件流</el-button>
+          <br />
+        </div>-->
+      </uploader>
+
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">关闭</el-button>
+
       </div>
-    </uploader>
+    </el-dialog>
+
+
+
+
   </div>
 
 
 </template>
 <script>
   import SparkMD5 from 'spark-md5'
+  import waves from '@/directive/waves' // waves directive
+  import Pagination from '@/components/Pagination'
   import apiUploadService from '@/api/upload'
   import indexDBService from '@/store/indexdb'
   import { getPageList } from '@/api/storefiles'
+  import { statusSet } from '@/utils/upload-download'
+  import myAction from '@/utils/baseutil'
+
   let { chunkUploadUrl, mergeFiles, getMD5ToBurstData, downloadBigFile, downloadBigFile2 } = apiUploadService
   let { add, queryDataBymd5, queryCount, mergeFileStream, requestFileStreamArrs, requestDB } = indexDBService
 
   export default {
+    name: "upload",
+    directives: { waves },
+    components: { Pagination },
     data() {
-      return {
-        recording: {},
+      let currentData = {
+        filterModel: {
+          value: {
+            field: "fileName",
+            method: "Contains",
+            value: "",
+            prefix: "",
+            operator: "And"
+          },
+          createTime: {
+            field: "UploadTime",
+            method: "Between",
+            value: "",
+            prefix: "",
+            operator: "And"
+          }
+        },
+        temp: {
+          id: "",
+          fileName: "",
+          fileType: "",
+          fileBytes: 0,
+          uploadTime: "",
+          uploader: ""
+        },
+        orderArr: [],
         options: {
           target: chunkUploadUrl,
           testChunks: true, //校验
@@ -138,73 +237,92 @@
           { color: '#5cb87a', percentage: 60 },
           { color: '#1989fa', percentage: 80 },
           { color: '#6f7ad3', percentage: 100 }
-        ],
-        list111: '222',
-        listLoading: ''
+        ]
 
       };
+      var data = $.extend(false, myAction.setBaseVueData, currentData);
+      return data;
     },
     created() {
-      
-      console.log("111");
-      console.log(this.list111);
-     // this.getList()
+      this.getList()
     },
     methods: {
       getList() {
-        let param = null;
-        //getPageList(param).then(res => {
+        this.listLoading = true;
+        let param = myAction.getQueryModel(
+          this.listQuery.limit,
+          this.listQuery.page,
+          this.total,
+          this.filterModel,
+          this.orderArr,
+          false
+        );
+        //var data = myAction.getItemsModel(this.filterModel);
 
+        getPageList(param).then(response => {
+          this.list = response.data;
+          this.total = response.total;
 
-        //});
+          // Just to simulate the time of the request
+          setTimeout(() => {
+            this.listLoading = false;
+          }, 1.5 * 300);
+        });
+      },
+      //上传弹窗
+      handleUpload() {
+
+        this.dialogStatus = "Create";
+        this.dialogTitle = "上传文件";
+        this.dialogFormVisible = true;
+
+        // 获取uploader对象
+        this.$nextTick(() => {
+          window.uploader = this.$refs.uploader.uploader;
+        });
+
+      },
+      //查询处理的事件
+      handleFilter() {
+        this.listQuery.page = 1;
+        this.getList();
+      },
+      //排序事件
+      sortChange(data) {
+        this.orderArr = [];
+        this.orderArr.push(data);
+        this.handleFilter();
+      },
+      //下载
+      handleDown(row) {
+
+      },
+      //删除数据
+      handleDelete(row, index) {
+        var title = '<span style="color: red;">是否要删除这条数据?</span>';
+        this.$confirm(title, "提示", {
+          dangerouslyUseHTMLString: true,
+          type: "warning",
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+        })
+          .then(() => {
+            let url = "/PurchaseOrder/GetDel";
+            let data = { orderNumber: row.pOrderNum };
+            this.$ajax(url, data, { method: "get" }).then(response => {
+              if (response.resultSign == 0) {
+                this.list.splice(index, 1);
+                this.total--;
+              }
+              myAction.getNotifyFunc(response, this);
+            });
+          })
+          .catch(action => { });
       },
       //选择文件后，将上传的窗口展示出来，开始md5的计算工作
       onFileAdded(file) {
-        // 计算MD5，下文会提到
-        this.computeMD5(file);
-      },
-      // 文件进度的回调
-      onFileProgress(rootFile, file, chunk) {
-        console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
-      },
-      //上传成功的事件
-      onFileSuccess(rootFile, file, response, chunk) {
-        let res = JSON.parse(response);
-        // 服务器自定义的错误，这种错误是Uploader无法拦截的
-        if (!res.flag) {
-          this.$message({ message: res.message, type: 'error' });
-          // 文件状态设为“失败”
-          this.statusSet(file.id, 'error');
-          return
-        }
-        var d = res.data;
-        // 如果服务端返回需要合并
-        if (d.needMerge) {
-          var param = {
-            Identifier: d.identifier,
-            FileName: d.fileName,
-            TotalSize: file.size,
-            FileType: "",
-            FileExt: d.fileName.substring(d.fileName.lastIndexOf('.') + 1)
 
-          }
-          // 文件状态设为“合并中”
-          this.statusSet(file.id, 'merging');
-          mergeFiles(param).then(response => {
-            this.statusSet(file.id, "success");
-          });
-        } else {
-          this.statusSet(file.id, "success");
-        }
-      },
-      onFileError(rootFile, file, response, chunk) {
-        console.log(response)
-      },
-      /**
-      * 计算md5，实现断点续传及秒传
-      * @param file
-      */
-      computeMD5(file) {
+        // 计算MD5，下文会提到
         let fileReader = new FileReader();
         let time = new Date().getTime();
         let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
@@ -213,7 +331,7 @@
         let chunks = Math.ceil(file.size / chunkSize);
         let spark = new SparkMD5.ArrayBuffer();
         // 文件状态设为"计算MD5"
-        this.statusSet(file.id, 'md5');
+        statusSet(this,file.id, 'md5');
         //文件暂停
         file.pause();
         loadNext();
@@ -232,8 +350,14 @@
             let md5 = spark.end();
             //可以有上传的按钮
             $('.file_' + file.id).find(".uploader-file-actions .uploader-file-resume").removeClass("hide");
-            this.computeMD5Success(md5, file);
-            //console.log(`MD5计算完毕：${file.name} \nMD5：${md5} \n分片：${chunks} 大小:${file.size} 用时：${new Date().getTime() - time} ms`);
+
+            globalThis.uploader.opts.query = {
+
+            }
+            file.uniqueIdentifier = md5;
+            file.resume();
+          
+
           }
         });
         fileReader.onerror = function () {
@@ -246,67 +370,43 @@
           fileReader.readAsArrayBuffer(blobSlice.call(file.file, start, end));
         }
       },
-      computeMD5Success(md5, file) {
-        // 将自定义参数直接加载uploader实例的opts上
-        globalThis.uploader.opts.query = {
-          //  query: {}
-        }
-        file.uniqueIdentifier = md5;
-        file.resume();
+      // 文件进度的回调
+      onFileProgress(rootFile, file, chunk) {
+        //  console.log(`上传中 ${file.name}，chunk：${chunk.startByte / 1024 / 1024} ~ ${chunk.endByte / 1024 / 1024}`)
       },
-      /**
-      * 新增的自定义的状态: 'md5'、'transcoding'、'failed'
-      * @param id
-      * @param status
-      */
-      statusSet(id, status) {
-        let statusMap = {
-          md5: {
-            text: '校验MD5',
-            bgc: '#fff'
-          },
-          merging: {
-            text: '合并中',
-            bgc: '#ac3ae6'
-          },
-          transcoding: {
-            text: '转码中',
-            bgc: '#e2eeff'
-          },
-          uploading: {
-            text: '上传中',
-            bgc: '#e2eeff'
-          },
-          waiting: {
-            text: '等待',
-            bgc: '#e2eeff'
-          },
-          paused: {
-            text: '暂停',
-            bgc: '#61affe'
-          },
-          error: {
-            text: '上传失败',
-            bgc: '#f56c6c'
-          },
-          success:
-          {
-            text: '上传成功',
-            bgc: '#49cc90'
-          }
+      //上传成功的事件
+      onFileSuccess(rootFile, file, response, chunk) {
+        let res = JSON.parse(response);
+        // 服务器自定义的错误，这种错误是Uploader无法拦截的
+        if (!res.flag) {
+          this.$message({ message: res.message, type: 'error' });
+          // 文件状态设为“失败”
+          statusSet(this,file.id, 'error');
+          return
         }
-        this.$nextTick(() => {
-          $('.file_' + id).find(".uploader-file-status span:eq(0)").css({
-            'position': 'absolute',
-            'top': '0',
-            'left': '0',
-            'right': '0',
-            'bottom': '0',
-            'zIndex': '1',
-            'color': 'white',
-            'background': statusMap[status].bgc
-          }).text(statusMap[status].text);
-        })
+        var d = res.data;
+        // 如果服务端返回需要合并
+        if (d.needMerge) {
+          var param = {
+            Identifier: d.identifier,
+            FileName: d.fileName,
+            TotalSize: file.size,
+            FileType: "",
+            FileExt: d.fileName.substring(d.fileName.lastIndexOf('.') + 1)
+
+          }
+          // 文件状态设为“合并中”
+          statusSet(this,file.id, 'merging');
+          mergeFiles(param).then(response => {
+            statusSet(this,file.id, "success");
+          });
+        } else {
+          statusSet(this,file.id, "success");
+        }
+      },
+      //上传失败
+      onFileError(rootFile, file, response, chunk) {
+        console.log(response)
       },
       //测试下载大文件
       testdownload() {
@@ -388,21 +488,18 @@
       }
     },
     mounted() {
-      // 获取uploader对象
-      this.$nextTick(() => {
-        window.uploader = this.$refs.uploader.uploader;
-      });
+
     }
   };
 </script>
 
-<style>
+<style scoped>
   .uploader-example {
     width: 100%;
-    padding: 15px;
-    margin: 50px auto 0;
+    /*padding: 15px;*/
+    /*margin: 50px auto 0;*/
     font-size: 12px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);*/
   }
 
     .uploader-example .uploader-btn {
@@ -418,5 +515,9 @@
 
   .hide {
     display: none !important;
+  }
+
+  .el-dialog__body {
+    padding: 10px !important;
   }
 </style>

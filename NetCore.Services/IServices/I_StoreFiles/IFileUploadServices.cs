@@ -1,4 +1,5 @@
-﻿using NetCore.Core.EntityModel.ReponseModels;
+﻿using Microsoft.AspNetCore.Http;
+using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.DTO.ReponseViewModel.FileUpload;
 using NetCore.DTO.RequestViewModel.FileUpload;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace NetCore.Services.IServices.I_StoreFiles
         HttpReponseViewModel<FileUploadResViewModel> CheckFileState(FileUploadReqViewModel fileUpload);
 
         Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(FileUploadReqViewModel fileUpload);
+
+        Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(IFormFile file, HttpRequest request);
 
         HttpReponseViewModel<FileUploadResViewModel> MergeFiles(FileUploadReqViewModel fileUpload);
 
