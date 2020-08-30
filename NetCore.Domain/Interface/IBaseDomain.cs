@@ -1,8 +1,8 @@
 ﻿using NetCore.EntityModel.QueryModels;
 using NetCore.Repository.Dapper.Entity;
+using NetCore.Repository.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 namespace NetCore.Domain.Interface
 {
     public  interface IBaseDomain<T> where T : class
@@ -20,6 +20,8 @@ namespace NetCore.Domain.Interface
 
 
         Task<PageData<T>> GetPageList(QueryModel queryModel);
+
+        Task<T>  GetEntity( object keyValues);
        
 
     }

@@ -17,5 +17,7 @@ namespace NetCore.DTO.ReponseViewModel.StoreFiles
         public DateTime UploadTime { set; get; }
 
         public string Uploader { set; get; }
+
+        public string FileCategory { set; get;}
     }
 }

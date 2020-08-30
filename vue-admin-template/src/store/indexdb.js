@@ -140,13 +140,13 @@ export function mergeFileStream(arss, fileName) {
 }
 
 //查询条数
-export function queryCount(requestDB,callback)
+export function queryCount(requestDB,md5,callback)
 {
   let myDb = requestDB.result;
   var store = myDb.transaction("downloadfile")
     .objectStore("downloadfile");
   var index = store.index("downloadfile_md5");
-  var countRequest = index.count();
+  var countRequest = index.count(md5);
   countRequest.onsuccess = function () {
      callback(countRequest.result);
   }

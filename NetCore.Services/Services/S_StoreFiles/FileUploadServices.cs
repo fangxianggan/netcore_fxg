@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.Core.Enum;
 using NetCore.Core.Extensions;
 using NetCore.Core.Util;
 using NetCore.Domain.Interface;
 using NetCore.DTO.ReponseViewModel.FileUpload;
+using NetCore.DTO.ReponseViewModel.StoreFiles;
 using NetCore.DTO.RequestViewModel.FileUpload;
 using NetCore.EntityFrameworkCore.Models;
-using NetCore.Services.IServices;
 using NetCore.Services.IServices.I_StoreFiles;
 using System;
 using System.IO;
@@ -25,11 +26,66 @@ namespace NetCore.Services.Services.S_StoreFiles
             _baseDomain = baseDomain;
         }
 
-        public HttpReponseViewModel<FileUploadResViewModel> CheckFileState(FileUploadReqViewModel fileUpload)
+        public HttpReponseViewModel<FileUploadResViewModel> CheckFileState(HttpRequest request)
         {
+            FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
+            if (request.Query.Count() > 0)
+            {
+                foreach (var item in request.Query.ToList())
+                {
+                    if (item.Key == "chunkNumber")
+                    {
+                        fileUpload.ChunkNumber = Convert.ToInt32(item.Value);
+                    }
+                    if (item.Key == "chunkSize")
+                    {
+                        fileUpload.ChunkSize = Convert.ToInt32(item.Value);
+                    }
+                    if (item.Key == "currentChunkSize")
+                    {
+                        fileUpload.CurrentChunkSize = Convert.ToInt32(item.Value);
+                    }
+                    if (item.Key == "totalSize")
+                    {
+                        fileUpload.TotalSize = Convert.ToInt32(item.Value);
+                    }
+                    if (item.Key == "identifier")
+                    {
+                        fileUpload.Identifier = item.Value;
+                    }
+                    if (item.Key == "filename")
+                    {
+                        fileUpload.FileName = item.Value;
+                    }
+                    if (item.Key == "relativePath")
+                    {
+                        fileUpload.RelativePath = item.Value;
+                    }
+                    if (item.Key == "totalChunks")
+                    {
+                        fileUpload.TotalChunks = Convert.ToInt32(item.Value);
+                    }
+                    if (item.Key == "fileExt")
+                    {
+                        fileUpload.FileExt = item.Value;
+                    }
+                    if (item.Key == "fileType")
+                    {
+                        fileUpload.FileType = item.Value;
+                    }
+                    if (item.Key == "fileCategory")
+                    {
+                        fileUpload.FileCategory = item.Value;
+                    }
+                }
+            }
+
+            var webRoot = AppConfigUtil.FilePath;
+
             FileUploadResViewModel fileUploadRes = new FileUploadResViewModel();
             fileUploadRes.FState = 0;//新文件
-            var md5Folder = FileUploadUtil.GetFileMd5Folder("", fileUpload.Identifier);
+
+            var md5Folder = FileUploadUtil.GetFileMd5Folder(webRoot, fileUpload.Identifier);
             //判断这个md5临时文件夹存不存在  存在证明可以用断点续传 返回已经上传分片文件
             if (Directory.Exists(md5Folder))
             {
@@ -39,7 +95,7 @@ namespace NetCore.Services.Services.S_StoreFiles
             else
             {
                 //判断改文件存不存在
-                var path = FileUploadUtil.GetPath("") + fileUpload.FileName;
+                var path = FileUploadUtil.GetPath(webRoot) + fileUpload.FileName;
                 if (System.IO.File.Exists(path))
                 {
                     //判断该文件是不是已经上传过了  上传过了就秒传  直接拿已经存在的地址url
@@ -121,59 +177,54 @@ namespace NetCore.Services.Services.S_StoreFiles
         public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(IFormFile file, HttpRequest request)
         {
             HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
-            string identifier = "";
-            int chunkNumber = 0;
-            int totalChunks = 0;
-            string fileName = "";
-            int currentChunkSize = 0;
-            int chunkSize = 0;
-            int totalSize = 0;
-            string relativePath = "";
+            FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
             foreach (var item in request.Form.Keys)
             {
                 if (item == "chunkNumber")
                 {
-                    chunkNumber = Convert.ToInt32(request.Form["chunkNumber"].ToString());
+                    fileUpload.ChunkNumber = Convert.ToInt32(request.Form["chunkNumber"].ToString());
                 }
                 if (item == "identifier")
                 {
-                    identifier = request.Form["identifier"].ToString();
+                    fileUpload.Identifier = request.Form["identifier"].ToString();
                 }
                 if (item == "totalChunks")
                 {
-                    totalChunks = Convert.ToInt32(request.Form["totalChunks"].ToString());
+                    fileUpload.TotalChunks = Convert.ToInt32(request.Form["totalChunks"].ToString());
                 }
                 if (item == "filename")
                 {
-                    fileName = request.Form["filename"].ToString();
+                    fileUpload.FileName = request.Form["filename"].ToString();
                 }
                 if (item == "chunkSize")
                 {
-                    chunkSize = Convert.ToInt32(request.Form["chunkSize"].ToString());
+                    fileUpload.ChunkSize = Convert.ToInt32(request.Form["chunkSize"].ToString());
                 }
                 if (item == "currentChunkSize")
                 {
-                    currentChunkSize = Convert.ToInt32(request.Form["currentChunkSize"].ToString());
+                    fileUpload.CurrentChunkSize = Convert.ToInt32(request.Form["currentChunkSize"].ToString());
                 }
                 if (item == "totalSize")
                 {
-                    totalSize = Convert.ToInt32(request.Form["totalSize"].ToString());
+                    fileUpload.TotalSize = Convert.ToInt32(request.Form["totalSize"].ToString());
                 }
                 if (item == "relativePath")
                 {
-                    relativePath = request.Form["relativePath"].ToString();
+                    fileUpload.RelativePath = request.Form["relativePath"].ToString();
+                }
+                if (item == "fileExt")
+                {
+                    fileUpload.FileExt = request.Form["fileExt"].ToString();
+                }
+                if (item == "fileType")
+                {
+                    fileUpload.FileType  = request.Form["fileType"].ToString();
+                }
+                if (item == "fileCategory")
+                {
+                    fileUpload.FileCategory = request.Form["fileCategory"].ToString();
                 }
             }
-
-            FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
-            fileUpload.Identifier = identifier;
-            fileUpload.FileName = fileName;
-            fileUpload.ChunkNumber = chunkNumber;
-            fileUpload.ChunkSize = chunkSize;
-            fileUpload.CurrentChunkSize = currentChunkSize;
-            fileUpload.RelativePath = relativePath;
-            fileUpload.TotalChunks = totalChunks;
-            fileUpload.TotalSize = totalSize;
             fileUpload.File = file;
 
             FileUploadResViewModel viewModel = new FileUploadResViewModel()
@@ -182,7 +233,14 @@ namespace NetCore.Services.Services.S_StoreFiles
                 FileName = fileUpload.FileName,
                 Identifier = fileUpload.Identifier
             };
-            var md5Folder = FileUploadUtil.GetFileMd5Folder("", fileUpload.Identifier);
+            var webRoot = AppConfigUtil.FilePath;
+            var md5Folder = FileUploadUtil.GetFileMd5Folder(webRoot, fileUpload.Identifier);
+
+            //建立临时传输文件夹
+            if (!Directory.Exists(md5Folder))
+            {
+                Directory.CreateDirectory(md5Folder);
+            }
             var filePath = "";  // 要保存的文件路径// 存在分片参数,并且，最大的片数大于1片时     
             if (fileUpload.TotalChunks > 1)
             {
@@ -193,11 +251,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                     var timesOfLoop = 10;   //休眠毫秒,可从数据库取值
                     Thread.Sleep(timesOfLoop);
                 }
-                //建立临时传输文件夹
-                if (!Directory.Exists(md5Folder))
-                {
-                    Directory.CreateDirectory(md5Folder);
-                }
+
                 filePath = md5Folder + "/" + fileUpload.ChunkNumber;
                 if (fileUpload.TotalChunks == fileUpload.ChunkNumber)
                 {
@@ -217,7 +271,7 @@ namespace NetCore.Services.Services.S_StoreFiles
             }
 
             // 写入文件
-            using (var addFile = new FileStream(filePath, FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.ReadWrite))
+            using (var addFile = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
             {
                 if (fileUpload.File != null)
                 {
@@ -225,6 +279,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 }
             }
             res.Data = viewModel;
+            res.Code = 20000;
             return res;
         }
 
@@ -245,15 +300,13 @@ namespace NetCore.Services.Services.S_StoreFiles
                 if (!Directory.Exists(md5Folder))
                 {
                     FileUploadUtil.DicCreate(md5Folder);
-
                 }
                 var fileName = model.Md5 + "." + model.Ext;
                 string targetPath = Path.Combine(md5Folder, fileName);
                 // 文件已经存在，则可能存在问题，直接删除，重新上传
-                if (System.IO.File.Exists(targetPath))
+                if (File.Exists(targetPath))
                 {
-                    System.IO.File.Delete(targetPath);
-
+                    File.Delete(targetPath);
                 }
                 var dicInfo = new DirectoryInfo(md5Folder);
                 var files = dicInfo.GetFiles();
@@ -276,36 +329,37 @@ namespace NetCore.Services.Services.S_StoreFiles
 
 
 
-        public HttpReponseViewModel<FileUploadResViewModel> MergeFiles(FileUploadReqViewModel fileUpload)
+        public async Task<HttpReponseViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload)
         {
-            HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
+            HttpReponseViewModel<StoreFilesViewModel> res = new HttpReponseViewModel<StoreFilesViewModel>();
             try
             {
                 var identifier = fileUpload.Identifier;
                 var fileName = fileUpload.FileName;
-
+                var webRoot = AppConfigUtil.FilePath;
                 //源数据文件夹
-                string sourcePath = FileUploadUtil.GetFileMd5Folder("", identifier);
+                string sourcePath = FileUploadUtil.GetFileMd5Folder(webRoot, identifier);
                 //合并后的文件路径
                 string targetFilePath = sourcePath + Path.GetExtension(fileName);
 
                 // 目标文件不存在，则需要合并
-                if (!System.IO.File.Exists(targetFilePath))
+                if (!File.Exists(targetFilePath))
                 {
                     if (!Directory.Exists(sourcePath))
                     {
                         res.Message = "为找到文件";
+                        res.ResultSign = ResultSign.Error;
                         res.Code = 20000;
                         return res;
                     }
                     FileUploadUtil.MergeDiskFile(sourcePath, targetFilePath);
                 }
                 fileUpload.RelativePath = targetFilePath;
-                var valid = this.VaildMergeFile(fileUpload);
+                var valid = VaildMergeFile(fileUpload);
                 FileUploadUtil.DeleteFolder(sourcePath);
 
                 //返回文件新的路径
-                var newFilePath = FileUploadUtil.newFilePath("", targetFilePath, fileName);
+                var newFilePath = FileUploadUtil.newFilePath(webRoot, targetFilePath, fileName);
                 //存储成功
                 if (newFilePath != "")
                 {
@@ -313,14 +367,20 @@ namespace NetCore.Services.Services.S_StoreFiles
                     storeFiles.ID = Guid.NewGuid();
                     storeFiles.RelationFilePath = newFilePath;
                     storeFiles.CreateBy = "";
-                    _baseDomain.AddDomain(storeFiles);
+                    storeFiles.FileName = fileName.Replace("." + storeFiles.FileExt, "");
+                    res.Flag = await _baseDomain.AddDomain(storeFiles);
+                    if (res.Flag)
+                    {
+                        res.ResultSign = ResultSign.Successful;
+                        res.Data = storeFiles.MapTo<StoreFilesViewModel>();
+                    }
+                    else
+                    {
+                        res.ResultSign = ResultSign.Error;
+                    }
                 }
-
                 res.Code = 20000;
-                res.Data = new FileUploadResViewModel()
-                {
-                    FilePathUrl = targetFilePath
-                };
+
                 return res;
             }
             catch (Exception ex)

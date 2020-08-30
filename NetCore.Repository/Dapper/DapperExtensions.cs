@@ -207,14 +207,14 @@ namespace NetCore.Repository.Dapper
         /// <returns></returns>
         public static async Task<T> SingleOrDefault<T>(IUnitOfWork unitOfWork, object id, SqlQuery sql = null) where T : class
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var db = unitOfWork.DbConnection;
-            if (sql == null)
-                sql = SqlQuery<T>.Builder(unitOfWork);
-            sql = sql.Top(1);
-            var result = await db.QueryFirstOrDefaultAsync<T>(sql.QuerySqlById, new { id });
-            return result;
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                var db = unitOfWork.DbConnection;
+                if (sql == null)
+                    sql = SqlQuery<T>.Builder(unitOfWork);
+                sql = sql.Top(1);
+                var result = await db.QueryFirstOrDefaultAsync<T>(sql.QuerySqlById, new { id });
+                return result;
         }
 
         /// <summary>

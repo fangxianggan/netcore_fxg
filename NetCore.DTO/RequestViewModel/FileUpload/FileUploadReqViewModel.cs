@@ -67,5 +67,10 @@ namespace NetCore.DTO.RequestViewModel.FileUpload
         /// 文件类型
         /// </summary>
         public string FileType { set; get; }
+
+        /// <summary>
+        /// 文件分类
+        /// </summary>
+        public string FileCategory { set; get; }
     }
 }

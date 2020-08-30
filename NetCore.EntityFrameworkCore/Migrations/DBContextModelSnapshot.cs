@@ -29,6 +29,9 @@ namespace NetCore.EntityFrameworkCore.Migrations
 
                     b.Property<long>("FileBytes");
 
+                    b.Property<string>("FileCategory")
+                        .HasMaxLength(16);
+
                     b.Property<string>("FileExt")
                         .HasMaxLength(8);
 
@@ -36,7 +39,7 @@ namespace NetCore.EntityFrameworkCore.Migrations
                         .HasMaxLength(128);
 
                     b.Property<string>("FileType")
-                        .HasMaxLength(16);
+                        .HasMaxLength(64);
 
                     b.Property<string>("RelationFilePath")
                         .HasMaxLength(128);

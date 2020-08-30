@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.DTO.ReponseViewModel;
 using NetCore.DTO.ReponseViewModel.FileDownload;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NetCore.Services.IServices.I_StoreFiles
 {
@@ -15,5 +17,12 @@ namespace NetCore.Services.IServices.I_StoreFiles
                                       long fileLength, string fileName);
 
         List<FileRangeViewModel> GetFileRangeData(long totalSize);
+
+        Task<HttpReponseViewModel<string>> GetDownloadSmallFiles(Guid id,HttpContext httpContext);
+
+        Task<HttpReponseViewModel<GenerateMD5ToBurstResViewModel>> GetMD5ToBurstData(Guid id);
+
+        Task GetDownloadBigFiles(string path, HttpContext httpContext);
+
     }
 }

@@ -63,7 +63,7 @@ namespace NetCore.Core.Util
                         //如果是整个文件返回200，否则返回206
                         if (start == 0 && end + 1 >= size)
                         {
-                            response.StatusCode = 200;
+                            response.StatusCode = 206;
                         }
                         else
                         {

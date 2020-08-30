@@ -48,6 +48,11 @@
           <span>{{ row.fileName }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="文件分类" prop="fileCategory" sortable="custom" width="180">
+        <template slot-scope="{row}">
+          <span>{{ row.fileCategory }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="文件类型" prop="fileType" sortable="custom" width="180">
         <template slot-scope="{row}">
           <span>{{ row.fileType }}</span>
@@ -71,6 +76,7 @@
 
       <el-table-column label="操作" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
+          <el-button type="success" v-if="row.fileCategory!='document'" size="mini" @click="handlePreview(row)">预览</el-button>
           <el-button type="primary" size="mini" @click="handleDown(row)">下载</el-button>
 
           <el-button v-if="row.status!='deleted'"
@@ -108,39 +114,39 @@
         <uploader-unsupport></uploader-unsupport>
         <uploader-drop>
           <uploader-btn :attrs="attrs">选择文件</uploader-btn>
-          <uploader-btn :attrs="attrs">选择图片</uploader-btn>
-          <uploader-btn :attrs="attrs" :directory="true">选择目录</uploader-btn>
+          <!--<uploader-btn :attrs="attrs">选择图片</uploader-btn>
+          <uploader-btn :attrs="attrs" :directory="true">选择目录</uploader-btn>-->
         </uploader-drop>
         <uploader-list>
           <ul class="file-list" slot-scope="props">
             <li v-for="file in props.fileList" :key="file.id">
               <uploader-file :class="'file_' + file.id" ref="files" :file="file" :list="true"></uploader-file>
             </li>
-
           </ul>
         </uploader-list>
-        <!--<div class="login-container">
-          <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="testdownload">下载</el-button>
-        </div>
-        <div id="dcontent" class="dcontent">
-          <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="testdownload2">下载2222</el-button>
-          <br />
-          <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" status="success"></el-progress>
 
-          <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="convertFile">合成文件流</el-button>
-          <br />
-        </div>-->
       </uploader>
 
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">关闭</el-button>
-
       </div>
     </el-dialog>
 
+    <el-dialog v-el-drag-dialog
+               :title="dialogprogressTitle"
+               :visible.sync="dialogprogressVisible"
+               :show-close="false"
+               fit
+               width="60%"
+               :destroy-on-close="true"
+               :fullscreen="false">
+      <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" status="success"></el-progress>
 
+      <div slot="footer" class="dialog-footer">
 
+      </div>
+    </el-dialog>
 
   </div>
 
@@ -151,18 +157,24 @@
   import waves from '@/directive/waves' // waves directive
   import Pagination from '@/components/Pagination'
   import apiUploadService from '@/api/upload'
+  import { getMD5ToBurstData, downloadSmallFiles, downloadBigFiles } from '@/api/download'
   import indexDBService from '@/store/indexdb'
   import { getPageList } from '@/api/storefiles'
-  import { statusSet } from '@/utils/upload-download'
+  import { statusSet, fileCategory } from '@/utils/upload-download'
   import myAction from '@/utils/baseutil'
 
-  let { chunkUploadUrl, mergeFiles, getMD5ToBurstData, downloadBigFile, downloadBigFile2 } = apiUploadService
+  let { chunkUploadUrl, mergeFiles } = apiUploadService
   let { add, queryDataBymd5, queryCount, mergeFileStream, requestFileStreamArrs, requestDB } = indexDBService
 
   export default {
     name: "upload",
     directives: { waves },
     components: { Pagination },
+    filters: {
+      formatTime: function (val) {
+        return myAction.formatTime(val);
+      }
+    },
     data() {
       let currentData = {
         filterModel: {
@@ -185,6 +197,7 @@
           id: "",
           fileName: "",
           fileType: "",
+          fileCategory: '',
           fileBytes: 0,
           uploadTime: "",
           uploader: ""
@@ -217,17 +230,21 @@
               .replace(/\shours?/, '小时')
               .replace(/\sminutes?/, '分钟')
               .replace(/\sseconds?/, '秒')
-          }
-
-        },
-        attrs: {
-          // 接受的文件类型，形如['.png', '.jpg', '.jpeg', '.gif', '.bmp'...] 这里我封装了一下
-          accept: {
+          },
+          categoryMap: {
             image: ['gif', 'jpg', 'jpeg', 'png', 'bmp', 'webp'],
             video: ['mp4', 'm3u8', 'rmvb', 'avi', 'swf', '3gp', 'mkv', 'flv'],
             audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac'],
             document: ['doc', 'txt', 'docx', 'pages', 'epub', 'pdf', 'numbers', 'csv', 'xls', 'xlsx', 'keynote', 'ppt', 'pptx']
           }
+        },
+        attrs: {
+          // 接受的文件类型，形如['.png', '.jpg', '.jpeg', '.gif', '.bmp'...] 这里我封装了一下
+          accept:
+            ['.gif', '.jpg', '.jpeg', '.png', '.bmp', '.webp',
+              '.mp4', '.m3u8', '.rmvb', '.avi', '.swf', '.3gp', '.mkv', '.flv',
+              '.mp3', '.wav', '.wma', '.ogg', '.aac', 'flac',
+              '.doc', '.txt', '.docx', '.pages', '.epub', '.pdf', '.numbers', '.csv', '.xls', '.xlsx', '.keynote', 'ppt', '.pptx']
         },
         downloadmd5: '',
         percentage: 0,
@@ -237,8 +254,9 @@
           { color: '#5cb87a', percentage: 60 },
           { color: '#1989fa', percentage: 80 },
           { color: '#6f7ad3', percentage: 100 }
-        ]
-
+        ],
+        dialogprogressVisible: false,
+        dialogprogressTitle: ''
       };
       var data = $.extend(false, myAction.setBaseVueData, currentData);
       return data;
@@ -257,8 +275,6 @@
           this.orderArr,
           false
         );
-        //var data = myAction.getItemsModel(this.filterModel);
-
         getPageList(param).then(response => {
           this.list = response.data;
           this.total = response.total;
@@ -293,9 +309,70 @@
         this.orderArr.push(data);
         this.handleFilter();
       },
+      //预览
+      handlePreview(row) {
+
+      },
       //下载
       handleDown(row) {
+        this.dialogprogressTitle = "下载进度";
+        this.dialogprogressVisible = true;
+        let id = row.id;
+        var $this = this;
+        //拆分信息
+        getMD5ToBurstData(id).then(res => {
+          var d = res.data;
+          $this.downloadmd5 = d.identifier;
+          let totalSize = d.fileRanges.length;
+          //进度条
+          var t = setInterval(function () {
+            //计算进度条
+            queryCount(requestDB, $this.downloadmd5, function (count) {
 
+              let p = (count / totalSize).toFixed(2);
+              $this.percentage = parseInt(p * 100);
+              if ($this.percentage === 100) {
+                clearInterval(t); 
+                //合并数据
+                queryDataBymd5(requestDB, $this.downloadmd5, function (res2) {
+
+                  //等待三秒
+                  setTimeout(function () {
+                    $this.dialogprogressVisible = false;
+                    $this.percentage = 0;
+                  }, 1000);
+                  mergeFileStream(res2, d.fileName);
+
+                 
+              
+                });
+               
+              }
+            });
+          }, 1000);
+          //首先从缓存取分片流 没有的话再去请求后台流数据
+          queryDataBymd5(requestDB, $this.downloadmd5, function (arrs) {
+            var fileRanges = requestFileStreamArrs(arrs, d.fileRanges);
+            $.each(fileRanges, function (i, ee) {
+              //请求分片
+              downloadBigFiles(d.filePathUrl, ee.range).then(res2 => {
+               
+                //存储数据流
+                if (requestDB != null && res2.status == 206) {
+
+                  var dd = {
+                    index: ee.sliceNumber,
+                    md5: d.identifier,
+                    range: ee.range,
+                    content: res2.data,
+                  };
+                
+                  add(requestDB, dd);
+                }
+              });
+            });
+          })
+        });
       },
       //删除数据
       handleDelete(row, index) {
@@ -322,16 +399,15 @@
       //选择文件后，将上传的窗口展示出来，开始md5的计算工作
       onFileAdded(file) {
 
-        // 计算MD5，下文会提到
+        // 计算MD5
         let fileReader = new FileReader();
-        let time = new Date().getTime();
         let blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
         let currentChunk = 0;
         const chunkSize = 10 * 1024 * 1000;
         let chunks = Math.ceil(file.size / chunkSize);
         let spark = new SparkMD5.ArrayBuffer();
         // 文件状态设为"计算MD5"
-        statusSet(this,file.id, 'md5');
+        statusSet(this, file.id, 'md5');
         //文件暂停
         file.pause();
         loadNext();
@@ -344,20 +420,20 @@
             this.$nextTick(() => {
               $('.file_' + file.id).find(".uploader-file-status span:eq(0)").text('校验MD5 ' + ((currentChunk / chunks) * 100).toFixed(0) + '%');
               //不可以点击上传
-              $('.file_' + file.id).find(".uploader-file-actions .uploader-file-resume").addClass("hide");
+              $('.file_' + file.id).find(".uploader-file-actions .uploader-file-resume").addClass("hide_class");
             })
           } else {
             let md5 = spark.end();
             //可以有上传的按钮
-            $('.file_' + file.id).find(".uploader-file-actions .uploader-file-resume").removeClass("hide");
-
+            $('.file_' + file.id).find(".uploader-file-actions .uploader-file-resume").removeClass("hide_class");
+            //自定义的参数
             globalThis.uploader.opts.query = {
-
+              fileExt: file.getExtension(),
+              fileType: file.getType(),
+              fileCategory: fileCategory(this, file.getExtension())
             }
             file.uniqueIdentifier = md5;
             file.resume();
-          
-
           }
         });
         fileReader.onerror = function () {
@@ -376,32 +452,37 @@
       },
       //上传成功的事件
       onFileSuccess(rootFile, file, response, chunk) {
+        //console.log(response);
         let res = JSON.parse(response);
         // 服务器自定义的错误，这种错误是Uploader无法拦截的
         if (!res.flag) {
           this.$message({ message: res.message, type: 'error' });
           // 文件状态设为“失败”
-          statusSet(this,file.id, 'error');
+          statusSet(this, file.id, 'error');
           return
         }
         var d = res.data;
         // 如果服务端返回需要合并
         if (d.needMerge) {
+          //debugger;
           var param = {
             Identifier: d.identifier,
-            FileName: d.fileName,
+            FileName: file.name,
             TotalSize: file.size,
-            FileType: "",
-            FileExt: d.fileName.substring(d.fileName.lastIndexOf('.') + 1)
-
+            FileType: file.getType(),
+            FileExt: file.getExtension(),
+            FileCategory: fileCategory(this, file.getExtension())
           }
           // 文件状态设为“合并中”
-          statusSet(this,file.id, 'merging');
-          mergeFiles(param).then(response => {
-            statusSet(this,file.id, "success");
+          statusSet(this, file.id, 'merging');
+          mergeFiles(param).then(res => {
+            console.log(res);
+            this.list.unshift(res.data);
+            this.total++;
+            statusSet(this, file.id, "success");
           });
         } else {
-          statusSet(this,file.id, "success");
+          statusSet(this, file.id, "success");
         }
       },
       //上传失败
@@ -410,7 +491,7 @@
       },
       //测试下载大文件
       testdownload() {
-        downloadBigFile().then(data => {
+        downloadSmallFiles().then(data => {
           console.log(data);
           // 文件名
           let fileName = "6767";
@@ -429,63 +510,8 @@
           //console.log(res)
         });
       },
-      testdownload2() {
-
-        let $this = this;
-
-        //拆分信息
-        getMD5ToBurstData().then(res => {
-          //  console.log(res.data);
-          var d = res.data;
-          $this.downloadmd5 = d.identifier;
-          let totalSize = d.fileRanges.length;
-          //进度条
-          var t = setInterval(function () {
-            //计算进度条
-            queryCount(requestDB, function (count) {
-              let p = (count / totalSize).toFixed(2);
-              // console.log(p);
-              $this.percentage = parseInt(p * 100);
-              // console.log(this.percentage);
-              if ($this.percentage === 100) {
-                clearInterval(t);
-                //合并数据
-                $this.convertFile();
-              }
-
-            });
-
-          }, 1000);
 
 
-          //首先从缓存取分片流 没有的话再去请求后台流数据
-          queryDataBymd5(requestDB, this.downloadmd5, function (arrs) {
-            var fileRanges = requestFileStreamArrs(arrs, d.fileRanges);
-            $.each(fileRanges, function (i, ee) {
-              //请求分片
-              downloadBigFile2(ee.range).then(res2 => {
-                // console.log(res2)
-                //存储数据流
-                if (requestDB != null && res2.status == 206) {
-                  var dd = {
-                    index: ee.sliceNumber,
-                    md5: d.identifier,
-                    range: ee.range,
-                    content: res2.data,
-                  };
-                  add(requestDB, dd);
-                }
-              });
-            });
-          })
-        });
-      },
-      convertFile() {
-        //查询数据 合并文件流
-        queryDataBymd5(requestDB, this.downloadmd5, function (d) {
-          mergeFileStream(d, "12334");
-        });
-      }
     },
     mounted() {
 
@@ -493,13 +519,10 @@
   };
 </script>
 
-<style scoped>
+<style>
   .uploader-example {
     width: 100%;
-    /*padding: 15px;*/
-    /*margin: 50px auto 0;*/
     font-size: 12px;
-    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);*/
   }
 
     .uploader-example .uploader-btn {
@@ -513,7 +536,7 @@
       overflow-y: auto;
     }
 
-  .hide {
+  .hide_class {
     display: none !important;
   }
 

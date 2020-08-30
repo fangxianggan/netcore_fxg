@@ -1,5 +1,10 @@
 
-
+/**
+ * 上传
+ * @param {any} $this
+ * @param {any} id
+ * @param {any} status
+ */
 
 export function statusSet($this,id, status) {
   let statusMap = {
@@ -49,5 +54,26 @@ export function statusSet($this,id, status) {
     }).text(statusMap[status].text);
   })
 }
+
+/**
+ * 
+ * @param {any} $this
+ * @param {any} ext
+ */
+export function fileCategory($this,ext)
+{
+  var str = "unkown";
+  $.each($this.options.categoryMap, function (i, e) {
+   let len= e.filter(function (m) {
+      return m == ext;
+   });
+    if (len.length > 0) {
+      str = i;
+      return false;
+    }
+  });
+  return str;
+}
+
 
 

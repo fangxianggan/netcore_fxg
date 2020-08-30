@@ -28,7 +28,7 @@ namespace NetCore.Repository.Interface
 
         Task<bool> InsertUpdateOrDelete(string sql, dynamic parms = null, CommandType? commandType = null);
 
-        Task<T> GetEntity(params object[] keyValues);
+        Task<T> GetEntity( object keyValues);
 
         Task<T> GetEntity(Expression<Func<T, bool>> whereLambda);
 

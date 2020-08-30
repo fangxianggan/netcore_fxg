@@ -27,6 +27,12 @@ namespace NetCore.Domain.Domain
             return dd;
         }
 
+        public async Task<T> GetEntity( object keyValues)
+        {
+            var ent = await _repository.GetEntity(keyValues);
+            return ent;
+        }
+
         public async Task<PageData<T>> GetPageList(QueryModel queryModel)
         {
             var list = await _repository.GetPageList(queryModel);

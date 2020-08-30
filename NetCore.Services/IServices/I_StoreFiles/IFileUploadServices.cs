@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.DTO.ReponseViewModel.FileUpload;
+using NetCore.DTO.ReponseViewModel.StoreFiles;
 using NetCore.DTO.RequestViewModel.FileUpload;
 using System.Threading.Tasks;
 
@@ -8,13 +9,13 @@ namespace NetCore.Services.IServices.I_StoreFiles
 {
     public interface IFileUploadServices
     {
-        HttpReponseViewModel<FileUploadResViewModel> CheckFileState(FileUploadReqViewModel fileUpload);
+        HttpReponseViewModel<FileUploadResViewModel> CheckFileState(HttpRequest request);
 
         Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(FileUploadReqViewModel fileUpload);
 
         Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(IFormFile file, HttpRequest request);
 
-        HttpReponseViewModel<FileUploadResViewModel> MergeFiles(FileUploadReqViewModel fileUpload);
+        Task<HttpReponseViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload);
 
         /// <summary>
         /// 返回最大的分片

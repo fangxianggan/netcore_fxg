@@ -48,11 +48,15 @@ namespace NetCore.EntityFrameworkCore.Models
         /// <summary>
         /// 文件类型
         /// </summary>
-        [DisplayName("文件类型"), MaxLength(16)]
+        [DisplayName("文件类型"), MaxLength(64)]
         public string FileType { set; get; }
 
 
-        
+        /// <summary>
+        /// 文件类型
+        /// </summary>
+        [DisplayName("文件分类"), MaxLength(16)]
+        public string FileCategory { set; get; }
 
 
 

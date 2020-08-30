@@ -59,7 +59,7 @@ namespace NetCore.Repository.Repository
             return await DapperExtensions.InsertUpdateOrDelete(_unitOfWork, sql, parms, commandType) > 0 ? true : false;
         }
 
-        public async Task<T> GetEntity(params object[] keyValues)
+        public async Task<T> GetEntity(object keyValues)
         {
             return await DapperExtensions.SingleOrDefault<T>(_unitOfWork, keyValues);
         }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NetCore.Core.Attributes;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace NetCore.EntityFrameworkCore.EntityModels
 {
@@ -12,14 +11,16 @@ namespace NetCore.EntityFrameworkCore.EntityModels
     public class BaseEntity<T>
     {
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public BaseEntity()
         {
             CreateTime = DateTime.Now;
         }
 
 
-        [Key, DisplayName("主键ID")]
+        [Key, Id, DisplayName("主键ID")]
         public T ID { set; get; }
         /// <summary>
         /// 添加时间

@@ -9,8 +9,8 @@ using NetCore.EntityFrameworkCore.Context;
 namespace NetCore.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20200618061116_v1.1_test")]
-    partial class v11_test
+    [Migration("20200829073601_v1")]
+    partial class v1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -18,6 +18,43 @@ namespace NetCore.EntityFrameworkCore.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.StoreFiles", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CreateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<long>("FileBytes");
+
+                    b.Property<string>("FileCategory")
+                        .HasMaxLength(16);
+
+                    b.Property<string>("FileExt")
+                        .HasMaxLength(8);
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("FileType")
+                        .HasMaxLength(64);
+
+                    b.Property<string>("RelationFilePath")
+                        .HasMaxLength(128);
+
+                    b.Property<string>("UpdateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("UpdateTime");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("StoreFiles");
+                });
 
             modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.TaskJob", b =>
                 {
@@ -76,6 +113,28 @@ namespace NetCore.EntityFrameworkCore.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("TaskJob");
+                });
+
+            modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.Test", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CreateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("UpdateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("UpdateTime");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Test");
                 });
 #pragma warning restore 612, 618
         }

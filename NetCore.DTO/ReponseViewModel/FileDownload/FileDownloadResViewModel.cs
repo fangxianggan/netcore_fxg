@@ -30,6 +30,11 @@ namespace NetCore.DTO.ReponseViewModel.FileDownload
         public long TotalSize { set; get; }
 
         /// <summary>
+        /// 文件路径地址
+        /// </summary>
+        public string FilePathUrl { set; get; }
+
+        /// <summary>
         /// 文件拆分片
         /// </summary>
         public List<FileRangeViewModel> FileRanges { set; get; }
