@@ -49,6 +49,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "vue-admin-template", "vue-a
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "55326"
+		SlnRelativePath = "vue-admin-template\"
 	EndProjectSection
 EndProject
 Global
