@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.DTO.RequestViewModel;
 using NetCore.DTO.RequestViewModel.FileUpload;
 using NetCore.DTO.TestModel;
@@ -41,6 +42,9 @@ namespace NetCore.DTO.AutoMapper
               .ForMember(d => d.RelationFilePath, o => o.MapFrom(s => s.RelativePath))
               .ForMember(d => d.FileType, o => o.MapFrom(s => s.FileType))
              .ForMember(d => d.FileExt, o => o.MapFrom(s => s.FileExt));
+
+
+            CreateMap<TaskJobViewModel, TaskJob>();
 
         }
     }

@@ -17,14 +17,19 @@ namespace NetCore.Domain.Domain
         }
         public  async Task<bool> AddDomain(T entity)
         {
-            var dd= await _repository.Add(entity);
-            return dd; 
+            var flag = await _repository.Add(entity);
+            return flag; 
         }
 
         public async Task<bool> AddListDomain(List<T> entity)
         {
-            var dd = await _repository.AddList(entity)>0?true:false;
-            return dd;
+            var flag = await _repository.AddList(entity)>0?true:false;
+            return flag;
+        }
+
+        public async Task<bool> EditDomain(T entity) {
+            var flag = await _repository.Edit(entity);
+            return flag;
         }
 
         public async Task<T> GetEntity( object keyValues)

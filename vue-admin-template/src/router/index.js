@@ -75,6 +75,17 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/taskjob',
+    component: Layout,
+    children: [{
+      path: 'taskjob',
+      name: '任务管理',
+      component: () => import('@/views/taskjob/index'),
+      meta: { title: '任务管理', icon: 'icon' }
+    }]
+  },
+
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

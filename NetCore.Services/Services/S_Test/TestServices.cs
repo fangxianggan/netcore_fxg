@@ -18,20 +18,8 @@ namespace NetCore.Services.S_Test
         {
             _userDomain = userDomain;
         }
-       
-     //  [Transactional]
-        public async Task<bool> AddService(TestViewModel entity)
-        {
 
-            var t1 = entity.MapTo<Test>();
-            var dd = await _userDomain.AddDomain(t1);
-
-            var t2 = entity.MapTo<Test>();
-            var d3 = await _userDomain.AddDomain(t1);
-            return true;
-        }
-
-       // [Transactional]
+        // [Transactional]
         public async Task<bool> AddListService(List<TestViewModel> entity)
         {
             var t2 = entity.MapTo<List<Test>>();
@@ -43,9 +31,26 @@ namespace NetCore.Services.S_Test
         }
 
 
-        Task<HttpReponseViewModel<List<TestViewModel>>> IBaseServices<TestViewModel>.GetPageListService(QueryModel queryModel)
+        public Task<HttpReponseViewModel<List<TestViewModel>>> GetPageListService(QueryModel queryModel)
         {
             throw new System.NotImplementedException();
+        }
+
+
+
+        //  [Transactional]
+
+        public async Task<HttpReponseViewModel<TestViewModel>> AddOrEditService(TestViewModel entity)
+        {
+
+            HttpReponseViewModel<TestViewModel> res = new HttpReponseViewModel<TestViewModel>();
+            var t1 = entity.MapTo<Test>();
+            var flag = await _userDomain.AddDomain(t1);
+
+            var t2 = entity.MapTo<Test>();
+            var flag1 = await _userDomain.AddDomain(t1);
+
+            return res;
         }
     }
 }

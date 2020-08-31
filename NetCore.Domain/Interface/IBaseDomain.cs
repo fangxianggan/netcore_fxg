@@ -14,9 +14,10 @@ namespace NetCore.Domain.Interface
         /// <returns></returns>
         Task<bool> AddDomain(T entity);
 
-       
-
         Task<bool> AddListDomain(List<T> entity);
+
+
+        Task<bool> EditDomain(T entity);
 
 
         Task<PageData<T>> GetPageList(QueryModel queryModel);

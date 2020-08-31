@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NetCore.DTO.ReponseViewModel;
 using NetCore.DTO.ReponseViewModel.StoreFiles;
+using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.DTO.TestModel;
 using NetCore.EntityFrameworkCore.Models;
 
@@ -27,6 +28,8 @@ namespace NetCore.DTO.AutoMapper
                 .ForMember(d => d.Uploader, o => o.MapFrom(s => s.CreateBy))
                 .ForMember(d => d.UploadTime, o => o.MapFrom(s => s.CreateTime));
 
+
+            CreateMap<TaskJob, TaskJobViewModel>();
 
         }
     }

@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using ColumnAttribute = NetCore.Core.Attributes.ColumnAttribute;
 
 namespace NetCore.Repository.Dapper.Entity
 {
@@ -97,9 +98,9 @@ namespace NetCore.Repository.Dapper.Entity
                     {
                         pty.CusAttribute = arri as IdAttribute;
                     }
-                    else if (arri is AutoIncrementAttribute)
+                    else if (arri is ColumnAttribute)
                     {
-                        pty.CusAttribute = arri as AutoIncrementAttribute;
+                        pty.CusAttribute = arri as ColumnAttribute;
                     }
                     model.Properties.Add(pty);
                 }
@@ -139,8 +140,9 @@ namespace NetCore.Repository.Dapper.Entity
                     {
                         continue;
                     }
-                    else if ((item.CusAttribute is AutoIncrementAttribute))
+                    else if ((item.CusAttribute is ColumnAttribute))
                     {
+                 
                         continue;
                     }
                     columns.Add(new ParamColumnModel { ColumnName = item.Column, FieldName = item.Field });

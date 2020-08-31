@@ -19,8 +19,10 @@ namespace NetCore.EntityFrameworkCore.EntityModels
             CreateTime = DateTime.Now;
         }
 
-
-        [Key, Id, DisplayName("主键ID")]
+        /// <summary>
+        /// 
+        /// </summary>
+        [Key, Id,ColumnAttribute, DisplayName("主键ID")]
         public T ID { set; get; }
         /// <summary>
         /// 添加时间

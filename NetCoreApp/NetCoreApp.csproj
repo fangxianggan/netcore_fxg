@@ -17,7 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\FileDownloadController.cs" />
     <Compile Remove="Controllers\FileUploadController.cs" />
+    <Compile Remove="Controllers\ValuesController.cs" />
   </ItemGroup>
 
   <ItemGroup>

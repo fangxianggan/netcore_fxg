@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.DTO.TestModel;
 using NetCore.IServices.I_Test;
 using NetCoreApp.Filters;
@@ -31,12 +32,12 @@ namespace NetCoreApp.Controllers
         /// <returns></returns>
         [Route("/fff")]
         [HttpGet]
-        public async Task<bool> GetT()
+        public async Task<HttpReponseViewModel<TestViewModel>> GetT()
         {
             TestViewModel model = new TestViewModel();
             model.ID = Guid.NewGuid();
             model.Name = "ffff";
-            return await _testService.AddService(model);
+            return await _testService.AddOrEditService(model);
         }
 
         /// <summary>
@@ -62,8 +63,6 @@ namespace NetCoreApp.Controllers
 
             return await _testService.AddListService(list);
         }
-
-
     }
 
 

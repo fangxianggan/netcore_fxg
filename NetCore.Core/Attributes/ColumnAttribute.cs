@@ -3,26 +3,36 @@
 namespace NetCore.Core.Attributes
 {
     /// <summary>
-    /// 列字段 自动增长
+    /// 列字段
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public partial class AutoIncrementAttribute : BaseAttribute
+    public class ColumnAttribute : BaseAttribute
     {
         /// <summary>
         /// 自增长
         /// </summary>
         public bool AutoIncrement { get; set; }
-        public AutoIncrementAttribute()
+
+        /// <summary>
+        /// guid
+        /// </summary>
+        public bool AutoGuid { set; get; }
+        public ColumnAttribute()
         {
             AutoIncrement = false;
+            AutoGuid = false;
         }
         /// <summary>
-        /// 是否是自增长
+        /// 
         /// </summary>
-        /// <param name="autoIncrement"></param>
-        public AutoIncrementAttribute(bool autoIncrement)
+        /// <param name="autoIncrement">是否是自增长</param>
+        /// <param name="autoGuid">是否生成guid</param>
+        public ColumnAttribute(bool autoIncrement, bool autoGuid)
         {
             AutoIncrement = autoIncrement;
+            AutoGuid = autoGuid;
         }
+
     }
+
 }

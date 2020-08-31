@@ -5,11 +5,9 @@ using NetCore.Domain.Interface;
 using NetCore.DTO.ReponseViewModel.StoreFiles;
 using NetCore.EntityFrameworkCore.Models;
 using NetCore.EntityModel.QueryModels;
-using NetCore.Repository.Dapper.Entity;
 using NetCore.Services.IServices.I_StoreFiles;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NetCore.Services.Services.S_StoreFiles
@@ -23,11 +21,6 @@ namespace NetCore.Services.Services.S_StoreFiles
             _baseDomain = baseDomain;
         }
         public Task<bool> AddListService(List<StoreFilesViewModel> entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> AddService(StoreFilesViewModel entity)
         {
             throw new NotImplementedException();
         }
@@ -47,6 +40,11 @@ namespace NetCore.Services.Services.S_StoreFiles
             httpReponse.ResultSign = ResultSign.Successful;
             httpReponse.Message = "cj";
             return httpReponse;
+        }
+
+        public Task<HttpReponseViewModel<StoreFilesViewModel>> AddOrEditService(StoreFilesViewModel entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

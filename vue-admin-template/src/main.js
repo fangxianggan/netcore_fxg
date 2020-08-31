@@ -25,6 +25,8 @@ Vue.use(uploader)
 import elDragDialog from '@/directive/el-drag-dialog'
 Vue.use(elDragDialog)
 
+
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
