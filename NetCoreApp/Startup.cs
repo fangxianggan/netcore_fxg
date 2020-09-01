@@ -29,6 +29,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using NetCore.Core.Util;
+using Quartz;
+using Quartz.Impl;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace NetCoreApp
 {
@@ -119,6 +122,8 @@ namespace NetCoreApp
             services.AddAutoMapperSetup();
             #endregion
 
+          
+
             #region  DBContext   code-first使用
             //读取aoosettings.json里配置的数据库连接语句需要的代码
             var connection = Configuration.GetConnectionString("MySqlConnection");
@@ -179,6 +184,9 @@ namespace NetCoreApp
             #region 依赖注入
             services.ConfigureDynamicProxy();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            #region 定时
+            services.AddScoped<ISchedulerFactory, StdSchedulerFactory>();
+            #endregion
             //注册 IHttpContextAccessor 对象
             services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped(typeof(IBaseDomain<>), typeof(BaseDomain<>));
@@ -224,6 +232,8 @@ namespace NetCoreApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //---
+            AppConfigUtil._serviceProvider = app.ApplicationServices;
 
             if (env.IsDevelopment())
             {

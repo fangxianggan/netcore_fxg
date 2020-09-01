@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Core.EntityModel.ReponseModels;
@@ -31,7 +32,7 @@ namespace NetCoreApp.Controllers
         }
 
         /// <summary>
-        /// 
+        /// 列表
         /// </summary>
         /// <param name="queryModel"></param>
         /// <returns></returns>
@@ -47,7 +48,7 @@ namespace NetCoreApp.Controllers
         }
 
         /// <summary>
-        /// 
+        /// 新增修改任务
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -58,6 +59,49 @@ namespace NetCoreApp.Controllers
         {
             return await Task.Run(()=> {
                 return _taskJobServices.AddOrEditService(model);
+            });
+        }
+
+        /// <summary>
+        /// 启动实例
+        /// </summary>
+        /// <param name="gId"></param>
+        /// <returns></returns>
+        /// 
+        [TypeFilter(typeof(CustomerExceptionFilter))]
+        [HttpGet, Route("AddJob")]
+        public async Task<HttpReponseViewModel<string>> AddJob(Guid gId)
+        {
+           return  await Task.Run(() => {
+                return _taskJobServices.AddJob(gId);
+            });
+        }
+
+        /// <summary>
+        /// 恢复实例
+        /// </summary>
+        /// <param name="gId"></param>
+        /// <returns></returns>
+        /// 
+        [HttpGet, Route("ResumeJob")]
+        public async Task<HttpReponseViewModel<string>> ResumeJob(Guid gId)
+        {
+            return await Task.Run(() => {
+                return _taskJobServices.ResumeJob(gId);
+            });
+        }
+
+        /// <summary>
+        /// 停止实例
+        /// </summary>
+        /// <param name="gId"></param>
+        /// <returns></returns>
+        /// 
+        [HttpGet, Route("StopJob")]
+        public async Task<HttpReponseViewModel<string>> StopJob(Guid gId)
+        {
+            return await Task.Run(() => {
+                return _taskJobServices.StopJob(gId);
             });
         }
 

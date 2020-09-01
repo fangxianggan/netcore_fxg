@@ -57,17 +57,17 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="任务组" prop="taskGroup" sortable="custom" >
+      <el-table-column label="任务组" prop="taskGroup" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.taskGroup }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="任务名称" prop="taskName" sortable="custom" >
+      <el-table-column label="任务名称" prop="taskName" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.taskName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Cron表达式" prop="cronExpression" sortable="custom" >
+      <el-table-column label="Cron表达式" prop="cronExpression" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.cronExpression }}</span>
         </template>
@@ -78,27 +78,27 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="接口地址" prop="apiUrl" sortable="custom" >
+      <el-table-column label="接口地址" prop="apiUrl" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.apiUrl}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="开始执行时间" >
+      <el-table-column label="开始执行时间">
         <template slot-scope="{row}">
           <span>{{ row.startRunTime|formatTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结束时间" >
+      <el-table-column label="结束时间">
         <template slot-scope="{row}">
           <span>{{ row.endRunTime|formatTime}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="运行次数" >
+      <el-table-column label="运行次数">
         <template slot-scope="{row}">
           <span>{{ row.runCount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="任务状态" >
+      <el-table-column label="任务状态">
         <template slot-scope="{row}">
           <span>{{ row.taskState }}</span>
         </template>
@@ -195,11 +195,10 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="请求类型" prop="requestType" :rules="rules.checkNull">
-               <el-radio v-model="temp.requestType" label="Get">Get</el-radio>
-               <el-radio v-model="temp.requestType" label="Post">Post</el-radio>
-                <el-radio v-model="temp.requestType" label="Put">Put</el-radio>
-               <el-radio v-model="temp.requestType" label="Delete">Delete</el-radio>
-              
+              <el-radio v-model="temp.requestType" label="Get">Get</el-radio>
+              <el-radio v-model="temp.requestType" label="Post">Post</el-radio>
+              <el-radio v-model="temp.requestType" label="Put">Put</el-radio>
+              <el-radio v-model="temp.requestType" label="Delete">Delete</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
@@ -248,7 +247,13 @@
 import { cron } from "vue-cron";
 import waves from "@/directive/waves"; // waves directive
 import Pagination from "@/components/Pagination";
-import { getPageList, addOrEdit } from "@/api/taskjob";
+import {
+  getPageList,
+  addOrEdit,
+  addJob,
+  stopJob,
+  resumeJob
+} from "@/api/taskjob";
 import myAction from "@/utils/baseutil";
 export default {
   name: "upload",
@@ -330,7 +335,6 @@ export default {
         }, 1.5 * 300);
       });
     },
-
     //查询处理的事件
     handleFilter() {
       this.listQuery.page = 1;
@@ -387,9 +391,26 @@ export default {
       });
     },
     //启动
-    handleStartUp(row) {},
+    handleStartUp(row) {
+      let gId = row.id;
+      addJob(gId).then(response => {
+        myAction.getNotifyFunc(response, this);
+      });
+    },
     //暂停
-    handleSuspend(row) {}
+    handleSuspend(row) {
+      let gId = row.id;
+      stopJob(gId).then(response => {
+        myAction.getNotifyFunc(response, this);
+      });
+    },
+    //恢复
+    handleResume(row) {
+      let gId = row.id;
+      resumeJob(gId).then(response => {
+        myAction.getNotifyFunc(response, this);
+      });
+    }
   },
   mounted() {}
 };

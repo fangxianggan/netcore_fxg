@@ -26,3 +26,39 @@ export function addOrEdit(data) {
   });
 }
 
+/**
+ * 启动实例
+ * @param {*} gId 
+ */
+export function addJob(gId){
+  return request({
+    url: "/Jobs/AddJob",
+    method: "get",
+    params:{gId}
+  });
+}
+
+/**
+ * 停止实例
+ * @param {*} gId 
+ */
+export function stopJob(gId){
+  return request({
+    url: "/Jobs/StopJob",
+    method: "get",
+    params:{gId}
+  });
+}
+
+/**
+ * 恢复实例
+ * @param {*} gId 
+ */
+export function resumeJob(gId){
+  return request({
+    url: "/Jobs/ResumeJob",
+    method: "get",
+    params:{gId}
+  });
+}
+

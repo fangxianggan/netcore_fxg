@@ -1,11 +1,13 @@
 ﻿using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.Core.Enum;
 using NetCore.Core.Extensions;
+using NetCore.Core.Util;
 using NetCore.Domain.Interface;
 using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.EntityFrameworkCore.Models;
 using NetCore.EntityModel.QueryModels;
 using NetCore.Services.IServices.I_TaskJob;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,6 +22,8 @@ namespace NetCore.Services.Services.S_TaskJob
         {
             _baseDomain = baseDomain;
         }
+
+     
 
         public Task<bool> AddListService(List<TaskJobViewModel> entity)
         {
@@ -67,6 +71,68 @@ namespace NetCore.Services.Services.S_TaskJob
             httpReponse.ResultSign = ResultSign.Successful;
             httpReponse.Message = "cj";
             return httpReponse;
+        }
+
+        /// <summary>
+        ///  启动实例
+        /// </summary>
+        /// <param name="gId"></param>
+        /// <returns></returns>
+        public async Task<HttpReponseViewModel<string>> AddJob(Guid gId)
+        {
+            var ent = await _baseDomain.GetEntity(gId);
+            var triggerName = ent.TaskName;
+            var groupName = ent.TaskGroup;
+            var cronExpression = ent.CronExpression;
+            JobKey jobKey = new JobKey(ent.TaskName, groupName);
+            ITrigger trigger = TriggerBuilder.Create().WithIdentity(triggerName, groupName).WithCronSchedule(cronExpression).Build();
+            await QuartzUtil.Add(typeof(MyJobServices),jobKey, trigger);
+            return new HttpReponseViewModel<string>()
+            {
+                Code = 20000,
+                Data = "ok",
+                ResultSign = ResultSign.Successful,
+                Flag = true
+            };
+        }
+
+        /// <summary>
+        /// 恢复实例
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
+        public async Task<HttpReponseViewModel<string>> ResumeJob(Guid gId)
+        {
+            var ent= await _baseDomain.GetEntity(gId);
+            JobKey jobKey = new JobKey(ent.TaskName, ent.TaskGroup);
+            await QuartzUtil.Resume(jobKey);
+            return new HttpReponseViewModel<string>()
+            {
+                Code = 20000,
+                Data = "ok",
+                ResultSign = ResultSign.Successful,
+                Flag = true
+            };
+        }
+         
+
+        /// <summary>
+        /// 暂停实例
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
+        public async Task<HttpReponseViewModel<string>> StopJob(Guid gId)
+        {
+            var ent = await _baseDomain.GetEntity(gId);
+            JobKey jobKey = new JobKey(ent.TaskName, ent.TaskGroup);
+            await QuartzUtil.Stop(jobKey);
+            return new HttpReponseViewModel<string>()
+            {
+                Code = 20000,
+                Data = "ok",
+                ResultSign = ResultSign.Successful,
+                Flag = true
+            };
         }
     }
 }
