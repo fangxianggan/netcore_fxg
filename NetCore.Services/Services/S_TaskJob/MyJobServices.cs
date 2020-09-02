@@ -18,6 +18,7 @@ namespace NetCore.Services.Services.S_TaskJob
     {
         public Task Execute(IJobExecutionContext context)
         {
+
             //业务
             return Task.Run(() =>
             {
@@ -29,5 +30,14 @@ namespace NetCore.Services.Services.S_TaskJob
               });
             }
 
+        public Task<bool> UpdateRunCount()
+        {
+            return Task.Run(() =>
+            {
+                LogUtil.Debug("hghghghg");
+                return true;
+            });
+           
+        }
     }
 }

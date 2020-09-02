@@ -13,16 +13,11 @@ namespace NetCore.Domain.Interface
         /// <param name="entity">新增实体</param>
         /// <returns></returns>
         Task<bool> AddDomain(T entity);
-
         Task<bool> AddListDomain(List<T> entity);
-
-
         Task<bool> EditDomain(T entity);
-
-
+        Task<bool> DeleteDomain(object id);
         Task<PageData<T>> GetPageList(QueryModel queryModel);
-
-        Task<T>  GetEntity( object keyValues);
+        Task<T>  GetEntity(object keyValues);
        
 
     }

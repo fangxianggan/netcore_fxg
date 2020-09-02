@@ -11,10 +11,9 @@ namespace NetCore.Services.IServices.I_TaskJob
 {
     public interface ITaskJobServices : IBaseServices<TaskJobViewModel>
     {
+        Task<HttpReponseViewModel> AddJob(Guid gId);
+        Task<HttpReponseViewModel> StopJob(Guid gId);
+        Task<HttpReponseViewModel> ResumeJob(Guid gId);
 
-        Task<HttpReponseViewModel<string>> AddJob(Guid gId);
-        Task<HttpReponseViewModel<string>> StopJob(Guid gId);
-
-        Task<HttpReponseViewModel<string>> ResumeJob(Guid gId);
     }
 }

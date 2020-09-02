@@ -371,7 +371,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                     res.Flag = await _baseDomain.AddDomain(storeFiles);
                     if (res.Flag)
                     {
-                        res.ResultSign = ResultSign.Successful;
+                        res.ResultSign = ResultSign.Success;
                         res.Data = storeFiles.MapTo<StoreFilesViewModel>();
                     }
                     else

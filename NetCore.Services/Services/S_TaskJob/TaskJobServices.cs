@@ -3,6 +3,7 @@ using NetCore.Core.Enum;
 using NetCore.Core.Extensions;
 using NetCore.Core.Util;
 using NetCore.Domain.Interface;
+using NetCore.DTO.Enum;
 using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.EntityFrameworkCore.Models;
 using NetCore.EntityModel.QueryModels;
@@ -17,10 +18,12 @@ namespace NetCore.Services.Services.S_TaskJob
     public class TaskJobServices : ITaskJobServices
     {
         private readonly IBaseDomain<TaskJob> _baseDomain;
+        private readonly IQuartzServices _quartzServices;
 
-        public TaskJobServices(IBaseDomain<TaskJob> baseDomain)
+        public TaskJobServices(IBaseDomain<TaskJob> baseDomain, IQuartzServices quartzServices)
         {
             _baseDomain = baseDomain;
+            _quartzServices = quartzServices;
         }
 
      
@@ -47,7 +50,7 @@ namespace NetCore.Services.Services.S_TaskJob
             {
                 res.Data = entity;
                 res.Message = "";
-                res.ResultSign = ResultSign.Successful;
+                res.ResultSign = ResultSign.Success;
                 res.Code = 20000;
             }
 
@@ -68,7 +71,7 @@ namespace NetCore.Services.Services.S_TaskJob
             httpReponse.PageSize = queryModel.PageSize;
             httpReponse.Flag = true;
             httpReponse.RequestParams = queryModel;
-            httpReponse.ResultSign = ResultSign.Successful;
+            httpReponse.ResultSign = ResultSign.Success;
             httpReponse.Message = "cj";
             return httpReponse;
         }
@@ -78,22 +81,28 @@ namespace NetCore.Services.Services.S_TaskJob
         /// </summary>
         /// <param name="gId"></param>
         /// <returns></returns>
-        public async Task<HttpReponseViewModel<string>> AddJob(Guid gId)
+        public async Task<HttpReponseViewModel> AddJob(Guid gId)
         {
             var ent = await _baseDomain.GetEntity(gId);
-            var triggerName = ent.TaskName;
+            ent.TaskState = TaskState.Start.ToInt();
+            await _baseDomain.EditDomain(ent);
             var groupName = ent.TaskGroup;
             var cronExpression = ent.CronExpression;
-            JobKey jobKey = new JobKey(ent.TaskName, groupName);
-            ITrigger trigger = TriggerBuilder.Create().WithIdentity(triggerName, groupName).WithCronSchedule(cronExpression).Build();
-            await QuartzUtil.Add(typeof(MyJobServices),jobKey, trigger);
-            return new HttpReponseViewModel<string>()
-            {
-                Code = 20000,
-                Data = "ok",
-                ResultSign = ResultSign.Successful,
-                Flag = true
-            };
+            var flag= CronExpression.IsValidExpression(cronExpression);
+            var errorMsg = "cron表达式错误";
+            if (flag) {
+                JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + groupName);
+                ITrigger trigger = TriggerBuilder.Create().WithIdentity(ent.ID + "|" + ent.TaskName, ent.ID + "|" + groupName).WithCronSchedule(cronExpression).Build();
+                flag = await _quartzServices.Add(typeof(MyJobServices), jobKey, trigger);
+                if (flag)
+                {
+                    errorMsg = "";
+                }
+                else {
+                    errorMsg = "任务启动失败！";
+                }
+            }
+            return new HttpReponseViewModel(flag,errorMsg, "", "");
         }
 
         /// <summary>
@@ -101,18 +110,20 @@ namespace NetCore.Services.Services.S_TaskJob
         /// </summary>
         /// <param name="jobKey"></param>
         /// <returns></returns>
-        public async Task<HttpReponseViewModel<string>> ResumeJob(Guid gId)
+        public async Task<HttpReponseViewModel> ResumeJob(Guid gId)
         {
             var ent= await _baseDomain.GetEntity(gId);
-            JobKey jobKey = new JobKey(ent.TaskName, ent.TaskGroup);
-            await QuartzUtil.Resume(jobKey);
-            return new HttpReponseViewModel<string>()
+            ent.TaskState =  TaskState.Start.ToInt();
+            await _baseDomain.EditDomain(ent);
+            JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + ent.TaskGroup);
+            var flag=await _quartzServices.Resume(jobKey);
+            var errorMsg = "恢复实例失败！";
+            if (flag)
             {
-                Code = 20000,
-                Data = "ok",
-                ResultSign = ResultSign.Successful,
-                Flag = true
-            };
+                errorMsg = "";
+            }
+            return new HttpReponseViewModel(flag,errorMsg);
+           
         }
          
 
@@ -121,18 +132,40 @@ namespace NetCore.Services.Services.S_TaskJob
         /// </summary>
         /// <param name="jobKey"></param>
         /// <returns></returns>
-        public async Task<HttpReponseViewModel<string>> StopJob(Guid gId)
+        public async Task<HttpReponseViewModel> StopJob(Guid gId)
         {
             var ent = await _baseDomain.GetEntity(gId);
-            JobKey jobKey = new JobKey(ent.TaskName, ent.TaskGroup);
-            await QuartzUtil.Stop(jobKey);
-            return new HttpReponseViewModel<string>()
+            ent.TaskState = TaskState.Stop.ToInt();
+            await _baseDomain.EditDomain(ent);
+            JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + ent.TaskGroup);
+            var flag= await _quartzServices.Stop(jobKey);
+            var errorMsg = "暂停实例失败！";
+            if (flag)
             {
-                Code = 20000,
-                Data = "ok",
-                ResultSign = ResultSign.Successful,
-                Flag = true
-            };
+                errorMsg = "";
+            }
+            return new HttpReponseViewModel(flag,errorMsg);
+            
+        }
+
+        public async Task<HttpReponseViewModel> DeleteService(object id)
+        {
+            var ent = await _baseDomain.GetEntity(id);
+            JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + ent.TaskGroup);
+            var flag = await _quartzServices.Delete(jobKey);
+            var errorMsg = "暂停实例失败！";
+            if (flag)
+            {
+                flag = await _baseDomain.DeleteDomain(id);
+                if (flag)
+                {
+                    errorMsg = "";
+                }
+                else {
+                    errorMsg = "删除数据失败！";
+                }
+            }
+            return new HttpReponseViewModel(flag, errorMsg);
         }
     }
 }

@@ -37,12 +37,17 @@ namespace NetCore.Services.Services.S_StoreFiles
             httpReponse.PageSize = queryModel.PageSize;
             httpReponse.Flag = true;
             httpReponse.RequestParams = queryModel;
-            httpReponse.ResultSign = ResultSign.Successful;
+            httpReponse.ResultSign = ResultSign.Success;
             httpReponse.Message = "cj";
             return httpReponse;
         }
 
         public Task<HttpReponseViewModel<StoreFilesViewModel>> AddOrEditService(StoreFilesViewModel entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HttpReponseViewModel> DeleteService(object id)
         {
             throw new NotImplementedException();
         }

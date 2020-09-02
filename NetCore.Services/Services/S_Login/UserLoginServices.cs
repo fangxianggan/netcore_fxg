@@ -24,7 +24,7 @@ namespace NetCore.Services.Services.S_Login
                 RequestParams = model,
                 Flag = true,
                 Message = HttpReponseMessageViewModel.SuccessMsg,
-                ResultSign = ResultSign.Successful,
+                ResultSign = ResultSign.Success,
                 EXESql = "",
                 Token = "123123123",
                 Data = "登录成功！"
@@ -45,7 +45,7 @@ namespace NetCore.Services.Services.S_Login
                 RequestParams = token,
                 Flag = true,
                 Message = HttpReponseMessageViewModel.SuccessMsg,
-                ResultSign = ResultSign.Successful,
+                ResultSign = ResultSign.Success,
                 EXESql = "",
                 Token = "",
                 Data = new UserInfoViewModel() {
@@ -65,7 +65,7 @@ namespace NetCore.Services.Services.S_Login
                 RequestParams = token,
                 Flag = true,
                 Message = HttpReponseMessageViewModel.SuccessMsg,
-                ResultSign = ResultSign.Successful,
+                ResultSign = ResultSign.Success,
                 EXESql = "",
                 Token = "123123123",
                 Data = "退出成功！"

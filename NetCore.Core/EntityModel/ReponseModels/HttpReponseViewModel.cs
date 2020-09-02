@@ -13,13 +13,40 @@ namespace NetCore.Core.EntityModel.ReponseModels
     {
         public HttpReponseViewModel()
         {
-            ResultSign = ResultSign.Successful;
+            ResultSign = ResultSign.Success;
             Message = HttpReponseMessageViewModel.SuccessMsg;
             Code = StatusCodes.Status200OK;
             RequestParams = null;
             Flag = true;
             EXESql = "";
         }
+        public HttpReponseViewModel(bool flag, string errorMsg = "", string successMsg = "", string exesql = "")
+        {
+            if (flag)
+            {
+                ResultSign = ResultSign.Success;
+                if (string.IsNullOrEmpty(successMsg))
+                {
+                    successMsg = HttpReponseMessageViewModel.SuccessMsg;
+                }
+                Message = successMsg;
+                Code = StatusCodes.Status200OK;
+            }
+            else
+            {
+                ResultSign = ResultSign.Error;
+                if (string.IsNullOrEmpty(errorMsg))
+                {
+                    errorMsg = HttpReponseMessageViewModel.ErrorMsg;
+                }
+                Message = errorMsg;
+                Code = StatusCodes.Status500InternalServerError;
+            }
+            Flag = flag;
+            RequestParams = null;
+            EXESql = exesql;
+        }
+
 
         #region 属性
         /// <summary>
@@ -72,11 +99,32 @@ namespace NetCore.Core.EntityModel.ReponseModels
             Total = 0;
             Data = default(T);
         }
-        public int PageIndex { set; get; }
+        public HttpReponseViewModel(bool flag, T t = default(T), int? pageIndex = 1, int? pageSize = 20, long? total = 0, string exeSql = "")
+        {
+            if (flag)
+            {
+                ResultSign = ResultSign.Success;
+                Message = HttpReponseMessageViewModel.SuccessMsg;
+                Code = StatusCodes.Status200OK;
+            }
+            else
+            {
+                ResultSign = ResultSign.Error;
+                Message = HttpReponseMessageViewModel.ErrorMsg;
+                Code = StatusCodes.Status500InternalServerError;
+            }
 
-        public int PageSize { set; get; }
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+            Total = total;
+            Data = t;
+            EXESql = exeSql;
+        }
+        public int? PageIndex { set; get; }
 
-        public long Total { set; get; }
+        public int? PageSize { set; get; }
+
+        public long? Total { set; get; }
         /// <summary>
         /// 泛型对象
         /// </summary>

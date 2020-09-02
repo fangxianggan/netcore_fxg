@@ -13,6 +13,8 @@ namespace NetCore.Services.Interface
 
         Task<HttpReponseViewModel<T>> AddOrEditService(T entity);
 
+        Task<HttpReponseViewModel> DeleteService(object id);
+
         Task<HttpReponseViewModel<List<T>>> GetPageListService(QueryModel queryModel);
     }
 }

@@ -185,7 +185,7 @@ namespace NetCoreApp
             services.ConfigureDynamicProxy();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             #region 定时
-            services.AddScoped<ISchedulerFactory, StdSchedulerFactory>();
+            services.TryAddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             #endregion
             //注册 IHttpContextAccessor 对象
             services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();

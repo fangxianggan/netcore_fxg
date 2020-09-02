@@ -27,6 +27,11 @@ namespace NetCore.Domain.Domain
             return flag;
         }
 
+        public async Task<bool> DeleteDomain(object id)
+        {
+            return await _repository.Delete(id);
+        }
+
         public async Task<bool> EditDomain(T entity) {
             var flag = await _repository.Edit(entity);
             return flag;

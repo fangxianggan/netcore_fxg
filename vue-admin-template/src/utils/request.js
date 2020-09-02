@@ -8,15 +8,17 @@ import qs from 'qs'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
+  
   timeout: 300000 // request timeout
 })
 
 // request interceptor
 service.interceptors.request.use(
   config => {
+    console.log("1111");
     // do something before request is sent
-    if (config.method === 'post' && config.data.constructor !== FormData) {
-      config.data = config.data
+    if (config.method === 'post'&& config.data.constructor !== FormData) {
+      config.data = config.data;
     } else {
       config.params = config.params || {};
     }

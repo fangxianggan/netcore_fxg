@@ -39,7 +39,7 @@ namespace NetCore.Repository.Repository
             return await DapperExtensions.DeleteByIds<T>(_unitOfWork, ids) > 0 ? true : false;
         }
 
-        public async Task<bool> Delete(params object[] keyValues)
+        public async Task<bool> Delete(object keyValues)
         {
             return await DapperExtensions.DeleteById<T>(_unitOfWork, keyValues) > 0 ? true : false;
         }

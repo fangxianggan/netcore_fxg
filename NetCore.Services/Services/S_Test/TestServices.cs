@@ -52,5 +52,10 @@ namespace NetCore.Services.S_Test
 
             return res;
         }
+
+        public Task<HttpReponseViewModel> DeleteService(object id)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -110,9 +110,9 @@
             type="success"
             v-if="row.fileCategory!='document'"
             size="mini"
-            @click="handleStartUp(row)"
+            @click="handleStart(row)"
           >启动</el-button>
-          <el-button type="primary" size="mini" @click="handleSuspend(row)">暂停</el-button>
+          <el-button type="primary" size="mini" @click="handleStop(row)">暂停</el-button>
 
           <el-button
             v-if="row.status!='deleted'"
@@ -252,9 +252,11 @@ import {
   addOrEdit,
   addJob,
   stopJob,
-  resumeJob
+  resumeJob,
+  deleteJob
 } from "@/api/taskjob";
 import myAction from "@/utils/baseutil";
+import qs from 'qs'
 export default {
   name: "upload",
   directives: { waves },
@@ -297,7 +299,7 @@ export default {
         startRunTime: "",
         endRunTime: "",
         runCount: 0,
-        taskState: ""
+        taskState: 0
       },
       orderArr: [],
       cronPopover: false,
@@ -362,7 +364,7 @@ export default {
         startRunTime: "",
         endRunTime: "",
         runCount: 0,
-        taskState: ""
+        taskState: 0
       };
     },
     //新增
@@ -391,14 +393,14 @@ export default {
       });
     },
     //启动
-    handleStartUp(row) {
+    handleStart(row) {
       let gId = row.id;
       addJob(gId).then(response => {
         myAction.getNotifyFunc(response, this);
       });
     },
     //暂停
-    handleSuspend(row) {
+    handleStop(row) {
       let gId = row.id;
       stopJob(gId).then(response => {
         myAction.getNotifyFunc(response, this);
@@ -410,6 +412,26 @@ export default {
       resumeJob(gId).then(response => {
         myAction.getNotifyFunc(response, this);
       });
+    },
+    handleDelete(row, index) {
+      var title = '<span style="color: red;">是否要删除这条数据?</span>';
+      this.$confirm(title, "提示", {
+        dangerouslyUseHTMLString: true,
+        type: "warning",
+        confirmButtonText: "确定",
+        cancelButtonText: "取消"
+      })
+        .then(() => {
+          let data={"":row.id};
+          deleteJob(qs.stringify(data)).then(response => {
+            if (response.resultSign == 0) {
+              this.list.splice(index, 1);
+              this.total--;
+            }
+            myAction.getNotifyFunc(response, this);
+          });
+        })
+        .catch(action => {});
     }
   },
   mounted() {}

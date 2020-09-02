@@ -20,7 +20,7 @@ namespace NetCore.Repository.Interface
 
         Task<bool> Delete(string ids);
 
-        Task<bool> Delete(params object[] keyValues);
+        Task<bool> Delete(object keyValues);
 
         Task<bool> Delete(Expression<Func<T, bool>> whereLambda);
 

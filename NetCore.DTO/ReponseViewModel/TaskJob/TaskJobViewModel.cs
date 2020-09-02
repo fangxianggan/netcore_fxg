@@ -103,6 +103,6 @@ namespace NetCore.DTO.ReponseViewModel.TaskJob
         /// </summary>
         /// 
       
-        public string TaskState { set; get; }
+        public int TaskState { set; get; }
     }
 }

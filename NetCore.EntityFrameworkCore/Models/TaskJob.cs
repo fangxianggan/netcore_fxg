@@ -110,8 +110,8 @@ namespace NetCore.EntityFrameworkCore.Models
         /// 任务状态
         /// </summary>
         /// 
-        [DisplayName("任务状态"), MaxLength(8)]
-        public string TaskState { set; get; }
+        [DisplayName("任务状态")]
+        public int TaskState { set; get; }
 
         /// <summary>
         ///是否 删除

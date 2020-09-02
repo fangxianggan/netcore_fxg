@@ -55,12 +55,27 @@ namespace NetCoreApp.Controllers
         /// 
         [TypeFilter(typeof(CustomerExceptionFilter))]
         [HttpPost, Route("AddOrEditTaskJob")]
-        public async Task<HttpReponseViewModel<TaskJobViewModel>>  AddOrEditTaskJob(TaskJobViewModel model)
+        public async Task<HttpReponseViewModel<TaskJobViewModel>> AddOrEditTaskJob(TaskJobViewModel model)
         {
-            return await Task.Run(()=> {
+            return await Task.Run(() =>
+            {
                 return _taskJobServices.AddOrEditService(model);
             });
         }
+
+        /// <summary>
+        /// delete
+        /// </summary>
+        /// <param name="gId"></param>
+        /// <returns></returns>
+        ///
+        [TypeFilter(typeof(CustomerExceptionFilter))]
+        [HttpPost, Route("DeleteTaskJob")]
+        public async Task<HttpReponseViewModel> DeleteTaskJob([FromBody] Guid gId)
+        {
+            return await _taskJobServices.DeleteService(gId);
+        }
+
 
         /// <summary>
         /// 启动实例
@@ -70,9 +85,10 @@ namespace NetCoreApp.Controllers
         /// 
         [TypeFilter(typeof(CustomerExceptionFilter))]
         [HttpGet, Route("AddJob")]
-        public async Task<HttpReponseViewModel<string>> AddJob(Guid gId)
+        public async Task<HttpReponseViewModel> AddJob(Guid gId)
         {
-           return  await Task.Run(() => {
+            return await Task.Run(() =>
+            {
                 return _taskJobServices.AddJob(gId);
             });
         }
@@ -84,9 +100,10 @@ namespace NetCoreApp.Controllers
         /// <returns></returns>
         /// 
         [HttpGet, Route("ResumeJob")]
-        public async Task<HttpReponseViewModel<string>> ResumeJob(Guid gId)
+        public async Task<HttpReponseViewModel> ResumeJob(Guid gId)
         {
-            return await Task.Run(() => {
+            return await Task.Run(() =>
+            {
                 return _taskJobServices.ResumeJob(gId);
             });
         }
@@ -98,12 +115,15 @@ namespace NetCoreApp.Controllers
         /// <returns></returns>
         /// 
         [HttpGet, Route("StopJob")]
-        public async Task<HttpReponseViewModel<string>> StopJob(Guid gId)
+        public async Task<HttpReponseViewModel> StopJob(Guid gId)
         {
-            return await Task.Run(() => {
+            return await Task.Run(() =>
+            {
                 return _taskJobServices.StopJob(gId);
             });
         }
+
+
 
     }
 }

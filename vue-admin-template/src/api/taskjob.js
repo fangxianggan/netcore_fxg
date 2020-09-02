@@ -1,5 +1,6 @@
 
 import request from '@/utils/request'
+import qs from 'qs'
 
 /**
  * //获取任务列表
@@ -62,3 +63,18 @@ export function resumeJob(gId){
   });
 }
 
+/**
+ * 删除job
+ * @param {*} data 
+ */
+export function deleteJob(data)
+{
+  return request({
+    url: "/Jobs/DeleteTaskJob",
+    method: "post",
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    },
+    data
+  });
+}

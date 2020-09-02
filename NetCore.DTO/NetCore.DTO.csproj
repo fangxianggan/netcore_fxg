@@ -9,7 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Enum\" />
     <Folder Include="RequestViewModel\FileDownload\" />
     <Folder Include="RequestViewModel\StoreFiles\" />
   </ItemGroup>
