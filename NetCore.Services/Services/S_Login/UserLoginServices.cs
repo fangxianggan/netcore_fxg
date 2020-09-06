@@ -20,7 +20,7 @@ namespace NetCore.Services.Services.S_Login
 
             return new HttpReponseViewModel<string>()
             {
-                Code = 20000,
+                Code = 200,
                 RequestParams = model,
                 Flag = true,
                 Message = HttpReponseMessageViewModel.SuccessMsg,
@@ -41,7 +41,7 @@ namespace NetCore.Services.Services.S_Login
         {
             return new HttpReponseViewModel<UserInfoViewModel>()
             {
-                Code = 20000,
+                Code = 200,
                 RequestParams = token,
                 Flag = true,
                 Message = HttpReponseMessageViewModel.SuccessMsg,
@@ -61,7 +61,7 @@ namespace NetCore.Services.Services.S_Login
         {
             return new HttpReponseViewModel<string>()
             {
-                Code = 20000,
+                Code = 200,
                 RequestParams = token,
                 Flag = true,
                 Message = HttpReponseMessageViewModel.SuccessMsg,

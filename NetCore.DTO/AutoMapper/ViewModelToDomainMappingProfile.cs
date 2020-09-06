@@ -46,6 +46,8 @@ namespace NetCore.DTO.AutoMapper
 
             CreateMap<TaskJobViewModel, TaskJob>();
 
+            CreateMap<TaskJobLogViewModel, TaskJobLog>();
+
         }
     }
 }

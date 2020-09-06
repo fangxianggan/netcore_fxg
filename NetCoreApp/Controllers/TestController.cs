@@ -37,7 +37,7 @@ namespace NetCoreApp.Controllers
             TestViewModel model = new TestViewModel();
             model.ID = Guid.NewGuid();
             model.Name = "ffff";
-            return await _testService.AddOrEditService(model);
+            return await _testService.AddOrEditService1(model);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace NetCoreApp.Controllers
                 });
             }
 
-            return await _testService.AddListService(list);
+            return await _testService.AddListService1(list);
         }
     }
 

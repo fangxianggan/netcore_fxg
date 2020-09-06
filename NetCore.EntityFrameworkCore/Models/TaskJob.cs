@@ -90,7 +90,7 @@ namespace NetCore.EntityFrameworkCore.Models
         /// </summary>
         /// 
         [DisplayName("开始执行时间")]
-        public DateTime? StartRunTime { set; get; }
+        public DateTime StartRunTime { set; get; }
 
         /// <summary>
         /// 结束时间

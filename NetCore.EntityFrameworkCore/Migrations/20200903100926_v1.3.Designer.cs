@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetCore.EntityFrameworkCore.Context;
 
 namespace NetCore.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20200903100926_v1.3")]
+    partial class v13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,37 +112,6 @@ namespace NetCore.EntityFrameworkCore.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("TaskJob");
-                });
-
-            modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.TaskJobLog", b =>
-                {
-                    b.Property<Guid>("ID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CreateBy")
-                        .HasMaxLength(32);
-
-                    b.Property<DateTime?>("CreateTime");
-
-                    b.Property<double>("ExecutionDuration");
-
-                    b.Property<DateTime>("ExecutionTime");
-
-                    b.Property<string>("JobName")
-                        .HasMaxLength(64);
-
-                    b.Property<string>("RunLog");
-
-                    b.Property<Guid>("TaskJobId");
-
-                    b.Property<string>("UpdateBy")
-                        .HasMaxLength(32);
-
-                    b.Property<DateTime?>("UpdateTime");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("TaskJobLog");
                 });
 
             modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.Test", b =>

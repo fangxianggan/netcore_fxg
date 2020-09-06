@@ -85,12 +85,12 @@
       </el-table-column>
       <el-table-column label="开始执行时间">
         <template slot-scope="{row}">
-          <span>{{ row.startRunTime|formatTime}}</span>
+          <span>{{ row.startRunTime}}</span>
         </template>
       </el-table-column>
       <el-table-column label="结束时间">
         <template slot-scope="{row}">
-          <span>{{ row.endRunTime|formatTime}}</span>
+          <span>{{ row.endRunTime}}</span>
         </template>
       </el-table-column>
       <el-table-column label="运行次数">
@@ -100,26 +100,26 @@
       </el-table-column>
       <el-table-column label="任务状态">
         <template slot-scope="{row}">
-          <span>{{ row.taskState }}</span>
+          <span>{{ row.taskState|formatTaskState }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="操作" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button
-            type="success"
-            v-if="row.fileCategory!='document'"
-            size="mini"
-            @click="handleStart(row)"
-          >启动</el-button>
-          <el-button type="primary" size="mini" @click="handleStop(row)">暂停</el-button>
+          <el-button type="success" v-if="row.taskState==0" size="mini" @click="handleStart(row)">启动</el-button>
+
+          <el-button type="warning" v-if="row.taskState==1" size="mini" @click="handleStop(row)">暂停</el-button>
 
           <el-button
-            v-if="row.status!='deleted'"
+            type="primary"
+            v-if="row.taskState==2"
             size="mini"
-            type="danger"
-            @click="handleDelete(row,$index)"
-          >删除</el-button>
+            @click="handleResume(row)"
+          >恢复</el-button>
+
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">修改</el-button>
+
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -166,14 +166,14 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="开始时间" prop="startRunTime" :rules="rules.checkNull">
-              <el-date-picker v-model="temp.startRunTime" type="datetime" />
+              <el-date-picker v-model="temp.startRunTime" type="datetime"  value-format="yyyy-MM-dd HH:mm:ss" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
             <el-form-item label="结束时间" prop="endRunTime">
-              <el-date-picker v-model="temp.endRunTime" type="datetime" />
+              <el-date-picker v-model="temp.endRunTime" type="datetime"  value-format="yyyy-MM-dd HH:mm:ss"  />
             </el-form-item>
           </el-col>
         </el-row>
@@ -181,7 +181,7 @@
           <el-col :span="24">
             <el-form-item label="Corn表达式" prop="cronExpression" :rules="rules.checkNull">
               <el-popover v-model="cronPopover">
-                <cron @change="changeCron" @close="cronPopover=false" i18n="cn"></cron>
+             <cron @change="changeCron" @close="cronPopover=false" i18n="cn"></cron>
                 <el-input
                   slot="reference"
                   @click="cronPopover=true"
@@ -256,7 +256,6 @@ import {
   deleteJob
 } from "@/api/taskjob";
 import myAction from "@/utils/baseutil";
-import qs from 'qs'
 export default {
   name: "upload",
   directives: { waves },
@@ -264,6 +263,9 @@ export default {
   filters: {
     formatTime: function(val) {
       return myAction.formatTime(val);
+    },
+    formatTaskState: function(val) {
+      return myAction.formatTaskState(val);
     }
   },
   data() {
@@ -314,8 +316,13 @@ export default {
     this.getList();
   },
   methods: {
+      
     changeCron(val) {
+    //  console.log("111")
       this.temp.cronExpression = val;
+    },
+    closeCron(){
+
     },
     getList() {
       this.listLoading = true;
@@ -382,9 +389,11 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           var data = this.temp;
+        
           addOrEdit(data).then(response => {
-            var d = response.data;
-            this.list.unshift(d);
+          
+            this.temp.id=response.data;
+            this.list.unshift(this.temp);
             this.total++;
             this.dialogFormVisible = false;
             myAction.getNotifyFunc(response, this);
@@ -395,6 +404,7 @@ export default {
     //启动
     handleStart(row) {
       let gId = row.id;
+      row.taskState = 1; //启动
       addJob(gId).then(response => {
         myAction.getNotifyFunc(response, this);
       });
@@ -402,6 +412,7 @@ export default {
     //暂停
     handleStop(row) {
       let gId = row.id;
+      row.taskState = 2; //暂停
       stopJob(gId).then(response => {
         myAction.getNotifyFunc(response, this);
       });
@@ -409,6 +420,7 @@ export default {
     //恢复
     handleResume(row) {
       let gId = row.id;
+      row.taskState = 1; //启动
       resumeJob(gId).then(response => {
         myAction.getNotifyFunc(response, this);
       });
@@ -422,8 +434,8 @@ export default {
         cancelButtonText: "取消"
       })
         .then(() => {
-          let data={"":row.id};
-          deleteJob(qs.stringify(data)).then(response => {
+          let data = '"' + row.id + '"';
+          deleteJob(data).then(response => {
             if (response.resultSign == 0) {
               this.list.splice(index, 1);
               this.total--;
@@ -432,6 +444,29 @@ export default {
           });
         })
         .catch(action => {});
+    },
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row); // copy obj
+      this.dialogStatus = "update";
+      this.dialogTitle = "修改配置";
+      this.dialogFormVisible = true;
+      this.$nextTick(() => {
+        this.$refs["dataForm"].clearValidate();
+      });
+    },
+    updateData() {
+      this.$refs["dataForm"].validate(valid => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp);
+          var data = tempData;
+          addOrEdit(data).then(response => {
+            const index = this.list.findIndex(v => v.id === this.temp.id);
+            this.list.splice(index, 1, data);
+            this.dialogFormVisible = false;
+            myAction.getNotifyFunc(response, this);
+          });
+        }
+      });
     }
   },
   mounted() {}

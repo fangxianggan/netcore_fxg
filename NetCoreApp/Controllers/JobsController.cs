@@ -55,7 +55,7 @@ namespace NetCoreApp.Controllers
         /// 
         [TypeFilter(typeof(CustomerExceptionFilter))]
         [HttpPost, Route("AddOrEditTaskJob")]
-        public async Task<HttpReponseViewModel<TaskJobViewModel>> AddOrEditTaskJob(TaskJobViewModel model)
+        public async Task<HttpReponseViewModel> AddOrEditTaskJob(TaskJobViewModel model)
         {
             return await Task.Run(() =>
             {

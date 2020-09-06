@@ -32,6 +32,7 @@ using NetCore.Core.Util;
 using Quartz;
 using Quartz.Impl;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using NetCore.Services.IServices.I_TaskJob;
 
 namespace NetCoreApp
 {
@@ -48,7 +49,6 @@ namespace NetCoreApp
         /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
-
 
             //log4
             repository = LogManager.CreateRepository("CoreLog4");
@@ -95,9 +95,7 @@ namespace NetCoreApp
                 //驼峰命名法
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 //设置时间格式
-                options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
-
-               
+                options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
 
             });
 
@@ -122,7 +120,7 @@ namespace NetCoreApp
             services.AddAutoMapperSetup();
             #endregion
 
-          
+
 
             #region  DBContext   code-first使用
             //读取aoosettings.json里配置的数据库连接语句需要的代码
@@ -232,6 +230,9 @@ namespace NetCoreApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+
+           
+
             //---
             AppConfigUtil._serviceProvider = app.ApplicationServices;
 
@@ -260,13 +261,20 @@ namespace NetCoreApp
             //automapper
             app.UseStateAutoMapper();
             app.UseHttpsRedirection();
+            app.JobSchedulerSetUp();
+
             //
             app.UseMiniProfiler();
 
+           
             //跨域 策略
             app.UseCors(MyAllowSpecificOrigins);
 
             app.UseMvc();
+
+           
+
+
         }
 
         #region 辅助类

@@ -110,7 +110,7 @@ namespace NetCore.Services.Services.S_StoreFiles
             }
             return new HttpReponseViewModel<FileUploadResViewModel>
             {
-                Code = 20000,
+                Code = 200,
                 Data = fileUploadRes,
                 Flag = true
             };
@@ -279,7 +279,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 }
             }
             res.Data = viewModel;
-            res.Code = 20000;
+            res.Code = 200;
             return res;
         }
 
@@ -323,7 +323,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 var errMsg = ex.Message;
                 res.Flag = false;
             }
-            res.Code = 20000;
+            res.Code = 200;
             return res;
         }
 
@@ -349,7 +349,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                     {
                         res.Message = "为找到文件";
                         res.ResultSign = ResultSign.Error;
-                        res.Code = 20000;
+                        res.Code = 200;
                         return res;
                     }
                     FileUploadUtil.MergeDiskFile(sourcePath, targetFilePath);
@@ -379,7 +379,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                         res.ResultSign = ResultSign.Error;
                     }
                 }
-                res.Code = 20000;
+                res.Code = 200;
 
                 return res;
             }
@@ -419,7 +419,7 @@ namespace NetCore.Services.Services.S_StoreFiles
             catch (Exception ex)
             {
                 // 删除本地错误文件
-                System.IO.File.Delete(chunkFile.RelativePath);
+                File.Delete(chunkFile.RelativePath);
                 return false;
             }
         }

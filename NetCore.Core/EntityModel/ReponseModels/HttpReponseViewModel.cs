@@ -19,8 +19,9 @@ namespace NetCore.Core.EntityModel.ReponseModels
             RequestParams = null;
             Flag = true;
             EXESql = "";
+            PrimaryKeyValue = "";
         }
-        public HttpReponseViewModel(bool flag, string errorMsg = "", string successMsg = "", string exesql = "")
+        public HttpReponseViewModel(bool flag,string primaryKeyValue="", string errorMsg = "", string successMsg = "", string exesql = "")
         {
             if (flag)
             {
@@ -45,6 +46,7 @@ namespace NetCore.Core.EntityModel.ReponseModels
             Flag = flag;
             RequestParams = null;
             EXESql = exesql;
+            PrimaryKeyValue = primaryKeyValue;
         }
 
 
@@ -83,6 +85,12 @@ namespace NetCore.Core.EntityModel.ReponseModels
         /// 执行的sql
         /// </summary>
         public string EXESql { set; get; }
+
+
+        /// <summary>
+        /// 返回主键值 （主要用于前端页面不刷新 需要主键值）
+        /// </summary>
+        public string PrimaryKeyValue { set; get; }
         #endregion
     }
 
@@ -114,6 +122,26 @@ namespace NetCore.Core.EntityModel.ReponseModels
                 Code = StatusCodes.Status500InternalServerError;
             }
 
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+            Total = total;
+            Data = t;
+            EXESql = exeSql;
+        }
+
+        public HttpReponseViewModel(T t, int? pageIndex = 1, int? pageSize = 20, long? total = 0, string exeSql = "")
+        {
+            if (t != null)
+            {
+                ResultSign = ResultSign.Success;
+                Message = HttpReponseMessageViewModel.SuccessMsg;
+                Code = StatusCodes.Status200OK;
+            }
+            else {
+                ResultSign = ResultSign.Error;
+                Message = HttpReponseMessageViewModel.ErrorMsg;
+                Code = StatusCodes.Status500InternalServerError;
+            }
             PageIndex = pageIndex;
             PageSize = pageSize;
             Total = total;

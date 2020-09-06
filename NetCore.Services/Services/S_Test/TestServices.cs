@@ -6,21 +6,22 @@ using NetCore.EntityFrameworkCore.Models;
 using NetCore.EntityModel.QueryModels;
 using NetCore.IServices.I_Test;
 using NetCore.Services.Interface;
+using NetCore.Services.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NetCore.Services.S_Test
 {
-    public class TestServices : ITestServices
+    public class TestServices :BaseServices<Test,TestViewModel>, ITestServices
     {
         private readonly IBaseDomain<Test> _userDomain;
-        public TestServices(IBaseDomain<Test> userDomain)
+        public TestServices(IBaseDomain<Test> userDomain):base(userDomain)
         {
             _userDomain = userDomain;
         }
 
         // [Transactional]
-        public async Task<bool> AddListService(List<TestViewModel> entity)
+        public async Task<bool> AddListService1(List<TestViewModel> entity)
         {
             var t2 = entity.MapTo<List<Test>>();
             var d3 = await _userDomain.AddListDomain(t2);
@@ -31,16 +32,13 @@ namespace NetCore.Services.S_Test
         }
 
 
-        public Task<HttpReponseViewModel<List<TestViewModel>>> GetPageListService(QueryModel queryModel)
-        {
-            throw new System.NotImplementedException();
-        }
+       
 
 
 
         //  [Transactional]
 
-        public async Task<HttpReponseViewModel<TestViewModel>> AddOrEditService(TestViewModel entity)
+        public async Task<HttpReponseViewModel<TestViewModel>> AddOrEditService1(TestViewModel entity)
         {
 
             HttpReponseViewModel<TestViewModel> res = new HttpReponseViewModel<TestViewModel>();
@@ -53,9 +51,6 @@ namespace NetCore.Services.S_Test
             return res;
         }
 
-        public Task<HttpReponseViewModel> DeleteService(object id)
-        {
-            throw new System.NotImplementedException();
-        }
+      
     }
 }

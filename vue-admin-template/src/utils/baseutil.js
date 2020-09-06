@@ -176,6 +176,17 @@ let myAction = {
     }
     return text;
   },
+  formatTaskState: function (val) {
+    let text = "";
+    switch (val) {
+      case 0: text = "未启动"; break;
+      case 1: text = "启动中"; break;
+      case 2: text = "暂停"; break;
+      case 3: text = "完成"; break;
+      default: text = ""; break;
+    }
+    return text;
+  },
   /**
    * 格式化时间
    * @param {any} val

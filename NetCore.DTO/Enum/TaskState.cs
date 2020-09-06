@@ -7,16 +7,20 @@ namespace NetCore.DTO.Enum
     public  enum   TaskState
     {
         /// <summary>
-        /// 初始化
+        /// 未启动
         /// </summary>
        Init=0,
         /// <summary>
-        /// 开始
+        /// 启动
         /// </summary>
         Start=1,
         /// <summary>
         /// 暂停
         /// </summary>
-        Stop=2
+        Stop=2,
+        /// <summary>
+        /// 结束
+        /// </summary>
+        Finsh=3
     }
 }

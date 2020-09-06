@@ -4,6 +4,7 @@ using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NetCore.Services.Services.S_TaskJob
@@ -14,30 +15,45 @@ namespace NetCore.Services.Services.S_TaskJob
     /// </summary>
     //前一次任务未执行完成时不触发下次
     [DisallowConcurrentExecution]
-    public class MyJobServices : IJob,IMyJobServices
+    public class MyJobServices : IJob, IMyJobServices
     {
-        public Task Execute(IJobExecutionContext context)
+
+
+        private static ITaskJobServices _taskJobServices
         {
-
-            //业务
-            return Task.Run(() =>
+            get
             {
-                for (int i = 0; i < 10; i++)
-                {
-                    LogUtil.Debug("陈大猪。。。" + i);
-                }
+                return (ITaskJobServices)AppConfigUtil._serviceProvider.GetService(typeof(ITaskJobServices));
+            }
+        }
 
-              });
+
+
+        public async Task Execute(IJobExecutionContext context)
+        {
+            //业务
+            try
+            {
+               
+                var gId = new Guid(context.JobDetail.Key.Name.Split('|')[0]);
+                LogUtil.Debug("陈大猪。。。" + gId);
+                LogUtil.Debug("ManagerJob Executing ...");
+                await _taskJobServices.ExcuteTaskJob(gId);
+            }
+            catch (Exception ex)
+            {
+                JobExecutionException e2 = new JobExecutionException(ex);
+                e2.RefireImmediately = true;
+            }
+            finally
+            {
+                LogUtil.Debug("ManagerJob Execute end ");
             }
 
-        public Task<bool> UpdateRunCount()
-        {
-            return Task.Run(() =>
-            {
-                LogUtil.Debug("hghghghg");
-                return true;
-            });
-           
         }
+
+
+
+
     }
 }

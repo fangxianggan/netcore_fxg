@@ -12,7 +12,7 @@ namespace NetCore.Core.Util
 
         public static FieldInfo[] GetFields(Type type)
         {
-            return type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            return type.GetFields(BindingFlags.Public | BindingFlags.Instance|BindingFlags.NonPublic);
         }
 
         public static void SetPropertyValue(object obj, PropertyInfo property, object value)

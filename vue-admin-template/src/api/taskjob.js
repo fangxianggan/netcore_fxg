@@ -63,7 +63,7 @@ export function resumeJob(gId){
   });
 }
 
-/**
+/** 单个post 传值
  * 删除job
  * @param {*} data 
  */
@@ -73,8 +73,8 @@ export function deleteJob(data)
     url: "/Jobs/DeleteTaskJob",
     method: "post",
     headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    },
+      'content-type': 'application/json;charset=UTF-8'
+    }, 
     data
   });
 }

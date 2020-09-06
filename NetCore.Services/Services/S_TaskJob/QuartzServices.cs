@@ -14,8 +14,8 @@ namespace NetCore.Services.Services.S_TaskJob
         private static IJobListenerServices _jobListenerServices;
         public QuartzServices(ISchedulerFactory schedulerFactory, IJobListenerServices jobListenerServices)
         {
-               _schedulerFactory = schedulerFactory;
-              _jobListenerServices = jobListenerServices;
+            _schedulerFactory = schedulerFactory;
+            _jobListenerServices = jobListenerServices;
         }
         public async Task<bool> Add(Type type, JobKey jobKey, ITrigger trigger)
         {
@@ -29,10 +29,14 @@ namespace NetCore.Services.Services.S_TaskJob
                        .Build();
                 await _scheduler.ScheduleJob(job, trigger);
                 LogUtil.Debug($"开始任务{jobKey.Group},{jobKey.Name}");
-                //添加监听 监听任务 记录日志
-                _scheduler.ListenerManager.AddJobListener(_jobListenerServices, GroupMatcher<JobKey>.AnyGroup());
-                //添加监听 监听触发器 记录日志
-                _scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, GroupMatcher<TriggerKey>.AnyGroup());
+
+                ////添加监听 监听任务 记录日志
+                _scheduler.ListenerManager.AddJobListener(_jobListenerServices, GroupMatcher<JobKey>.GroupEquals(jobKey.Group));
+                _scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, GroupMatcher<TriggerKey>.GroupEquals(jobKey.Group));
+                //  _scheduler.ListenerManager.AddJobListener(_jobListenerServices, GroupMatcher<JobKey>.AnyGroup());
+                ////添加监听 监听触发器 记录日志
+                //  _scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, GroupMatcher<TriggerKey>.AnyGroup());
+
             }
             return !flag;
         }
@@ -73,6 +77,6 @@ namespace NetCore.Services.Services.S_TaskJob
             return flag;
         }
 
-       
+
     }
 }

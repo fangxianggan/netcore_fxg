@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NetCore.Core.Util
 {
@@ -240,5 +241,7 @@ namespace NetCore.Core.Util
             }
             return sb.ToString();
         }
+
+       
     }
 }

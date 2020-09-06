@@ -206,7 +206,7 @@ namespace NetCore.Services.Services.S_StoreFiles
             {
                 res.Data = "该文件不存在";
             }
-            res.Code = 20000;
+            res.Code = 200;
             return res;
         }
 
@@ -234,7 +234,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 res.Data = null;
                 res.Message = "该文件不存在";
             }
-            res.Code = 20000;
+            res.Code = 200;
             res.ResultSign = Core.Enum.ResultSign.Info;
             return res;
         }

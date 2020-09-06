@@ -1,7 +1,9 @@
 ﻿using NetCore.EntityModel.QueryModels;
 using NetCore.Repository.Dapper.Entity;
 using NetCore.Repository.Interface;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 namespace NetCore.Domain.Interface
 {
@@ -17,6 +19,7 @@ namespace NetCore.Domain.Interface
         Task<bool> EditDomain(T entity);
         Task<bool> DeleteDomain(object id);
         Task<PageData<T>> GetPageList(QueryModel queryModel);
+        Task<List<T>> GetList(Expression<Func<T, bool>> whereLambda);
         Task<T>  GetEntity(object keyValues);
        
 

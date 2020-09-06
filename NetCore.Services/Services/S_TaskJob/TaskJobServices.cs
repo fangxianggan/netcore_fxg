@@ -9,71 +9,24 @@ using NetCore.EntityFrameworkCore.Models;
 using NetCore.EntityModel.QueryModels;
 using NetCore.Services.IServices.I_TaskJob;
 using Quartz;
+using Quartz.Impl.Triggers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NetCore.Services.Services.S_TaskJob
 {
-    public class TaskJobServices : ITaskJobServices
+    public class TaskJobServices : BaseServices<TaskJob, TaskJobViewModel>, ITaskJobServices
     {
         private readonly IBaseDomain<TaskJob> _baseDomain;
         private readonly IQuartzServices _quartzServices;
 
-        public TaskJobServices(IBaseDomain<TaskJob> baseDomain, IQuartzServices quartzServices)
+        public TaskJobServices(IBaseDomain<TaskJob> baseDomain, IQuartzServices quartzServices) : base(baseDomain)
         {
             _baseDomain = baseDomain;
             _quartzServices = quartzServices;
-        }
-
-     
-
-        public Task<bool> AddListService(List<TaskJobViewModel> entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<HttpReponseViewModel<TaskJobViewModel>> AddOrEditService(TaskJobViewModel entity)
-        {
-            HttpReponseViewModel<TaskJobViewModel> res = new HttpReponseViewModel<TaskJobViewModel>();
-            var ent = entity.MapTo<TaskJob>();
-            if (ent.ID.IsInitGuid())
-            {
-                ent.ID = Guid.NewGuid();
-                res.Flag = await _baseDomain.AddDomain(ent);
-            }
-            else
-            {
-                res.Flag = await _baseDomain.EditDomain(ent);
-            }
-            if (res.Flag)
-            {
-                res.Data = entity;
-                res.Message = "";
-                res.ResultSign = ResultSign.Success;
-                res.Code = 20000;
-            }
-
-            return res;
-        }
-
-
-
-        public async Task<HttpReponseViewModel<List<TaskJobViewModel>>> GetPageListService(QueryModel queryModel)
-        {
-            var pageData = await _baseDomain.GetPageList(queryModel);
-            HttpReponseViewModel<List<TaskJobViewModel>> httpReponse = new HttpReponseViewModel<List<TaskJobViewModel>>();
-            httpReponse.Code = 20000;
-            httpReponse.Data = pageData.DataList.MapToList<TaskJobViewModel>();
-            httpReponse.Total = pageData.Total;
-            httpReponse.EXESql = pageData.EXESql;
-            httpReponse.PageIndex = queryModel.PageIndex;
-            httpReponse.PageSize = queryModel.PageSize;
-            httpReponse.Flag = true;
-            httpReponse.RequestParams = queryModel;
-            httpReponse.ResultSign = ResultSign.Success;
-            httpReponse.Message = "cj";
-            return httpReponse;
         }
 
         /// <summary>
@@ -88,21 +41,30 @@ namespace NetCore.Services.Services.S_TaskJob
             await _baseDomain.EditDomain(ent);
             var groupName = ent.TaskGroup;
             var cronExpression = ent.CronExpression;
-            var flag= CronExpression.IsValidExpression(cronExpression);
+            var flag = CronExpression.IsValidExpression(cronExpression);
             var errorMsg = "cron表达式错误";
-            if (flag) {
+            if (flag)
+            {
                 JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + groupName);
-                ITrigger trigger = TriggerBuilder.Create().WithIdentity(ent.ID + "|" + ent.TaskName, ent.ID + "|" + groupName).WithCronSchedule(cronExpression).Build();
+                DateTimeOffset st1 = ent.StartRunTime.ToDateTimeOffset();
+                DateTimeOffset? st2 = null;
+                if (!ent.EndRunTime.IsNull())
+                {
+                    st2 = ent.EndRunTime.Value.ToDateTimeOffset();
+                }
+                string description = ent.CronExpressionDescription;
+                ITrigger trigger = TriggerBuilder.Create().WithIdentity(ent.ID + "|" + ent.TaskName, ent.ID + "|" + groupName).StartAt(st1).EndAt(st2).WithCronSchedule(cronExpression).WithDescription(description).Build();
                 flag = await _quartzServices.Add(typeof(MyJobServices), jobKey, trigger);
                 if (flag)
                 {
                     errorMsg = "";
                 }
-                else {
+                else
+                {
                     errorMsg = "任务启动失败！";
                 }
             }
-            return new HttpReponseViewModel(flag,errorMsg, "", "");
+            return new HttpReponseViewModel(flag, errorMsg, "", "");
         }
 
         /// <summary>
@@ -112,20 +74,20 @@ namespace NetCore.Services.Services.S_TaskJob
         /// <returns></returns>
         public async Task<HttpReponseViewModel> ResumeJob(Guid gId)
         {
-            var ent= await _baseDomain.GetEntity(gId);
-            ent.TaskState =  TaskState.Start.ToInt();
+            var ent = await _baseDomain.GetEntity(gId);
+            ent.TaskState = TaskState.Start.ToInt();
             await _baseDomain.EditDomain(ent);
             JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + ent.TaskGroup);
-            var flag=await _quartzServices.Resume(jobKey);
+            var flag = await _quartzServices.Resume(jobKey);
             var errorMsg = "恢复实例失败！";
             if (flag)
             {
                 errorMsg = "";
             }
-            return new HttpReponseViewModel(flag,errorMsg);
-           
+            return new HttpReponseViewModel(flag, errorMsg);
+
         }
-         
+
 
         /// <summary>
         /// 暂停实例
@@ -138,22 +100,27 @@ namespace NetCore.Services.Services.S_TaskJob
             ent.TaskState = TaskState.Stop.ToInt();
             await _baseDomain.EditDomain(ent);
             JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + ent.TaskGroup);
-            var flag= await _quartzServices.Stop(jobKey);
+            var flag = await _quartzServices.Stop(jobKey);
             var errorMsg = "暂停实例失败！";
             if (flag)
             {
                 errorMsg = "";
             }
-            return new HttpReponseViewModel(flag,errorMsg);
-            
+            return new HttpReponseViewModel(flag, errorMsg);
+
         }
 
-        public async Task<HttpReponseViewModel> DeleteService(object id)
+        /// <summary>
+        /// 删除实例 job
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<HttpReponseViewModel> DeleteJob(Guid id)
         {
             var ent = await _baseDomain.GetEntity(id);
             JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + ent.TaskGroup);
             var flag = await _quartzServices.Delete(jobKey);
-            var errorMsg = "暂停实例失败！";
+            var errorMsg = "实例未存在,暂停失败！";
             if (flag)
             {
                 flag = await _baseDomain.DeleteDomain(id);
@@ -161,11 +128,55 @@ namespace NetCore.Services.Services.S_TaskJob
                 {
                     errorMsg = "";
                 }
-                else {
+                else
+                {
                     errorMsg = "删除数据失败！";
                 }
             }
             return new HttpReponseViewModel(flag, errorMsg);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="gId"></param>
+        /// <returns></returns>
+        public async Task<bool> ExcuteTaskJob(Guid gId)
+        {
+
+            var ent = await _baseDomain.GetEntity(gId);
+            ent.RunCount = ent.RunCount + 1;
+            var timesOfLoop = 10;   //休眠毫秒
+            Thread.Sleep(timesOfLoop);
+            await _baseDomain.EditDomain(ent);
+            return true;
+
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task JobSchedulerSetUp()
+        {
+            var list = await _baseDomain.GetList(p => p.TaskState != TaskState.Init.ToInt());
+            var qdList = list.Where(p => p.TaskState == TaskState.Start.ToInt());
+            var ztList = list.Where(p => p.TaskState == TaskState.Stop.ToInt());
+            await qdList.ToAsyncEnumerable().ForEachAsync(async item =>
+           {
+               var timesOfLoop = 10;   //休眠毫秒
+               Thread.Sleep(timesOfLoop);
+               await AddJob(item.ID);
+           });
+            await ztList.ToAsyncEnumerable().ForEachAsync(async item =>
+            {
+                var timesOfLoop = 10;   //休眠毫秒
+                Thread.Sleep(timesOfLoop);
+                await AddJob(item.ID);
+                await StopJob(item.ID);
+            });
+
         }
     }
 }

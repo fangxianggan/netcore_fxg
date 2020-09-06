@@ -9,11 +9,17 @@ using System.Threading.Tasks;
 
 namespace NetCore.Services.IServices.I_TaskJob
 {
-    public interface ITaskJobServices : IBaseServices<TaskJobViewModel>
+    public interface ITaskJobServices :IBaseServices<TaskJobViewModel>
     {
         Task<HttpReponseViewModel> AddJob(Guid gId);
         Task<HttpReponseViewModel> StopJob(Guid gId);
         Task<HttpReponseViewModel> ResumeJob(Guid gId);
+
+        Task<HttpReponseViewModel> DeleteJob(Guid gId);
+
+        Task<bool> ExcuteTaskJob(Guid gId);
+
+        Task JobSchedulerSetUp();
 
     }
 }

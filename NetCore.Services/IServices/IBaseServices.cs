@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 
 namespace NetCore.Services.Interface
 {
-    public interface IBaseServices<T> where T : class
+    public interface IBaseServices<TView> where TView : class
     {
        
-        Task<bool> AddListService(List<T> entity);
+        Task<bool> AddListService(List<TView> entity);
 
-        Task<HttpReponseViewModel<T>> AddOrEditService(T entity);
+        Task<HttpReponseViewModel> AddOrEditService(TView entity);
 
         Task<HttpReponseViewModel> DeleteService(object id);
 
-        Task<HttpReponseViewModel<List<T>>> GetPageListService(QueryModel queryModel);
+        Task<HttpReponseViewModel<List<TView>>> GetPageListService(QueryModel queryModel);
+
+      
     }
 }

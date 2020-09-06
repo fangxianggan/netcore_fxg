@@ -2,7 +2,9 @@
 using NetCore.EntityModel.QueryModels;
 using NetCore.Repository.Dapper.Entity;
 using NetCore.Repository.Interface;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace NetCore.Domain.Domain
@@ -41,6 +43,11 @@ namespace NetCore.Domain.Domain
         {
             var ent = await _repository.GetEntity(keyValues);
             return ent;
+        }
+
+        public async Task<List<T>> GetList(Expression<Func<T, bool>> whereLambda)
+        {
+            return await _repository.GetList(whereLambda);
         }
 
         public async Task<PageData<T>> GetPageList(QueryModel queryModel)
