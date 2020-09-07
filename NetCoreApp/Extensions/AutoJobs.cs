@@ -21,18 +21,15 @@ namespace NetCoreApp.Extensions
         /// </summary>
         /// <param name="applicationBuilder"></param>
         /// <returns></returns>
-        public static  void JobSchedulerSetUp(this IApplicationBuilder applicationBuilder)
+        public static void JobSchedulerSetUp(this IApplicationBuilder applicationBuilder)
         {
-            _serviceProvider = applicationBuilder.ApplicationServices;
-            //启动定时任务
-            var TaskList = (ITaskJobServices)_serviceProvider.GetService(typeof(ITaskJobServices));
-             TaskList.JobSchedulerSetUp();
+            //_serviceProvider = applicationBuilder.ApplicationServices;
+            ////启动定时任务
+            //var TaskList = (ITaskJobServices)_serviceProvider.GetService(typeof(ITaskJobServices));
+            //TaskList.JobSchedulerSetUp();
+            ////添加监听
+            //TaskList.GetJobListenerList();
 
-          //  var _jobListenerServices = (IJobListenerServices)_serviceProvider.GetService(typeof(IJobListenerServices));
-
-           
-            
-           
         }
     }
 }

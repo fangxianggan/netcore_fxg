@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.DTO.TestModel;
 using NetCore.IServices.I_Test;
+using NetCore.Services.Interface;
 using NetCoreApp.Filters;
 
 namespace NetCoreApp.Controllers
@@ -17,6 +18,7 @@ namespace NetCoreApp.Controllers
     public class TestController : ControllerBase
     {
         private readonly ITestServices _testService;
+      
         /// <summary>
         /// 
         /// </summary>
@@ -52,7 +54,7 @@ namespace NetCoreApp.Controllers
         {
             
             var list = new List<TestViewModel>();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 list.Add(new TestViewModel()
                 {
@@ -60,8 +62,19 @@ namespace NetCoreApp.Controllers
                     Name = "ffff" + i
                 });
             }
-
-            return await _testService.AddListService1(list);
+            
+            await _testService.AddOrEditService1(list[0]);
+            var list1 = new List<TestViewModel>();
+            for (int i = 100; i < 200; i++)
+            {
+                list1.Add(new TestViewModel()
+                {
+                    ID = Guid.NewGuid(),
+                    Name = "ffff" + i
+                });
+            }
+            await _testService.AddOrEditService1(list1[1]);
+            return true;
         }
     }
 

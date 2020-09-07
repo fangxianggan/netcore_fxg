@@ -21,14 +21,16 @@ namespace NetCore.Services.Services.S_TaskJob
     public class JobListenerServices : IJobListenerServices
     {
 
-        private static ITaskJobLogServices _taskJobLogServices
-        {
-            get
-            {
-                return (ITaskJobLogServices)AppConfigUtil._serviceProvider.GetService(typeof(ITaskJobLogServices));
-            }
-        }
+        //private static ITaskJobLogServices _taskJobLogServices
+        //{
+        //    get
+        //    {
+        //        return (ITaskJobLogServices)AppConfigUtil._serviceProvider.GetService(typeof(ITaskJobLogServices));
+        //    }
+        //}
 
+
+        private static IBaseDomain<TaskJobLog> _baseDomainLog { get { return (IBaseDomain<TaskJobLog>)AppConfigUtil._serviceProvider.GetService(typeof(IBaseDomain<TaskJobLog>)); } }
         private static IBaseDomain<TaskJob> _baseDomain { get { return (IBaseDomain<TaskJob>)AppConfigUtil._serviceProvider.GetService(typeof(IBaseDomain<TaskJob>)); } }
 
         public string Name { get { return "SchedulerJobListener"; } }
@@ -76,8 +78,8 @@ namespace NetCore.Services.Services.S_TaskJob
         /// <returns></returns>
         public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await Task.Run(async () =>
-            {
+            //await Task.Run( () =>
+            //{
                 DateTime NextFireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.NextFireTimeUtc.Value.DateTime, TimeZoneInfo.Local);
                 DateTime FireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.FireTimeUtc.DateTime, TimeZoneInfo.Local);
                 double TotalSeconds = context.JobRunTime.TotalSeconds;
@@ -113,7 +115,7 @@ namespace NetCore.Services.Services.S_TaskJob
                     LogContent = LogContent + " EX:" + jobException.ToString();
                 }
 
-                LogUtil.Debug(string.Format("[{0}={2}]任务监听，name:{1}|任务执行完成。", NextFireTimeUtc, Name, endTimeUtc));
+                LogUtil.Debug(string.Format("[{0}={2}]任务监听，name:{1}|任务执行完成。", NextFireTimeUtc, jobId, endTimeUtc));
                 //  任务已经结束 更新状态
                 if (endTimeUtc.ToString() == NextFireTimeUtc.ToString())
                 {
@@ -124,22 +126,22 @@ namespace NetCore.Services.Services.S_TaskJob
                     await _baseDomain.EditDomain(ent);
                 }
 
-                TaskJobLogViewModel taskJobLog = new TaskJobLogViewModel()
+                TaskJobLog taskJobLog = new TaskJobLog()
                 {
                     ExecutionTime = FireTimeUtc,
                     ExecutionDuration = TotalSeconds,
-                    ID = new Guid(),
+                    ID = Guid.NewGuid(),
                     JobName = JobName,
                     RunLog = LogContent,
                     TaskJobId = jobId
                 };
 
-                var timesOfLoop = 10;   //休眠毫秒
-                Thread.Sleep(timesOfLoop);
+                //var timesOfLoop = 10;   //休眠毫秒
+                //Thread.Sleep(timesOfLoop);
 
                 //记录日志
-                await _taskJobLogServices.AddOrEditService(taskJobLog);
-            });
+                await _baseDomainLog.AddDomain(taskJobLog);
+           // });
         }
 
         /// <summary>
@@ -184,6 +186,7 @@ namespace NetCore.Services.Services.S_TaskJob
         {
             await Task.Run(() =>
             {
+
                 LogUtil.Debug(string.Format("[{0}]触发器监听，name:{1}|触发器触发失败。", DateTime.Now.ToLongTimeString(), trigger.Key.Name));
 
                 //写邮件通知
@@ -202,7 +205,7 @@ namespace NetCore.Services.Services.S_TaskJob
         {
             return await Task.Run(() =>
             {
-                LogUtil.Debug(string.Format("[{0}]触发器监听，name:{1}|可以阻止该任务执行，这里不设阻拦。", DateTime.Now.ToLongTimeString(), trigger.Key.Name));
+              //  LogUtil.Debug(string.Format("[{0}]触发器监听，name:{1}|可以阻止该任务执行，这里不设阻拦。", DateTime.Now.ToLongTimeString(), trigger.Key.Name));
                 // False 时，不阻止该任务。True 阻止执行
                 return false;
             });

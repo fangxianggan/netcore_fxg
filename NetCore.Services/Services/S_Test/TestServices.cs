@@ -26,8 +26,6 @@ namespace NetCore.Services.S_Test
             var t2 = entity.MapTo<List<Test>>();
             var d3 = await _userDomain.AddListDomain(t2);
 
-            var t23 = entity.MapTo<List<Test>>();
-            var d33 = await _userDomain.AddListDomain(t23);
             return true;
         }
 
@@ -45,8 +43,8 @@ namespace NetCore.Services.S_Test
             var t1 = entity.MapTo<Test>();
             var flag = await _userDomain.AddDomain(t1);
 
-            var t2 = entity.MapTo<Test>();
-            var flag1 = await _userDomain.AddDomain(t1);
+            //var t2 = entity.MapTo<Test>();
+            //var flag1 = await _userDomain.AddDomain(t1);
 
             return res;
         }

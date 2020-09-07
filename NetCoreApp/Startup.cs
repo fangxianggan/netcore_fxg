@@ -183,7 +183,7 @@ namespace NetCoreApp
             services.ConfigureDynamicProxy();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             #region 定时
-            services.TryAddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             #endregion
             //注册 IHttpContextAccessor 对象
             services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
@@ -222,12 +222,12 @@ namespace NetCoreApp
           
 
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="app"></param>
-        /// <param name="env"></param>
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="app"></param>
+       /// <param name="env"></param>
+       
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
@@ -261,7 +261,8 @@ namespace NetCoreApp
             //automapper
             app.UseStateAutoMapper();
             app.UseHttpsRedirection();
-            app.JobSchedulerSetUp();
+
+           // app.JobSchedulerSetUp();
 
             //
             app.UseMiniProfiler();
@@ -269,6 +270,19 @@ namespace NetCoreApp
            
             //跨域 策略
             app.UseCors(MyAllowSpecificOrigins);
+
+
+            //appLifetime.ApplicationStarted.Register(() =>
+            //{
+
+            //    quartz.Start().Wait(); //网站启动完成执行
+            //});
+
+            //appLifetime.ApplicationStopped.Register(() =>
+            //{
+            //    quartz.Stop();  //网站停止完成执行
+
+            //});
 
             app.UseMvc();
 

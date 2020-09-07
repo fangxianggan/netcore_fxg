@@ -12,5 +12,8 @@ namespace NetCore.Services.IServices.I_TaskJob
         Task<bool> Resume(JobKey jobKey);
         Task<bool> Stop(JobKey jobKey);
         Task<bool> Delete(JobKey jobKey);
+        void AddJobListener();
+        Task StartScheduleAsync();
+       
     }
 }

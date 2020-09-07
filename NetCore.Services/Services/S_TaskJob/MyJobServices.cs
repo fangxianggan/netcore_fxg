@@ -36,8 +36,8 @@ namespace NetCore.Services.Services.S_TaskJob
             {
                
                 var gId = new Guid(context.JobDetail.Key.Name.Split('|')[0]);
-                LogUtil.Debug("陈大猪。。。" + gId);
-                LogUtil.Debug("ManagerJob Executing ...");
+               // LogUtil.Debug("陈大猪。。。" + gId);
+                //LogUtil.Debug("ManagerJob Executing ...");
                 await _taskJobServices.ExcuteTaskJob(gId);
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace NetCore.Services.Services.S_TaskJob
             }
             finally
             {
-                LogUtil.Debug("ManagerJob Execute end ");
+                //LogUtil.Debug("ManagerJob Execute end ");
             }
 
         }

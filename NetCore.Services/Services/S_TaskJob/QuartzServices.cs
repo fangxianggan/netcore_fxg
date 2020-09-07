@@ -1,8 +1,10 @@
-﻿using NetCore.Core.Util;
+﻿using Microsoft.CodeAnalysis.Differencing;
+using NetCore.Core.Util;
 using NetCore.Services.IServices.I_TaskJob;
 using Quartz;
 using Quartz.Impl.Matchers;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NetCore.Services.Services.S_TaskJob
@@ -16,34 +18,80 @@ namespace NetCore.Services.Services.S_TaskJob
         {
             _schedulerFactory = schedulerFactory;
             _jobListenerServices = jobListenerServices;
+
         }
+
+        
+        /// <summary>
+        /// 开启调度器
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartScheduleAsync()
+        {
+             _scheduler =await _schedulerFactory.GetScheduler();
+             await _scheduler.Start();
+             LogUtil.Debug("任务调度启动！");
+        }
+
+
+        /// <summary>
+        /// 添加监听
+        /// </summary>
+        public void AddJobListener()
+        {
+            _scheduler.ListenerManager.AddJobListener(_jobListenerServices, GroupMatcher<JobKey>.AnyGroup());
+            //添加监听 监听触发器 记录日志
+            _scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, GroupMatcher<TriggerKey>.AnyGroup());
+
+            ////添加监听
+            //_scheduler.ListenerManager.AddJobListener(_jobListenerServices);
+            ////添加监听 监听触发器 记录日志
+            //_scheduler.ListenerManager.AddTriggerListener(_jobListenerServices);
+        }
+
         public async Task<bool> Add(Type type, JobKey jobKey, ITrigger trigger)
         {
-            _scheduler = await _schedulerFactory.GetScheduler();
+
             var flag = await _scheduler.CheckExists(jobKey);
             if (!flag)
             {
-                await _scheduler.Start();
+
+                //    await _scheduler.Start();
                 var job = JobBuilder.Create(type)
                        .WithIdentity(jobKey)
                        .Build();
                 await _scheduler.ScheduleJob(job, trigger);
-                LogUtil.Debug($"开始任务{jobKey.Group},{jobKey.Name}");
+                // LogUtil.Debug($"开始任务{jobKey.Group},{jobKey.Name}");
 
-                ////添加监听 监听任务 记录日志
-                _scheduler.ListenerManager.AddJobListener(_jobListenerServices, GroupMatcher<JobKey>.GroupEquals(jobKey.Group));
-                _scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, GroupMatcher<TriggerKey>.GroupEquals(jobKey.Group));
-                //  _scheduler.ListenerManager.AddJobListener(_jobListenerServices, GroupMatcher<JobKey>.AnyGroup());
+                //await Task.Run(() =>
+                // {
+                //  var timesOfLoop = 100;   //休眠毫秒
+                //   Thread.Sleep(timesOfLoop);
+
+                //_scheduler.ListenerManager.AddJobListener(_jobListenerServices, GroupMatcher<JobKey>.AnyGroup());
                 ////添加监听 监听触发器 记录日志
-                //  _scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, GroupMatcher<TriggerKey>.AnyGroup());
+                //_scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, GroupMatcher<TriggerKey>.AnyGroup());
+                //////添加监听 监听任务 记录日志
+                //Thread.Sleep(1000);
+                //_scheduler.ListenerManager.AddJobListener(_jobListenerServices, KeyMatcher<JobKey>.KeyEquals(new JobKey(jobKey.Group, jobKey.Name)));
+                //_scheduler.ListenerManager.AddTriggerListener(_jobListenerServices, KeyMatcher<TriggerKey>.KeyEquals(new TriggerKey(trigger.JobKey.Group, trigger.JobKey.Name)));
+
+                //  });
+
+
+
+
+
 
             }
             return !flag;
         }
 
+
+
         public async Task<bool> Delete(JobKey jobKey)
         {
-            _scheduler = await _schedulerFactory.GetScheduler();
+
             var flag = await _scheduler.CheckExists(jobKey);
             if (flag)
             {
@@ -55,7 +103,7 @@ namespace NetCore.Services.Services.S_TaskJob
 
         public async Task<bool> Resume(JobKey jobKey)
         {
-            _scheduler = await _schedulerFactory.GetScheduler();
+
             var flag = await _scheduler.CheckExists(jobKey);
             if (flag)
             {
@@ -67,7 +115,6 @@ namespace NetCore.Services.Services.S_TaskJob
 
         public async Task<bool> Stop(JobKey jobKey)
         {
-            _scheduler = await _schedulerFactory.GetScheduler();
             var flag = await _scheduler.CheckExists(jobKey);
             if (flag)
             {

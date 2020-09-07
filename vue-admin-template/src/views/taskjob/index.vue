@@ -392,7 +392,7 @@ export default {
         
           addOrEdit(data).then(response => {
           
-            this.temp.id=response.data;
+            this.temp.id=response.primaryKeyValue;
             this.list.unshift(this.temp);
             this.total++;
             this.dialogFormVisible = false;

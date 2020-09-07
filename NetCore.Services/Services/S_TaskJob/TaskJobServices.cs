@@ -143,15 +143,14 @@ namespace NetCore.Services.Services.S_TaskJob
         /// <returns></returns>
         public async Task<bool> ExcuteTaskJob(Guid gId)
         {
-
+            LogUtil.Debug("ggg11:" + gId);
             var ent = await _baseDomain.GetEntity(gId);
             ent.RunCount = ent.RunCount + 1;
-            var timesOfLoop = 10;   //休眠毫秒
-            Thread.Sleep(timesOfLoop);
+            //var timesOfLoop = 10;   //休眠毫秒
+            //Thread.Sleep(timesOfLoop);
+            // LogUtil.Debug("ggg:"+JsonUtil.JsonSerialize(ent));
             await _baseDomain.EditDomain(ent);
             return true;
-
-
         }
 
         /// <summary>
@@ -163,20 +162,21 @@ namespace NetCore.Services.Services.S_TaskJob
             var list = await _baseDomain.GetList(p => p.TaskState != TaskState.Init.ToInt());
             var qdList = list.Where(p => p.TaskState == TaskState.Start.ToInt());
             var ztList = list.Where(p => p.TaskState == TaskState.Stop.ToInt());
-            await qdList.ToAsyncEnumerable().ForEachAsync(async item =>
+           await qdList.ToAsyncEnumerable().ForEachAsync(async item =>
            {
-               var timesOfLoop = 10;   //休眠毫秒
-               Thread.Sleep(timesOfLoop);
+
+               Thread.Sleep(100);
                await AddJob(item.ID);
            });
             await ztList.ToAsyncEnumerable().ForEachAsync(async item =>
             {
-                var timesOfLoop = 10;   //休眠毫秒
-                Thread.Sleep(timesOfLoop);
+                Thread.Sleep(100);
                 await AddJob(item.ID);
                 await StopJob(item.ID);
             });
 
         }
+
+      
     }
 }
