@@ -96,6 +96,7 @@
     <el-dialog v-el-drag-dialog
                :title="dialogTitle"
                :visible.sync="dialogFormVisible"
+               :close-on-click-modal="false"
                fit
                width="60%"
                :destroy-on-close="true"
@@ -137,6 +138,7 @@
                :title="dialogprogressTitle"
                :visible.sync="dialogprogressVisible"
                :show-close="false"
+                :close-on-click-modal="false"
                fit
                width="60%"
                :destroy-on-close="true"

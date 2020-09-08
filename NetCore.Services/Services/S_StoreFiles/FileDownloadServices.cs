@@ -103,18 +103,18 @@ namespace NetCore.Services.Services.S_StoreFiles
         public List<FileRangeViewModel> GetFileRangeData(long totalSize)
         {
             //分片大小
-            int chunkSize = 1024 * 1024; //1M
+            long chunkSize = 1024 * 1024; //1M
             List<FileRangeViewModel> list = new List<FileRangeViewModel>();
             long currentSize = 0;
-            int chunkIndex = Convert.ToInt32(Math.Ceiling(Convert.ToDecimal(totalSize / chunkSize)));
+            long chunkIndex = Convert.ToInt64(Math.Ceiling(Convert.ToDecimal(totalSize / chunkSize)));
             for (int i = 0; i <= chunkIndex; i++)
             {
                 if (currentSize > totalSize)
                 {
                     break;
                 }
-                int startLength = 0;
-                int endLength = 0;
+                long startLength = 0;
+                long endLength = 0;
                 long tempSize = 0;
                 FileRangeViewModel fileRangeView = new FileRangeViewModel();
 
