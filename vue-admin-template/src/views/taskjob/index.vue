@@ -67,6 +67,15 @@
           <span>{{ row.taskName }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="任务状态">
+        <template slot-scope="{row}">
+          <el-tag  v-if="row.taskState==0" type="primary" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
+           <el-tag  v-if="row.taskState==1" type="success" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
+            <el-tag  v-if="row.taskState==4" type="danger" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
+              <el-tag  v-if="row.taskState==2" type="warning" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
+                <el-tag  v-if="row.taskState==3" type="info" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="Cron表达式" prop="cronExpression" sortable="custom">
         <template slot-scope="{row}">
           <span>{{ row.cronExpression }}</span>
@@ -96,11 +105,6 @@
       <el-table-column label="运行次数">
         <template slot-scope="{row}">
           <span>{{ row.runCount }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="任务状态">
-        <template slot-scope="{row}">
-          <span>{{ row.taskState|formatTaskState }}</span>
         </template>
       </el-table-column>
 
@@ -166,14 +170,22 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="开始时间" prop="startRunTime" :rules="rules.checkNull">
-              <el-date-picker v-model="temp.startRunTime" type="datetime"  value-format="yyyy-MM-dd HH:mm:ss" />
+              <el-date-picker
+                v-model="temp.startRunTime"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
             <el-form-item label="结束时间" prop="endRunTime">
-              <el-date-picker v-model="temp.endRunTime" type="datetime"  value-format="yyyy-MM-dd HH:mm:ss"  />
+              <el-date-picker
+                v-model="temp.endRunTime"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -181,7 +193,7 @@
           <el-col :span="24">
             <el-form-item label="Corn表达式" prop="cronExpression" :rules="rules.checkNull">
               <el-popover v-model="cronPopover">
-             <cron @change="changeCron" @close="cronPopover=false" i18n="cn"></cron>
+                <cron @change="changeCron" @close="cronPopover=false" i18n="cn"></cron>
                 <el-input
                   slot="reference"
                   @click="cronPopover=true"
@@ -195,10 +207,10 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="请求类型" prop="requestType" :rules="rules.checkNull">
-              <el-radio v-model="temp.requestType" label="Get">Get</el-radio>
-              <el-radio v-model="temp.requestType" label="Post">Post</el-radio>
-              <el-radio v-model="temp.requestType" label="Put">Put</el-radio>
-              <el-radio v-model="temp.requestType" label="Delete">Delete</el-radio>
+              <el-radio v-model="temp.requestType" label="1">Get</el-radio>
+              <el-radio v-model="temp.requestType" label="2">Post</el-radio>
+              <el-radio v-model="temp.requestType" label="4">Put</el-radio>
+              <el-radio v-model="temp.requestType" label="8">Delete</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
@@ -231,6 +243,15 @@
                 type="textarea"
                 :autosize="{minRows: 2,maxRows: 5}"
               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="邮件通知" prop="mailMessage">
+              <el-radio v-model="temp.mailMessage" label="0">不通知</el-radio>
+              <el-radio v-model="temp.mailMessage" label="1">异常通知</el-radio>
+              <el-radio v-model="temp.mailMessage" label="2">全部通知</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
@@ -292,7 +313,7 @@ export default {
         taskName: "",
         description: "",
         apiUrl: "",
-        requestType: "",
+        requestType: 2,
         requestHead: "",
         requestParams: "",
         exceptionMsg: "",
@@ -301,7 +322,8 @@ export default {
         startRunTime: "",
         endRunTime: "",
         runCount: 0,
-        taskState: 0
+        taskState: 0,
+        mailMessage: 1
       },
       orderArr: [],
       cronPopover: false,
@@ -316,14 +338,11 @@ export default {
     this.getList();
   },
   methods: {
-      
     changeCron(val) {
-    //  console.log("111")
+      //  console.log("111")
       this.temp.cronExpression = val;
     },
-    closeCron(){
-
-    },
+    closeCron() {},
     getList() {
       this.listLoading = true;
       let param = myAction.getQueryModel(
@@ -362,7 +381,7 @@ export default {
         taskName: "",
         description: "",
         apiUrl: "",
-        requestType: "Post",
+        requestType: 2,
         requestHead: "",
         requestParams: "",
         exceptionMsg: "",
@@ -371,7 +390,8 @@ export default {
         startRunTime: "",
         endRunTime: "",
         runCount: 0,
-        taskState: 0
+        taskState: 0,
+        mailMessage: 1
       };
     },
     //新增
@@ -389,10 +409,9 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           var data = this.temp;
-        
+
           addOrEdit(data).then(response => {
-          
-            this.temp.id=response.primaryKeyValue;
+            this.temp.id = response.primaryKeyValue;
             this.list.unshift(this.temp);
             this.total++;
             this.dialogFormVisible = false;

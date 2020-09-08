@@ -9,7 +9,7 @@ namespace NetCore.DTO.Enum
         /// <summary>
         /// 未启动
         /// </summary>
-       Init=0,
+        Init=0,
         /// <summary>
         /// 启动
         /// </summary>

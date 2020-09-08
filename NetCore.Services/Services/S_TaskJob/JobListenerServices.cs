@@ -121,29 +121,29 @@ namespace NetCore.Services.Services.S_TaskJob
             //var timesOfLoop = 10;   //休眠毫秒
             //Thread.Sleep(timesOfLoop);
 
-            //更新运行次数
-            var ents = await _baseDomain.GetEntity(jobId);
-            ents.RunCount = ents.RunCount + 1;
-            ents.UpdateTime = DateTime.Now;
-            await _baseDomain.EditDomain(ents);
-            //记录日志
-            await _baseDomainLog.AddDomain(new TaskJobLog()
-            {
-                ExecutionTime = FireTimeUtc,
-                ExecutionDuration = TotalSeconds,
-                ID = Guid.NewGuid(),
-                JobName = JobName,
-                RunLog = LogContent,
-                TaskJobId = jobId
-            });
-            //  任务已经结束 更新状态
-            if (endTimeUtc.ToString() == NextFireTimeUtc.ToString())
-            {
-                var ent = await _baseDomain.GetEntity(jobId);
-                ent.TaskState = TaskState.Finsh.ToInt();
-                ent.UpdateTime = DateTime.Now;
-                await _baseDomain.EditDomain(ent);
-            }
+            ////更新运行次数
+            //var ents = await _baseDomain.GetEntity(jobId);
+            //ents.RunCount = ents.RunCount + 1;
+            //ents.UpdateTime = DateTime.Now;
+            //await _baseDomain.EditDomain(ents);
+            //////记录日志
+            //await _baseDomainLog.AddDomain(new TaskJobLog()
+            //{
+            //    ExecutionTime = FireTimeUtc,
+            //    ExecutionDuration = TotalSeconds,
+            //    ID = Guid.NewGuid(),
+            //    JobName = JobName,
+            //    RunLog = LogContent,
+            //    TaskJobId = jobId
+            //});
+            ////  任务已经结束 更新状态
+            //if (endTimeUtc.ToString() == NextFireTimeUtc.ToString())
+            //{
+            //    var ent = await _baseDomain.GetEntity(jobId);
+            //    ent.TaskState = TaskState.Finsh.ToInt();
+            //    ent.UpdateTime = DateTime.Now;
+            //    await _baseDomain.EditDomain(ent);
+            //}
 
         }
 
@@ -193,6 +193,7 @@ namespace NetCore.Services.Services.S_TaskJob
                 LogUtil.Debug(string.Format("[{0}]触发器监听，name:{1}|触发器触发失败。", DateTime.Now.ToLongTimeString(), trigger.Key.Name));
 
                 //写邮件通知
+
 
             });
         }

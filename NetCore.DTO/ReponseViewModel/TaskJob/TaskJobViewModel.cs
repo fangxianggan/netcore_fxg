@@ -41,7 +41,7 @@ namespace NetCore.DTO.ReponseViewModel.TaskJob
         /// </summary>
         /// 
        
-        public string RequestType { set; get; }
+        public int RequestType { set; get; }
 
         /// <summary>
         /// 请求头

@@ -55,11 +55,12 @@ namespace NetCore.Services.Services.S_TaskJob
             if (!flag)
             {
 
-                //    await _scheduler.Start();
+                  //  await _scheduler.Start();
                 var job = JobBuilder.Create(type)
-                        .SetJobData(keyValues)
-                        .WithIdentity(jobKey)
-                       .Build();
+                        .WithIdentity(jobKey).SetJobData(keyValues).Build();
+                // 
+
+
                 await _scheduler.ScheduleJob(job, trigger);
                 // LogUtil.Debug($"开始任务{jobKey.Group},{jobKey.Name}");
 

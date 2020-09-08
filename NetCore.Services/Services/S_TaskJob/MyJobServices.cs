@@ -29,6 +29,11 @@ namespace NetCore.Services.Services.S_TaskJob
         public async Task Execute(IJobExecutionContext context)
         {
 
+            //var gId = new Guid(context.JobDetail.Key.Name.Split('|')[0]);
+            // LogUtil.Debug("陈大猪。。。" + gId);
+            //LogUtil.Debug("ManagerJob Executing ...");
+            //  await _taskJobServices.ExcuteTaskJob(gId);
+
             var maxLogCount = 20;//最多保存日志数量
             var warnTime = 20;//接口请求超过多少秒记录警告日志         
                               //获取相关参数

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -35,13 +36,15 @@ namespace NetCoreApp
 
             using (var scope = webHost.Services.CreateScope())
             {
-                var _quartzServices = scope.ServiceProvider.GetRequiredService<IQuartzServices>();
+                var _quartzServices = scope.ServiceProvider.GetRequiredService<IQuartzServices>();    
                 await _quartzServices.StartScheduleAsync();
-                
+               
                 var _taskJobServices = scope.ServiceProvider.GetRequiredService<ITaskJobServices>();
                 await  _taskJobServices.JobSchedulerSetUp();
 
+                Thread.Sleep(100);
                 _quartzServices.AddJobListener();
+
 
             }
             await webHost.RunAsync();
