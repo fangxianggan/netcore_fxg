@@ -155,7 +155,17 @@ namespace NetCore.Core.Extensions
             return s;
         }
 
-        
+        public static string MaxLeft(this string s,int length)
+        {
+            string res = "";
+            if (s.Length > length) {
+                res = s.Substring(0, length);
+            }
+            else {
+                res = s;
+            }
+            return res;
+        }
 
     }
 }

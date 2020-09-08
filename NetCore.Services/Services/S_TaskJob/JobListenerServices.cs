@@ -30,6 +30,8 @@ namespace NetCore.Services.Services.S_TaskJob
         //}
 
 
+
+
         private static IBaseDomain<TaskJobLog> _baseDomainLog { get { return (IBaseDomain<TaskJobLog>)AppConfigUtil._serviceProvider.GetService(typeof(IBaseDomain<TaskJobLog>)); } }
         private static IBaseDomain<TaskJob> _baseDomain { get { return (IBaseDomain<TaskJob>)AppConfigUtil._serviceProvider.GetService(typeof(IBaseDomain<TaskJob>)); } }
 
@@ -78,70 +80,71 @@ namespace NetCore.Services.Services.S_TaskJob
         /// <returns></returns>
         public async Task JobWasExecuted(IJobExecutionContext context, JobExecutionException jobException, CancellationToken cancellationToken = default(CancellationToken))
         {
-            //await Task.Run( () =>
-            //{
-                DateTime NextFireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.NextFireTimeUtc.Value.DateTime, TimeZoneInfo.Local);
-                DateTime FireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.FireTimeUtc.DateTime, TimeZoneInfo.Local);
-                double TotalSeconds = context.JobRunTime.TotalSeconds;
-                DateTime endTimeUtc = context.Trigger.EndTimeUtc.Value.DateTime;
-                string JobNames = context.JobDetail.Key.Name;
-                Guid jobId = new Guid(JobNames.Split('|')[0]);
-                string JobName = JobNames.Split('|')[1];
-                string LogContent = string.Empty;
-                if (context.MergedJobDataMap != null)
+
+            DateTime NextFireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.NextFireTimeUtc.Value.DateTime, TimeZoneInfo.Local);
+            DateTime FireTimeUtc = TimeZoneInfo.ConvertTimeFromUtc(context.FireTimeUtc.DateTime, TimeZoneInfo.Local);
+            double TotalSeconds = context.JobRunTime.TotalSeconds;
+            DateTime endTimeUtc = context.Trigger.EndTimeUtc.Value.DateTime;
+            string JobNames = context.JobDetail.Key.Name;
+            Guid jobId = new Guid(JobNames.Split('|')[0]);
+            string JobName = JobNames.Split('|')[1];
+            string LogContent = string.Empty;
+            if (context.MergedJobDataMap != null)
+            {
+                StringBuilder log = new StringBuilder();
+                int i = 0;
+                foreach (var item in context.MergedJobDataMap)
                 {
-                    StringBuilder log = new StringBuilder();
-                    int i = 0;
-                    foreach (var item in context.MergedJobDataMap)
+                    string key = item.Key;
+                    if (key.StartsWith("extend_"))
                     {
-                        string key = item.Key;
-                        if (key.StartsWith("extend_"))
+                        if (i > 0)
                         {
-                            if (i > 0)
-                            {
-                                log.Append(",");
-                            }
-                            log.AppendFormat("{0}:{1}", item.Key, item.Value);
-                            i++;
+                            log.Append(",");
                         }
-                    }
-                    if (i > 0)
-                    {
-                        LogContent = string.Concat("[", log.ToString(), "]");
+                        log.AppendFormat("{0}:{1}", item.Key, item.Value);
+                        i++;
                     }
                 }
-                if (jobException != null)
+                if (i > 0)
                 {
-                    LogContent = LogContent + " EX:" + jobException.ToString();
+                    LogContent = string.Concat("[", log.ToString(), "]");
                 }
+            }
+            if (jobException != null)
+            {
+                LogContent = LogContent + " EX:" + jobException.ToString();
+            }
 
-                LogUtil.Debug(string.Format("[{0}={2}]任务监听，name:{1}|任务执行完成。", NextFireTimeUtc, jobId, endTimeUtc));
-                //  任务已经结束 更新状态
-                if (endTimeUtc.ToString() == NextFireTimeUtc.ToString())
-                {
-                    var ent = await _baseDomain.GetEntity(jobId);
-                    ent.TaskState = TaskState.Finsh.ToInt();
-                    ent.UpdateTime = DateTime.Now;
+            LogUtil.Debug(string.Format("[{0}={2}]任务监听，name:{1}|任务执行完成。", NextFireTimeUtc, jobId, endTimeUtc));
 
-                    await _baseDomain.EditDomain(ent);
-                }
+            //var timesOfLoop = 10;   //休眠毫秒
+            //Thread.Sleep(timesOfLoop);
 
-                TaskJobLog taskJobLog = new TaskJobLog()
-                {
-                    ExecutionTime = FireTimeUtc,
-                    ExecutionDuration = TotalSeconds,
-                    ID = Guid.NewGuid(),
-                    JobName = JobName,
-                    RunLog = LogContent,
-                    TaskJobId = jobId
-                };
+            //更新运行次数
+            var ents = await _baseDomain.GetEntity(jobId);
+            ents.RunCount = ents.RunCount + 1;
+            ents.UpdateTime = DateTime.Now;
+            await _baseDomain.EditDomain(ents);
+            //记录日志
+            await _baseDomainLog.AddDomain(new TaskJobLog()
+            {
+                ExecutionTime = FireTimeUtc,
+                ExecutionDuration = TotalSeconds,
+                ID = Guid.NewGuid(),
+                JobName = JobName,
+                RunLog = LogContent,
+                TaskJobId = jobId
+            });
+            //  任务已经结束 更新状态
+            if (endTimeUtc.ToString() == NextFireTimeUtc.ToString())
+            {
+                var ent = await _baseDomain.GetEntity(jobId);
+                ent.TaskState = TaskState.Finsh.ToInt();
+                ent.UpdateTime = DateTime.Now;
+                await _baseDomain.EditDomain(ent);
+            }
 
-                //var timesOfLoop = 10;   //休眠毫秒
-                //Thread.Sleep(timesOfLoop);
-
-                //记录日志
-                await _baseDomainLog.AddDomain(taskJobLog);
-           // });
         }
 
         /// <summary>
@@ -205,7 +208,7 @@ namespace NetCore.Services.Services.S_TaskJob
         {
             return await Task.Run(() =>
             {
-              //  LogUtil.Debug(string.Format("[{0}]触发器监听，name:{1}|可以阻止该任务执行，这里不设阻拦。", DateTime.Now.ToLongTimeString(), trigger.Key.Name));
+                //  LogUtil.Debug(string.Format("[{0}]触发器监听，name:{1}|可以阻止该任务执行，这里不设阻拦。", DateTime.Now.ToLongTimeString(), trigger.Key.Name));
                 // False 时，不阻止该任务。True 阻止执行
                 return false;
             });

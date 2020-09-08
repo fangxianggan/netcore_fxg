@@ -45,6 +45,17 @@ namespace NetCore.Services.Services.S_TaskJob
             var errorMsg = "cron表达式错误";
             if (flag)
             {
+                //http请求配置
+                var httpDir = new Dictionary<string, string>()
+                {
+                    { ConstantUtil.REQUESTURL,ent.ApiUrl},
+                    { ConstantUtil.REQUESTPARAMETERS,ent.RequestParams},
+                    { ConstantUtil.REQUESTTYPE, ent.RequestType.ToString()},
+                    { ConstantUtil.HEADERS, ent.RequestHead},
+                    { ConstantUtil.MAILMESSAGE, ent.MailMessage.ToString()},
+                    { ConstantUtil.UUID, ent.ID.ToString()},
+                };
+
                 JobKey jobKey = new JobKey(ent.ID + "|" + ent.TaskName, ent.ID + "|" + groupName);
                 DateTimeOffset st1 = ent.StartRunTime.ToDateTimeOffset();
                 DateTimeOffset? st2 = null;
@@ -54,7 +65,7 @@ namespace NetCore.Services.Services.S_TaskJob
                 }
                 string description = ent.CronExpressionDescription;
                 ITrigger trigger = TriggerBuilder.Create().WithIdentity(ent.ID + "|" + ent.TaskName, ent.ID + "|" + groupName).StartAt(st1).EndAt(st2).WithCronSchedule(cronExpression).WithDescription(description).Build();
-                flag = await _quartzServices.Add(typeof(MyJobServices), jobKey, trigger);
+                flag = await _quartzServices.Add(typeof(MyJobServices), new JobDataMap(httpDir),jobKey, trigger);
                 if (flag)
                 {
                     errorMsg = "";

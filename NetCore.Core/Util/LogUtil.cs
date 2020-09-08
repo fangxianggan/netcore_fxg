@@ -86,5 +86,25 @@ namespace NetCore.Core.Util
             }
         }
 
+
+        /// <summary>
+        /// 警告
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="obj"></param>
+        public static void Warn(string msg, object obj = null)
+        {
+            if (log.IsWarnEnabled && !string.IsNullOrEmpty(msg))
+            {
+                if (obj == null)
+                {
+                    log.Warn(msg);
+                }
+                else
+                {
+                    log.WarnFormat(msg, obj);
+                }
+            }
+        }
     }
 }

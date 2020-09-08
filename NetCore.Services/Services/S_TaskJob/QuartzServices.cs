@@ -18,7 +18,7 @@ namespace NetCore.Services.Services.S_TaskJob
         {
             _schedulerFactory = schedulerFactory;
             _jobListenerServices = jobListenerServices;
-
+            _scheduler = _schedulerFactory.GetScheduler().Result;
         }
 
         
@@ -28,7 +28,6 @@ namespace NetCore.Services.Services.S_TaskJob
         /// <returns></returns>
         public async Task StartScheduleAsync()
         {
-             _scheduler =await _schedulerFactory.GetScheduler();
              await _scheduler.Start();
              LogUtil.Debug("任务调度启动！");
         }
@@ -49,7 +48,7 @@ namespace NetCore.Services.Services.S_TaskJob
             //_scheduler.ListenerManager.AddTriggerListener(_jobListenerServices);
         }
 
-        public async Task<bool> Add(Type type, JobKey jobKey, ITrigger trigger)
+        public async Task<bool> Add(Type type,JobDataMap keyValues, JobKey jobKey, ITrigger trigger)
         {
 
             var flag = await _scheduler.CheckExists(jobKey);
@@ -58,7 +57,8 @@ namespace NetCore.Services.Services.S_TaskJob
 
                 //    await _scheduler.Start();
                 var job = JobBuilder.Create(type)
-                       .WithIdentity(jobKey)
+                        .SetJobData(keyValues)
+                        .WithIdentity(jobKey)
                        .Build();
                 await _scheduler.ScheduleJob(job, trigger);
                 // LogUtil.Debug($"开始任务{jobKey.Group},{jobKey.Name}");

@@ -14,8 +14,6 @@ namespace NetCore.EntityFrameworkCore.Models
     [Table("TaskJob")]
     public partial class TaskJob : BaseEntity<Guid>, ISoftDelete
     {
-
-
         /// <summary>
         /// 任务组
         /// </summary>
@@ -48,8 +46,8 @@ namespace NetCore.EntityFrameworkCore.Models
         /// 请求类型
         /// </summary>
         /// 
-        [DisplayName("请求类型"), MaxLength(8)]
-        public string RequestType { set; get; }
+        [DisplayName("请求类型")]
+        public int RequestType { set; get; }
 
         /// <summary>
         /// 请求头
@@ -117,5 +115,13 @@ namespace NetCore.EntityFrameworkCore.Models
         ///是否 删除
         /// </summary>
         public bool IsDelete { get; set; }
+
+        /// <summary>
+        /// 是否发送邮件通知
+        /// </summary>
+        /// 
+        [DisplayName("邮件通知")]
+        public int MailMessage { get; set; }
+
     }
 }

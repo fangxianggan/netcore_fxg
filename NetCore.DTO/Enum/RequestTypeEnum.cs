@@ -4,27 +4,27 @@ using System.Text;
 
 namespace NetCore.DTO.Enum
 {
-    public  enum   TaskState
+    public enum RequestTypeEnum
     {
         /// <summary>
-        /// 未启动
+        /// 无
         /// </summary>
-       Init=0,
+        None = 0,
         /// <summary>
-        /// 启动
+        /// get 方式
         /// </summary>
-        Start=1,
+        Get = 1,
         /// <summary>
-        /// 暂停
+        ///  post 方式
         /// </summary>
-        Stop=2,
+        Post = 2,
         /// <summary>
-        /// 结束
+        /// put 方式
         /// </summary>
-        Finsh=3,
+        Put = 4,
         /// <summary>
-        /// 异常
+        /// delete 方式
         /// </summary>
-        Exception=4
+        Delete = 8
     }
 }

@@ -37,10 +37,12 @@ namespace NetCoreApp
             {
                 var _quartzServices = scope.ServiceProvider.GetRequiredService<IQuartzServices>();
                 await _quartzServices.StartScheduleAsync();
-                 _quartzServices.AddJobListener();
-
+                
                 var _taskJobServices = scope.ServiceProvider.GetRequiredService<ITaskJobServices>();
                 await  _taskJobServices.JobSchedulerSetUp();
+
+                _quartzServices.AddJobListener();
+
             }
             await webHost.RunAsync();
         }
