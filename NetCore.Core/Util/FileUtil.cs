@@ -279,17 +279,7 @@ namespace NetCore.Core.Util
         }
         #endregion
 
-        #region  相对目录 检测指定目录是否存在
-        /// <summary>
-        /// 检测指定目录是否存在
-        /// </summary>
-        /// <param name="directoryPath">目录的相对目录</param>
-        /// <returns></returns>
-        public static bool IsExistDir(string directoryPath)
-        {
-            return Directory.Exists(directoryPath);
-        }
-        #endregion
+
 
         #region 检测指定文件是否存在,如果存在返回true
         /// <summary>

@@ -61,13 +61,20 @@ namespace NetCoreApp.Controllers
         [HttpPost, Route("GetPageList")]
         public async Task<HttpReponseViewModel<List<StoreFilesViewModel>>> GetPageList(QueryModel queryModel)
         {
-            return await Task.Run(() =>
-            {
-                return _storeFilesServices.GetPageListService(queryModel);
-            });
-
+            return await _storeFilesServices.GetPageListService(queryModel);
         }
 
+        /// <summary>
+        /// 文件删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [TypeFilter(typeof(CustomerExceptionFilter))]
+        [HttpPost, Route("DeleteStoreFiles")]
+        public async Task<HttpReponseViewModel> DeleteStoreFiles([FromBody]Guid id)
+        {
+            return await _storeFilesServices.DeleteStoreFiles(id);
+        }
 
         #endregion
 
@@ -142,7 +149,7 @@ namespace NetCoreApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("ChunkUpload")]
-        public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload()
+        public async Task<HttpReponseViewModel<List<int>>> ChunkUpload()
         {
             return await Task.Run(() =>
             {
@@ -156,16 +163,14 @@ namespace NetCoreApp.Controllers
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost, Route("ChunkUpload")]
-        public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(IFormFile file)
+        public async Task<HttpReponseViewModel<bool>> ChunkUpload(IFormFile file)
         {
-            HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
-                return _uploadServices.ChunkUpload(file, _contextAccessor.HttpContext.Request);
+                return await _uploadServices.ChunkUpload(file, _contextAccessor.HttpContext.Request);
             });
 
         }
-
         /// <summary>
         ///  合并文件
         /// </summary>

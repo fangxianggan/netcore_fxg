@@ -69,11 +69,36 @@
       </el-table-column>
       <el-table-column label="任务状态">
         <template slot-scope="{row}">
-          <el-tag  v-if="row.taskState==0" type="primary" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
-           <el-tag  v-if="row.taskState==1" type="success" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
-            <el-tag  v-if="row.taskState==4" type="danger" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
-              <el-tag  v-if="row.taskState==2" type="warning" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
-                <el-tag  v-if="row.taskState==3" type="info" hit="true" effect="dark">{{ row.taskState|formatTaskState }}</el-tag>
+          <el-tag
+            v-if="row.taskState==0"
+            type="primary"
+            :hit="true"
+            effect="dark"
+          >{{ row.taskState|formatTaskState }}</el-tag>
+          <el-tag
+            v-if="row.taskState==1"
+            type="success"
+            :hit="true"
+            effect="dark"
+          >{{ row.taskState|formatTaskState }}</el-tag>
+          <el-tag
+            v-if="row.taskState==4"
+            type="danger"
+            :hit="true"
+            effect="dark"
+          >{{ row.taskState|formatTaskState }}</el-tag>
+          <el-tag
+            v-if="row.taskState==2"
+            type="warning"
+            :hit="true"
+            effect="dark"
+          >{{ row.taskState|formatTaskState }}</el-tag>
+          <el-tag
+            v-if="row.taskState==3"
+            type="info"
+            :hit="true"
+            effect="dark"
+          >{{ row.taskState|formatTaskState }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Cron表达式" prop="cronExpression" sortable="custom">
@@ -207,10 +232,12 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="请求类型" prop="requestType" :rules="rules.checkNull">
-              <el-radio v-model="temp.requestType" label="1">Get</el-radio>
-              <el-radio v-model="temp.requestType" label="2">Post</el-radio>
-              <el-radio v-model="temp.requestType" label="4">Put</el-radio>
-              <el-radio v-model="temp.requestType" label="8">Delete</el-radio>
+              <el-radio-group v-model="temp.requestType">
+                <el-radio :label="1">Get</el-radio>
+                <el-radio :label="2">Post</el-radio>
+                <el-radio :label="4">Put</el-radio>
+                <el-radio :label="8">Delete</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
@@ -218,7 +245,11 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="请求头" prop="requestHead">
-              <el-input v-model="temp.requestHead" />
+               <el-input
+                v-model="temp.requestHead"
+                type="textarea"
+                :autosize="{minRows: 2,maxRows: 5}"
+              />
             </el-form-item>
           </el-col>
         </el-row>

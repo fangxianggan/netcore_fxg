@@ -117,7 +117,6 @@ namespace NetCore.Services.Services.S_StoreFiles
                 long endLength = 0;
                 long tempSize = 0;
                 FileRangeViewModel fileRangeView = new FileRangeViewModel();
-
                 fileRangeView.SliceNumber = i + 1;
                 if (i == 0)
                 {
@@ -131,7 +130,6 @@ namespace NetCore.Services.Services.S_StoreFiles
                         endLength = chunkSize;
                         tempSize = endLength;
                     }
-                   
                 }
                 else
                 {
@@ -151,7 +149,6 @@ namespace NetCore.Services.Services.S_StoreFiles
                 currentSize = endLength;
                 list.Add(fileRangeView);
             }
-
             return list;
         }
 

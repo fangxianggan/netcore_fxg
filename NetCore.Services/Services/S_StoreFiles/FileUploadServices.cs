@@ -10,6 +10,7 @@ using NetCore.DTO.RequestViewModel.FileUpload;
 using NetCore.EntityFrameworkCore.Models;
 using NetCore.Services.IServices.I_StoreFiles;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -26,7 +27,12 @@ namespace NetCore.Services.Services.S_StoreFiles
             _baseDomain = baseDomain;
         }
 
-        public HttpReponseViewModel<FileUploadResViewModel> CheckFileState(HttpRequest request)
+        /// <summary>
+        /// 文件检查
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public HttpReponseViewModel<List<int>> CheckFileState(HttpRequest request)
         {
             FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
             if (request.Query.Count() > 0)
@@ -79,104 +85,56 @@ namespace NetCore.Services.Services.S_StoreFiles
                     }
                 }
             }
-
             var webRoot = AppConfigUtil.FilePath;
 
             FileUploadResViewModel fileUploadRes = new FileUploadResViewModel();
             fileUploadRes.FState = 0;//新文件
 
+            //状态
+            var fstate = 0;
+            List<int> uploadedList = new List<int>();
+
             var md5Folder = FileUploadUtil.GetFileMd5Folder(webRoot, fileUpload.Identifier);
             //判断这个md5临时文件夹存不存在  存在证明可以用断点续传 返回已经上传分片文件
             if (Directory.Exists(md5Folder))
             {
-                fileUploadRes.FState = 1;//可以断点续传
-                fileUploadRes.Uploaded = FileUploadUtil.GetSourcePathGetFilesNames(md5Folder);
+                fstate = 1;//可以断点续传
+                //删除最后一块分片  防止出现破损
+                uploadedList = FileUploadUtil.DelLastSourceFileRef(md5Folder);
             }
             else
             {
                 //判断改文件存不存在
                 var path = FileUploadUtil.GetPath(webRoot) + fileUpload.FileName;
-                if (System.IO.File.Exists(path))
+                if (FileUtil.IsExistFile(path))
                 {
                     //判断该文件是不是已经上传过了  上传过了就秒传  直接拿已经存在的地址url
                     var fileMd5 = FileUploadUtil.GetMD5HashFromFile(path);
                     if (fileMd5.Equals(fileUpload.Identifier))
                     {
-                        fileUploadRes.FState = 2;//已经存在该文件
-                        fileUploadRes.SecondTransmission = true;
+                        fstate = 2;//已经存在该文件
                         fileUploadRes.FilePathUrl = path;
                     }
                 }
             }
-            return new HttpReponseViewModel<FileUploadResViewModel>
+            return new HttpReponseViewModel<List<int>>
             {
                 Code = 200,
-                Data = fileUploadRes,
-                Flag = true
+                Data = uploadedList,
+                Flag = true,
+                ResultSign = (ResultSign)fstate
             };
         }
 
+        /// <summary>
+        /// 文件切片上传
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
 
-
-        public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(FileUploadReqViewModel fileUpload)
+        public async Task<HttpReponseViewModel<bool>> ChunkUpload(IFormFile file, HttpRequest request)
         {
-            HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
-            FileUploadResViewModel viewModel = new FileUploadResViewModel()
-            {
-                NeedMerge = false,
-                FileName = fileUpload.FileName,
-                Identifier = fileUpload.Identifier
-            };
-            var md5Folder = FileUploadUtil.GetFileMd5Folder("", fileUpload.Identifier);
-            var filePath = "";  // 要保存的文件路径// 存在分片参数,并且，最大的片数大于1片时     
-            if (fileUpload.TotalChunks > 1)
-            {
-                var uploadNumsOfLoop = 10;
-                // 是10的倍数就休眠几秒（数据库设置的秒数）
-                if (fileUpload.ChunkNumber % uploadNumsOfLoop == 0)
-                {
-                    var timesOfLoop = 10;   //休眠毫秒,可从数据库取值
-                    Thread.Sleep(timesOfLoop);
-                }
-                //建立临时传输文件夹
-                if (!Directory.Exists(md5Folder))
-                {
-                    Directory.CreateDirectory(md5Folder);
-                }
-                filePath = md5Folder + "/" + fileUpload.ChunkNumber;
-
-                if (fileUpload.TotalChunks == fileUpload.ChunkNumber)
-                {
-                    viewModel.NeedMerge = true;
-                }
-                else
-                {
-                    viewModel.NeedMerge = false;
-                }
-            }
-            else
-            {
-                var qfileName = fileUpload?.FileName;
-                //没有分片直接保存
-                filePath = md5Folder + Path.GetExtension(qfileName);
-                viewModel.NeedMerge = true;
-            }
-
-            // 写入文件
-            using (var addFile = new FileStream(filePath, FileMode.OpenOrCreate))
-            {
-                if (fileUpload.File != null)
-                {
-                    await fileUpload.File.CopyToAsync(addFile);
-                }
-            }
-            res.Data = viewModel;
-            return res;
-        }
-
-        public async Task<HttpReponseViewModel<FileUploadResViewModel>> ChunkUpload(IFormFile file, HttpRequest request)
-        {
-            HttpReponseViewModel<FileUploadResViewModel> res = new HttpReponseViewModel<FileUploadResViewModel>();
             FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
             foreach (var item in request.Form.Keys)
             {
@@ -218,7 +176,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 }
                 if (item == "fileType")
                 {
-                    fileUpload.FileType  = request.Form["fileType"].ToString();
+                    fileUpload.FileType = request.Form["fileType"].ToString();
                 }
                 if (item == "fileCategory")
                 {
@@ -226,40 +184,32 @@ namespace NetCore.Services.Services.S_StoreFiles
                 }
             }
             fileUpload.File = file;
-
-            FileUploadResViewModel viewModel = new FileUploadResViewModel()
-            {
-                NeedMerge = false,
-                FileName = fileUpload.FileName,
-                Identifier = fileUpload.Identifier
-            };
+            var isNeedMerge = false;
             var webRoot = AppConfigUtil.FilePath;
             var md5Folder = FileUploadUtil.GetFileMd5Folder(webRoot, fileUpload.Identifier);
-
             //建立临时传输文件夹
-            if (!Directory.Exists(md5Folder))
+            if (!FileUtil.IsExistDirectory(md5Folder))
             {
-                Directory.CreateDirectory(md5Folder);
+                FileUtil.CreateDirectory(md5Folder);
             }
             var filePath = "";  // 要保存的文件路径// 存在分片参数,并且，最大的片数大于1片时     
             if (fileUpload.TotalChunks > 1)
             {
-                var uploadNumsOfLoop = 10;
-                // 是10的倍数就休眠几秒（数据库设置的秒数）
-                if (fileUpload.ChunkNumber % uploadNumsOfLoop == 0)
-                {
-                    var timesOfLoop = 10;   //休眠毫秒,可从数据库取值
-                    Thread.Sleep(timesOfLoop);
-                }
-
+                //var uploadNumsOfLoop = 10;
+                //// 是10的倍数就休眠几秒（数据库设置的秒数）
+                //if (fileUpload.ChunkNumber % uploadNumsOfLoop == 0)
+                //{
+                //    var timesOfLoop = 10;   //休眠毫秒,可从数据库取值
+                //    Thread.Sleep(timesOfLoop);
+                //}
                 filePath = md5Folder + "/" + fileUpload.ChunkNumber;
                 if (fileUpload.TotalChunks == fileUpload.ChunkNumber)
                 {
-                    viewModel.NeedMerge = true;
+                    isNeedMerge = true;
                 }
                 else
                 {
-                    viewModel.NeedMerge = false;
+                    isNeedMerge = false;
                 }
             }
             else
@@ -267,68 +217,30 @@ namespace NetCore.Services.Services.S_StoreFiles
                 var qfileName = fileUpload?.FileName;
                 //没有分片直接保存
                 filePath = md5Folder + Path.GetExtension(qfileName);
-                viewModel.NeedMerge = true;
+                isNeedMerge = true;
             }
 
             // 写入文件
-            using (var addFile = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+            using (var addFile = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write))
             {
                 if (fileUpload.File != null)
                 {
                     await fileUpload.File.CopyToAsync(addFile);
                 }
             }
-            res.Data = viewModel;
-            res.Code = 200;
-            return res;
+            return new HttpReponseViewModel<bool>()
+            {
+                Flag = true,
+                Code = 200,
+                Data = isNeedMerge
+            };
         }
 
-        public HttpReponseViewModel<int> GetMaxChunk(FileUploadCheckChunkViewModel model)
-        {
-            HttpReponseViewModel<int> res = new HttpReponseViewModel<int>();
-            try
-            {
-                var webRootPath = model.RootPath;
-                // 检测文件夹是否存在，不存在则创建
-                var userPath = FileUploadUtil.GetPath(webRootPath);
-                if (!Directory.Exists(userPath))
-                {
-                    FileUploadUtil.DicCreate(userPath);
-                }
-
-                var md5Folder = FileUploadUtil.GetFileMd5Folder(webRootPath, model.Md5);
-                if (!Directory.Exists(md5Folder))
-                {
-                    FileUploadUtil.DicCreate(md5Folder);
-                }
-                var fileName = model.Md5 + "." + model.Ext;
-                string targetPath = Path.Combine(md5Folder, fileName);
-                // 文件已经存在，则可能存在问题，直接删除，重新上传
-                if (File.Exists(targetPath))
-                {
-                    File.Delete(targetPath);
-                }
-                var dicInfo = new DirectoryInfo(md5Folder);
-                var files = dicInfo.GetFiles();
-                var chunk = files.Count();
-                if (chunk > 1)
-                {
-                    //当文件上传中时，页面刷新，上传中断，这时最后一个保存的块的大小可能会有异常，所以这里直接删除最后一个块文件                  
-                    res.Data = (chunk - 1);
-                }
-                res.Flag = true;
-            }
-            catch (Exception ex)
-            {
-                var errMsg = ex.Message;
-                res.Flag = false;
-            }
-            res.Code = 200;
-            return res;
-        }
-
-
-
+        /// <summary>
+        /// 文件合并
+        /// </summary>
+        /// <param name="fileUpload"></param>
+        /// <returns></returns>
         public async Task<HttpReponseViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload)
         {
             HttpReponseViewModel<StoreFilesViewModel> res = new HttpReponseViewModel<StoreFilesViewModel>();
@@ -343,9 +255,9 @@ namespace NetCore.Services.Services.S_StoreFiles
                 string targetFilePath = sourcePath + Path.GetExtension(fileName);
 
                 // 目标文件不存在，则需要合并
-                if (!File.Exists(targetFilePath))
+                if (!FileUtil.IsExistFile(targetFilePath))
                 {
-                    if (!Directory.Exists(sourcePath))
+                    if (!FileUtil.IsExistDirectory(sourcePath))
                     {
                         res.Message = "为找到文件";
                         res.ResultSign = ResultSign.Error;
@@ -391,8 +303,6 @@ namespace NetCore.Services.Services.S_StoreFiles
 
         }
 
-
-
         public bool VaildMergeFile(FileUploadReqViewModel chunkFile)
         {
             var clientFileName = chunkFile.FileName;
@@ -423,7 +333,5 @@ namespace NetCore.Services.Services.S_StoreFiles
                 return false;
             }
         }
-
-
     }
 }

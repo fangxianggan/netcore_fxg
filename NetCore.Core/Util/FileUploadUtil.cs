@@ -34,7 +34,8 @@ namespace NetCore.Core.Util
             {
                 foreach (var item in deleteExpire)
                 {
-                    Directory.Delete(chunkTemp + "/" + item, true);
+                    FileUtil.DeleteFolder(chunkTemp + "/" + item);
+                    //Directory.Delete(chunkTemp + "/" + item, true);
                 }
             }
 
@@ -43,7 +44,7 @@ namespace NetCore.Core.Util
             {
                 foreach (var item in deleteExpireFile)
                 {
-                    System.IO.File.Delete(chunkTemp + "/" + item);
+                    FileUtil.DeleteFiles(chunkTemp + "/" + item);
                 }
             }
             #endregion
@@ -110,7 +111,7 @@ namespace NetCore.Core.Util
         /// </summary>
         /// <param name="targetPath"></param>
         /// <returns></returns>
-        
+
 
         /// <summary>
         /// 将磁盘上的切片源合并成一个文件
@@ -125,7 +126,7 @@ namespace NetCore.Core.Util
             try
             {
                 var streamTotalSize = 0;
-                addFile = new FileStream(targetPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                addFile = new FileStream(targetPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write);
                 addWriter = new BinaryWriter(addFile);
                 // 获取目录下所有的切片文件块
                 FileInfo[] files = new DirectoryInfo(sourcePath).GetFiles();
@@ -134,7 +135,7 @@ namespace NetCore.Core.Util
                 foreach (FileInfo diskFile in orderFileInfoList)
                 {
                     //获得上传的分片数据流 
-                    Stream stream = diskFile.Open(FileMode.Open);
+                    Stream stream = diskFile.Open(FileMode.Open,FileAccess.Read,FileShare.Read);
                     BinaryReader tempReader = new BinaryReader(stream);
                     var streamSize = (int)stream.Length;
                     //将上传的分片追加到临时文件末尾
@@ -167,6 +168,25 @@ namespace NetCore.Core.Util
                 }
                 throw ex;
             }
+        }
+
+        public static List<int> DelLastSourceFileRef(string sourcePath)
+        {
+            List<int> ids = new List<int>();
+            FileInfo[] files = new DirectoryInfo(sourcePath).GetFiles();
+            // 按照文件名(数字)进行排序
+            var orderFileInfoList = files.OrderBy(f => int.Parse(f.Name));
+            foreach (FileInfo diskFile in orderFileInfoList)
+            {
+                int index = Convert.ToInt32(diskFile.Name);
+                ids.Add(index);
+            }
+            if (ids.Count > 0)
+            {
+                var max = ids.Max();
+                ids.Remove(max);
+            }
+            return ids;
         }
 
         /// <summary>

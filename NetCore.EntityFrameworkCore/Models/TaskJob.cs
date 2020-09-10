@@ -53,14 +53,14 @@ namespace NetCore.EntityFrameworkCore.Models
         /// 请求头
         /// </summary>
         /// 
-        [DisplayName("请求头"), MaxLength(1024)]
+        [DisplayName("请求头"), MaxLength]
         public string RequestHead { set; get; }
 
         /// <summary>
         /// 请求的参数 以json形式传入
         /// </summary>
         /// 
-        [DisplayName("请求参数")]
+        [DisplayName("请求参数"),MaxLength]
         public string RequestParams { set; get; }
 
         /// <summary>
