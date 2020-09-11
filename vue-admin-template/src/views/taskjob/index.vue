@@ -245,7 +245,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="请求头" prop="requestHead">
-               <el-input
+              <el-input
                 v-model="temp.requestHead"
                 type="textarea"
                 :autosize="{minRows: 2,maxRows: 5}"
@@ -280,9 +280,11 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="邮件通知" prop="mailMessage">
-              <el-radio v-model="temp.mailMessage" label="0">不通知</el-radio>
-              <el-radio v-model="temp.mailMessage" label="1">异常通知</el-radio>
-              <el-radio v-model="temp.mailMessage" label="2">全部通知</el-radio>
+              <el-radio-group v-model="temp.mailMessage">
+                <el-radio :label="0">不通知</el-radio>
+                <el-radio :label="1">异常通知</el-radio>
+                <el-radio :label="2">全部通知</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>

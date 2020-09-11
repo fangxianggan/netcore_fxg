@@ -1,4 +1,5 @@
-﻿using NetCore.Core.Extensions;
+﻿using NetCore.Core.CoreModel;
+using NetCore.Core.Extensions;
 using NetCore.Core.Helper;
 using NetCore.Core.Util;
 using NetCore.DTO.Enum;
@@ -9,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -25,14 +24,9 @@ namespace NetCore.Services.Services.S_TaskJob
     [PersistJobDataAfterExecution]
     public class MyJobServices : IJob, IMyJobServices
     {
-      
+
         public async Task Execute(IJobExecutionContext context)
         {
-
-            //var gId = new Guid(context.JobDetail.Key.Name.Split('|')[0]);
-            // LogUtil.Debug("陈大猪。。。" + gId);
-            //LogUtil.Debug("ManagerJob Executing ...");
-            //  await _taskJobServices.ExcuteTaskJob(gId);
 
             var maxLogCount = 20;//最多保存日志数量
             var warnTime = 20;//接口请求超过多少秒记录警告日志         
@@ -112,11 +106,6 @@ namespace NetCore.Services.Services.S_TaskJob
                     }
                 }
 
-
-                //var gId = new Guid(context.JobDetail.Key.Name.Split('|')[0]);
-                //// LogUtil.Debug("陈大猪。。。" + gId);
-                ////LogUtil.Debug("ManagerJob Executing ...");
-                //await _taskJobServices.ExcuteTaskJob(gId);
             }
             catch (Exception ex)
             {
@@ -134,7 +123,6 @@ namespace NetCore.Services.Services.S_TaskJob
             finally
             {
                 //LogUtil.Debug("ManagerJob Execute end ");
-
                 logs.Add($"<p>{JsonUtil.JsonSerialize(loginfo)}</p>");
                 context.JobDetail.JobDataMap[ConstantUtil.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
@@ -143,48 +131,59 @@ namespace NetCore.Services.Services.S_TaskJob
                     await WarningAsync(loginfo.JobName, "耗时过长 - " + JsonUtil.JsonSerialize(loginfo), mailMessage);
                 }
             }
-
         }
 
         public async Task WarningAsync(string title, string msg, MailMessageEnum mailMessage)
         {
-            LogUtil.Warn(msg);
-            //if (mailMessage == MailMessageEnum.All)
-            //{
-            //    await new SetingController().SendMail(new Model.SendMailModel()
-            //    {
-            //        Title = $"任务调度-{title}【警告】消息",
-            //        Content = msg
-            //    });
-            //}
+            await Task.Run(() =>
+            {
+                LogUtil.Warn(msg);
+                if (mailMessage == MailMessageEnum.All)
+                {
+                    //发邮件
+                    MailEntity mail = new MailEntity();
+                    mail.MailSubject = $"任务调度-{title}【警告】消息";
+                    mail.SendText = msg;
+                    mail.SendHtml = null;
+                    EmailUtil.SendMail(mail);
+                }
+            });
         }
 
         public async Task InformationAsync(string title, string msg, MailMessageEnum mailMessage)
         {
-            LogUtil.Info(msg);
-            //if (mailMessage == MailMessageEnum.All)
-            //{
-            //    await new SetingController().SendMail(new Model.SendMailModel()
-            //    {
-            //        Title = $"任务调度-{title}消息",
-            //        Content = msg
-            //    });
-            //}
+            await Task.Run(() =>
+            {
+                LogUtil.Info(msg);
+                if (mailMessage == MailMessageEnum.All)
+                {
+                    //发邮件
+                    MailEntity mail = new MailEntity();
+                    mail.MailSubject = $"任务调度-{title}消息";
+                    mail.SendText = msg;
+                    mail.SendHtml = null;
+                    EmailUtil.SendMail(mail);
+
+                }
+            });
+
         }
 
         public async Task ErrorAsync(string title, Exception ex, string msg, MailMessageEnum mailMessage)
         {
-            LogUtil.Error(msg, ex);
-            //if (mailMessage == MailMessageEnum.Err || mailMessage == MailMessageEnum.All)
-            //{
-            //    await new SetingController().SendMail(new Model.SendMailModel()
-            //    {
-            //        Title = $"任务调度-{title}【异常】消息",
-            //        Content = msg
-            //    });
-            //}
+            await Task.Run(() =>
+            {
+                LogUtil.Error(msg, ex);
+                if (mailMessage == MailMessageEnum.Err || mailMessage == MailMessageEnum.All)
+                {
+                    MailEntity mail = new MailEntity();
+                    mail.MailSubject = $"任务调度-{title}【异常】消息";
+                    mail.SendText = msg;
+                    mail.SendHtml = null;
+                    EmailUtil.SendMail(mail);
+
+                }
+            });
         }
-
-
     }
 }
