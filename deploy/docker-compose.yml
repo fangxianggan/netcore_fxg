@@ -1,0 +1,50 @@
+version: '3.4'
+
+services:
+  netcoreapp.mysql:
+    image: mysql
+    container_name: netcoreapp.mysql
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - TZ=Asia/Shanghai
+    volumes:
+      - /app/data/mysql:/var/lib/mysql
+    networks:
+      - netcoreapp-net
+
+  netcoreapp.web:
+    image: netcoreappweb:prod_1
+    container_name: netcoreapp.web
+    restart: always
+    depends_on:
+      - netcoreapp.mysql
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - netcoreapp-net
+
+
+  netcoreapp.nginx:
+    image: nginx
+    container_name: netcoreapp.nginx
+    restart: always
+    ports:
+      - "44321:80"
+      - "443:443"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - /app/data/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - /app/data/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /app/logs/nginxlogs:/var/log/nginx
+    depends_on:
+      - netcoreapp.web
+    networks:
+      - netcoreapp-net
+
+networks:
+  netcoreapp-net:
+    driver: bridge
