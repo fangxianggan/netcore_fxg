@@ -32,5 +32,11 @@ namespace NetCore.EntityFrameworkCore.Context
         public DbSet<Test> Tests { get; set; }
 
         public DbSet<StoreFiles> StoreFiles { get; set; }
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<UserInfo> UserInfos { get; set; }
+        public DbSet<RoleMenu> RoleMenus { get; set; }
+
+        public DbSet<Role> Roles { get; set; }
+
     }
 }

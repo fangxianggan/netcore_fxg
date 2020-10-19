@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.DTO.ReponseViewModel;
 using NetCore.DTO.ReponseViewModel.Login;
 using NetCore.DTO.RequestViewModel;
 using NetCore.DTO.RequestViewModel.Login;
+using NetCore.DTO.ViewModel;
 using NetCore.Services.IServices;
 using NetCore.Services.IServices.I_Login;
 
@@ -17,14 +19,16 @@ namespace NetCoreApp.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-
         private readonly IUserLoginServices _userLoginServices;
+        private readonly IHttpContextAccessor _contextAccessor;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="userLoginServices"></param>
-        public LoginController(IUserLoginServices userLoginServices)
+        /// <param name="contextAccessor"></param>
+        public LoginController(IUserLoginServices userLoginServices, IHttpContextAccessor contextAccessor)
         {
+            _contextAccessor = contextAccessor;
             _userLoginServices = userLoginServices;
         }
 
@@ -35,7 +39,7 @@ namespace NetCoreApp.Controllers
         /// <returns></returns>
         /// 
         [HttpPost,Route("GetValidateLogon")]
-        public async Task<HttpReponseViewModel<string>> GetValidateLogon(UserLoginViewModel model)
+        public async Task<HttpReponseViewModel<ComplexTokenViewModel>> GetValidateLogon(UserLoginViewModel model)
         {
             return await Task.Run(() =>
             {
@@ -46,14 +50,14 @@ namespace NetCoreApp.Controllers
         /// <summary>
         /// 获取用户信息
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="tokenModel"></param>
         /// <returns></returns>
-        [HttpGet, Route("GetUserInfoData")]
-        public async Task<HttpReponseViewModel<UserInfoViewModel>> GetUserInfoData(string token)
+        [HttpPost, Route("GetUserInfoData")]
+        public async Task<HttpReponseViewModel<UserInfoViewModel>> GetUserInfoData(TokenViewModel tokenModel)
         {
             return await Task.Run(() =>
             {
-                return _userLoginServices.GetUserInfoData(token);
+                return _userLoginServices.GetUserInfoData(tokenModel);
             });
         }
 

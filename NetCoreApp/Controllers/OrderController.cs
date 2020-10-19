@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace NetCoreApp.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase

@@ -6,7 +6,8 @@ namespace NetCore.DTO.ReponseViewModel.Login
 {
    public  class UserInfoViewModel
     {
-        public string Name { set; get; }
+        public string UserCode { set; get; }
+        public string UserName { set; get; }
 
         public string Avatar { set; get; }
 

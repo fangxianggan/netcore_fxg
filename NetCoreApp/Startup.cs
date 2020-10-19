@@ -31,8 +31,10 @@ using Microsoft.AspNetCore.Http;
 using NetCore.Core.Util;
 using Quartz;
 using Quartz.Impl;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using NetCore.Services.IServices.I_TaskJob;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using NetCore.DTO.ViewModel;
 
 namespace NetCoreApp
 {
@@ -82,7 +84,30 @@ namespace NetCoreApp
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
 
-           
+            #region 读取配置信息
+          
+            services.Configure<JWTConfigViewModel>(Configuration.GetSection("JWT"));
+            JWTConfigViewModel config = new JWTConfigViewModel();
+            Configuration.GetSection("JWT").Bind(config);
+            #endregion
+
+            #region 启用JWT
+            services.AddAuthentication(Options =>
+            {
+                Options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                Options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).
+             AddJwtBearer(options =>
+             {
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidIssuer = config.Issuer,
+                     ValidAudience = config.Audience,
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.IssuerSigningKey))
+                 };
+             });
+            #endregion
+
             #region 全局注册 异常过滤器  全局设置
             services.AddMvc(option => {
                 option.Filters.Add<CustomerExceptionFilter>();
@@ -140,7 +165,7 @@ namespace NetCoreApp
                 c.SwaggerDoc("CoreTest", new Info
                 {
                     Version = "CoreTest",
-                    Title = "第一个netcore项目接口文档",
+                    Title = "netcore项目接口文档",
                     Description = "This CoreTest Api",
                     //服务条款
                     TermsOfService = "None",
@@ -168,12 +193,24 @@ namespace NetCoreApp
                 var xmlModelPath = Path.Combine(basePath, "NetCore.EntityFrameworkCore.xml");
                 c.IncludeXmlComments(xmlModelPath);
 
+                #region 启用swagger验证功能
+                //添加一个必须的全局安全信息，和AddSecurityDefinition方法指定的方案名称一致即可，CoreAPI。
+                var security = new Dictionary<string, IEnumerable<string>> { { "CoreAPI", new string[] { } }, };
+                c.AddSecurityRequirement(security);
+                c.AddSecurityDefinition("CoreAPI", new ApiKeyScheme
+                {
+                    Description = "JWT授权(数据将在请求头中进行传输) 在下方输入Bearer {token} 即可，注意两者之间有空格",
+                    Name = "Authorization",//jwt默认的参数名称
+                    In = "header",//jwt默认存放Authorization信息的位置(请求头中)
+                    Type = "apiKey"
+                });
+                #endregion
 
             });
 
-
-
             #endregion
+
+         
 
             #region 版本信息
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -218,9 +255,6 @@ namespace NetCoreApp
 
             #endregion
 
-
-          
-
         }
        /// <summary>
        /// 
@@ -262,8 +296,6 @@ namespace NetCoreApp
             app.UseStateAutoMapper();
             app.UseHttpsRedirection();
 
-           // app.JobSchedulerSetUp();
-
             //
             app.UseMiniProfiler();
 
@@ -271,23 +303,10 @@ namespace NetCoreApp
             //跨域 策略
             app.UseCors(MyAllowSpecificOrigins);
 
-
-            //appLifetime.ApplicationStarted.Register(() =>
-            //{
-
-            //    quartz.Start().Wait(); //网站启动完成执行
-            //});
-
-            //appLifetime.ApplicationStopped.Register(() =>
-            //{
-            //    quartz.Stop();  //网站停止完成执行
-
-            //});
+            //启用认证中间件
+            app.UseAuthentication();
 
             app.UseMvc();
-
-           
-
 
         }
 

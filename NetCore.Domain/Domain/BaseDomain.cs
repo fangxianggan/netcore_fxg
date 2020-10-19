@@ -45,6 +45,12 @@ namespace NetCore.Domain.Domain
             return ent;
         }
 
+        public async Task<T> GetEntity(Expression<Func<T, bool>> whereLambda)
+        {
+            var ent = await _repository.GetEntity(whereLambda);
+            return ent;
+        }
+
         public async Task<List<T>> GetList(Expression<Func<T, bool>> whereLambda)
         {
             return await _repository.GetList(whereLambda);

@@ -19,7 +19,7 @@ namespace NetCore.Core.Enum
         /// </summary>
         Info = 2,
         /// <summary>
-        ///  操作引发错误（操作报错引起的事件）
+        ///  操作引发错误（操作报错引起的事件 登录失败等）
         /// </summary>
         Error = 3
     }

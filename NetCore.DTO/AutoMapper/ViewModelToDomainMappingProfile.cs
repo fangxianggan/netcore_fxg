@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using NetCore.DTO.ReponseViewModel.Login;
 using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.DTO.RequestViewModel;
 using NetCore.DTO.RequestViewModel.FileUpload;
@@ -7,7 +8,7 @@ using NetCore.EntityFrameworkCore.Models;
 
 namespace NetCore.DTO.AutoMapper
 {
-   
+
     public class ViewModelToDomainMappingProfile : Profile
     {
         public ViewModelToDomainMappingProfile()
@@ -34,10 +35,10 @@ namespace NetCore.DTO.AutoMapper
 
             //CreateMap<OrderViewModel, Order>();
 
-           // CreateMap<UserViewModel, User>();
+            // CreateMap<UserViewModel, User>();
             CreateMap<TestViewModel, Test>();
 
-            CreateMap<FileUploadReqViewModel, StoreFiles > ()
+            CreateMap<FileUploadReqViewModel, StoreFiles>()
              .ForMember(d => d.FileBytes, o => o.MapFrom(s => s.TotalSize))
               .ForMember(d => d.RelationFilePath, o => o.MapFrom(s => s.RelativePath))
               .ForMember(d => d.FileType, o => o.MapFrom(s => s.FileType))
@@ -47,6 +48,8 @@ namespace NetCore.DTO.AutoMapper
             CreateMap<TaskJobViewModel, TaskJob>();
 
             CreateMap<TaskJobLogViewModel, TaskJobLog>();
+
+            CreateMap<UserInfoViewModel, UserInfo>();
 
         }
     }

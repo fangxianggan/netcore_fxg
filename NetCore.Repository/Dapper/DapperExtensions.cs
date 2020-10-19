@@ -53,7 +53,7 @@ namespace NetCore.Repository.Dapper
         /// <param name="unitOfWork"></param>
         /// <param name="entitys"></param>
         /// <returns></returns>
-    
+
         public static async Task<int> SqlBulkCopy<T>(IUnitOfWork unitOfWork, List<T> entitys) where T : new()
         {
             int result = 0;
@@ -80,7 +80,7 @@ namespace NetCore.Repository.Dapper
             }
             else
             {
-                var destinationConnection =(ProfiledDbConnection) unitOfWork.DbConnection;
+                var destinationConnection = (ProfiledDbConnection)unitOfWork.DbConnection;
                 DataTable table = DTListConvertUtil<T>.FillDataTable(entitys);
                 string tmpPath = Directory.GetCurrentDirectory() + "\\UpTemp";
                 if (!Directory.Exists(tmpPath))
@@ -98,9 +98,9 @@ namespace NetCore.Repository.Dapper
       useAsync: true))
                 {
                     await fs.WriteAsync(bits, 0, bits.Length);
-                    
+
                 }
-                
+
                 MySqlBulkLoader bulk = new MySqlBulkLoader((MySqlConnection)destinationConnection.WrappedConnection)
                 {
                     FieldTerminator = ",",
@@ -114,8 +114,8 @@ namespace NetCore.Repository.Dapper
                 result = await bulk.LoadAsync();
 
                 File.Delete(tmpPath);
-                
-                
+
+
             }
 
             return result;
@@ -207,14 +207,14 @@ namespace NetCore.Repository.Dapper
         /// <returns></returns>
         public static async Task<T> SingleOrDefault<T>(IUnitOfWork unitOfWork, object id, SqlQuery sql = null) where T : class
         {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-                var db = unitOfWork.DbConnection;
-                if (sql == null)
-                    sql = SqlQuery<T>.Builder(unitOfWork);
-                sql = sql.Top(1);
-                var result = await db.QueryFirstOrDefaultAsync<T>(sql.QuerySqlById, new { id });
-                return result;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var db = unitOfWork.DbConnection;
+            if (sql == null)
+                sql = SqlQuery<T>.Builder(unitOfWork);
+            sql = sql.Top(1);
+            var result = await db.QueryFirstOrDefaultAsync<T>(sql.QuerySqlById, new { id });
+            return result;
         }
 
         /// <summary>
@@ -227,13 +227,25 @@ namespace NetCore.Repository.Dapper
         /// <returns></returns>
         public static async Task<T> SingleOrDefault<T>(IUnitOfWork unitOfWork, Expression<Func<T, bool>> whereLambda, SqlQuery sql = null) where T : class
         {
+
+
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             var db = unitOfWork.DbConnection;
             if (sql == null)
                 sql = SqlQuery<T>.Builder(unitOfWork);
             sql._Sql = new StringBuilder(LambdaToSqlHelper<T>.GetWhereByLambda(whereLambda, unitOfWork.DbType));
-            var result = await db.QueryFirstOrDefaultAsync<T>(sql.QuerySql);
+            T result=null;
+            try
+            {
+                result = await db.QueryFirstOrDefaultAsync<T>(sql.QuerySql);
+
+            }
+            catch (Exception ex)
+            {
+              string kk= ex.Message;
+            }
+
             return result;
         }
 
@@ -284,7 +296,7 @@ namespace NetCore.Repository.Dapper
             {
                 DataList = result.ToList(),
                 Total = cr.DataCount,
-                EXESql=sqlQuery.PageSql
+                EXESql = sqlQuery.PageSql
             };
         }
 
@@ -475,5 +487,5 @@ namespace NetCore.Repository.Dapper
 
     }
 
-  
+
 }

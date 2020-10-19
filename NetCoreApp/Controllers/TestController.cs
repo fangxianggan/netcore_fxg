@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.Core.Util;
 using NetCore.DTO.TestModel;
 using NetCore.IServices.I_Test;
 using NetCore.Services.Interface;
@@ -13,19 +17,24 @@ namespace NetCoreApp.Controllers
     /// <summary>
     /// 
     /// </summary>
+    /// 
+
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // 添加授权特性
     public class TestController : ControllerBase
     {
         private readonly ITestServices _testService;
-      
+        private readonly IHttpContextAccessor _contextAccessor;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="testService"></param>
-        public TestController(ITestServices testService)
+        /// <param name="contextAccessor"></param>
+        public TestController(ITestServices testService, IHttpContextAccessor contextAccessor)
         {
             _testService = testService;
+            _contextAccessor = contextAccessor;
         }
 
         /// <summary>
@@ -52,7 +61,7 @@ namespace NetCoreApp.Controllers
         [HttpGet]
         public async Task<bool> GetTT()
         {
-            
+
             var list = new List<TestViewModel>();
             for (int i = 0; i < 100; i++)
             {
@@ -62,7 +71,7 @@ namespace NetCoreApp.Controllers
                     Name = "ffff" + i
                 });
             }
-            
+
             await _testService.AddOrEditService1(list[0]);
             var list1 = new List<TestViewModel>();
             for (int i = 100; i < 200; i++)
@@ -75,6 +84,21 @@ namespace NetCoreApp.Controllers
             }
             await _testService.AddOrEditService1(list1[1]);
             return true;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [TypeFilter(typeof(CustomerExceptionFilter))]
+        [Route("/fff3")]
+        [HttpGet]
+        public string UserInfo()
+        {
+            var bb = _contextAccessor.HttpContext.User.Claims.ToList();
+            var cc = bb;
+            return JsonUtil.JsonSerialize(cc);
         }
     }
 
