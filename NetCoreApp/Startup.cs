@@ -35,6 +35,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NetCore.DTO.ViewModel;
+using NetCore.Core.RedisUtil;
 
 namespace NetCoreApp
 {
@@ -61,6 +62,9 @@ namespace NetCoreApp
 
             //初始化自己配置的config文件
             AppConfigUtil.InitConfig(configuration);
+
+            //redis 配置
+            RedisConfig.InitConfig(configuration);
         }
 
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -109,9 +113,15 @@ namespace NetCoreApp
             #endregion
 
             #region 全局注册 异常过滤器  全局设置
-            services.AddMvc(option => {
-                option.Filters.Add<CustomerExceptionFilter>();
-            });
+            //services.AddMvc(option =>
+            //{
+            //    option.Filters.Add<AuthorizationFilter>();
+            //    //option.Filters.Add<ResourceFilter>();
+            //    option.Filters.Add<CustomerExceptionFilter>();
+            //    option.Filters.Add<ActionFilter>();
+            //    // option.Filters.Add<ResultFilter>();
+            //    option.Filters.Add(new AddHeaderResultFilterAttribute("name", "Jesen"));
+            //});
             //全局配置Json序列化处理
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -144,8 +154,6 @@ namespace NetCoreApp
             #region automap 注入
             services.AddAutoMapperSetup();
             #endregion
-
-
 
             #region  DBContext   code-first使用
             //读取aoosettings.json里配置的数据库连接语句需要的代码
@@ -203,14 +211,15 @@ namespace NetCoreApp
                     Name = "Authorization",//jwt默认的参数名称
                     In = "header",//jwt默认存放Authorization信息的位置(请求头中)
                     Type = "apiKey"
+             
                 });
+               
                 #endregion
 
             });
 
             #endregion
 
-         
 
             #region 版本信息
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -269,6 +278,9 @@ namespace NetCoreApp
 
             //---
             AppConfigUtil._serviceProvider = app.ApplicationServices;
+
+         
+
 
             if (env.IsDevelopment())
             {

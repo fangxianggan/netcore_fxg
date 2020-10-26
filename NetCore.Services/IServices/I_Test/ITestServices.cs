@@ -10,7 +10,7 @@ namespace NetCore.IServices.I_Test
     {
         Task<bool> AddListService1(List<TestViewModel> entity);
 
-        Task<HttpReponseViewModel<TestViewModel>> AddOrEditService1(TestViewModel entity);
+        Task<HttpReponseObjViewModel<TestViewModel>> AddOrEditService1(TestViewModel entity);
 
     }
 }

@@ -32,7 +32,7 @@ namespace NetCore.Services.Services.S_StoreFiles
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public HttpReponseViewModel<List<int>> CheckFileState(HttpRequest request)
+        public HttpReponseObjViewModel<List<int>> CheckFileState(HttpRequest request)
         {
             FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
             if (request.Query.Count() > 0)
@@ -117,11 +117,10 @@ namespace NetCore.Services.Services.S_StoreFiles
                     }
                 }
             }
-            return new HttpReponseViewModel<List<int>>
+            return new HttpReponseObjViewModel<List<int>>
             {
-                Code = 200,
+                StatusCode=StatusCode.OK,
                 Data = uploadedList,
-                Flag = true,
                 ResultSign = (ResultSign)fstate
             };
         }
@@ -133,7 +132,7 @@ namespace NetCore.Services.Services.S_StoreFiles
         /// <param name="request"></param>
         /// <returns></returns>
 
-        public async Task<HttpReponseViewModel<bool>> ChunkUpload(IFormFile file, HttpRequest request)
+        public async Task<HttpReponseObjViewModel<bool>> ChunkUpload(IFormFile file, HttpRequest request)
         {
             FileUploadReqViewModel fileUpload = new FileUploadReqViewModel();
             foreach (var item in request.Form.Keys)
@@ -228,10 +227,10 @@ namespace NetCore.Services.Services.S_StoreFiles
                     await fileUpload.File.CopyToAsync(addFile);
                 }
             }
-            return new HttpReponseViewModel<bool>()
+            return new HttpReponseObjViewModel<bool>()
             {
-                Flag = true,
-                Code = 200,
+                ResultSign = ResultSign.Success,
+                StatusCode = StatusCode.OK,
                 Data = isNeedMerge
             };
         }
@@ -241,9 +240,9 @@ namespace NetCore.Services.Services.S_StoreFiles
         /// </summary>
         /// <param name="fileUpload"></param>
         /// <returns></returns>
-        public async Task<HttpReponseViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload)
+        public async Task<HttpReponseObjViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload)
         {
-            HttpReponseViewModel<StoreFilesViewModel> res = new HttpReponseViewModel<StoreFilesViewModel>();
+            HttpReponseObjViewModel<StoreFilesViewModel> res = new HttpReponseObjViewModel<StoreFilesViewModel>();
             try
             {
                 var identifier = fileUpload.Identifier;
@@ -261,7 +260,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                     {
                         res.Message = "为找到文件";
                         res.ResultSign = ResultSign.Error;
-                        res.Code = 200;
+                        res.StatusCode = StatusCode.OK;
                         return res;
                     }
                     FileUploadUtil.MergeDiskFile(sourcePath, targetFilePath);
@@ -280,8 +279,8 @@ namespace NetCore.Services.Services.S_StoreFiles
                     storeFiles.RelationFilePath = newFilePath;
                     storeFiles.CreateBy = "";
                     storeFiles.FileName = fileName.Replace("." + storeFiles.FileExt, "");
-                    res.Flag = await _baseDomain.AddDomain(storeFiles);
-                    if (res.Flag)
+                    var flag = await _baseDomain.AddDomain(storeFiles);
+                    if (flag)
                     {
                         res.ResultSign = ResultSign.Success;
                         res.Data = storeFiles.MapTo<StoreFilesViewModel>();
@@ -291,8 +290,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                         res.ResultSign = ResultSign.Error;
                     }
                 }
-                res.Code = 200;
-
+                res.StatusCode = StatusCode.OK;
                 return res;
             }
             catch (Exception ex)

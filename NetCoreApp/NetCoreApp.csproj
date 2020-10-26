@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NetCore.Core.RedisUtil\NetCore.Core.RedisUtil.csproj" />
     <ProjectReference Include="..\NetCore.Core\NetCore.Core.csproj" />
     <ProjectReference Include="..\NetCore.Domain\NetCore.Domain.csproj" />
     <ProjectReference Include="..\NetCore.DTO\NetCore.DTO.csproj" />

@@ -59,7 +59,7 @@ namespace NetCoreApp.Controllers
         /// 
         [TypeFilter(typeof(CustomerExceptionFilter))]
         [HttpPost, Route("GetPageList")]
-        public async Task<HttpReponseViewModel<List<StoreFilesViewModel>>> GetPageList(QueryModel queryModel)
+        public async Task<HttpReponsePageViewModel<List<StoreFilesViewModel>>> GetPageList(QueryModel queryModel)
         {
             return await _storeFilesServices.GetPageListService(queryModel);
         }
@@ -149,7 +149,7 @@ namespace NetCoreApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("ChunkUpload")]
-        public async Task<HttpReponseViewModel<List<int>>> ChunkUpload()
+        public async Task<HttpReponseObjViewModel<List<int>>> ChunkUpload()
         {
             return await Task.Run(() =>
             {
@@ -163,7 +163,7 @@ namespace NetCoreApp.Controllers
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost, Route("ChunkUpload")]
-        public async Task<HttpReponseViewModel<bool>> ChunkUpload(IFormFile file)
+        public async Task<HttpReponseObjViewModel<bool>> ChunkUpload(IFormFile file)
         {
             return await Task.Run(async () =>
             {
@@ -177,7 +177,7 @@ namespace NetCoreApp.Controllers
         /// <param name="fileUpload"></param>
         /// <returns></returns>
         [HttpPost, Route("MergeFiles")]
-        public async Task<HttpReponseViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload)
+        public async Task<HttpReponseObjViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload)
         {
             return await Task.Run(() =>
             {
@@ -194,7 +194,7 @@ namespace NetCoreApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, Route("DownloadSmallFiles")]
-        public async Task<HttpReponseViewModel<string>> DownloadSmallFiles(string id)
+        public async Task<HttpReponseObjViewModel<string>> DownloadSmallFiles(string id)
         {
             Guid gid = new Guid(id);
             return await Task.Run(() =>
@@ -212,7 +212,7 @@ namespace NetCoreApp.Controllers
         /// 
         [TypeFilter(typeof(CustomerExceptionFilter))]
         [HttpGet, Route("GetMD5ToBurstData")]
-        public async Task<HttpReponseViewModel<GenerateMD5ToBurstResViewModel>> GetMD5ToBurstData(Guid id)
+        public async Task<HttpReponseObjViewModel<GenerateMD5ToBurstResViewModel>> GetMD5ToBurstData(Guid id)
         {
             return await Task.Run(() =>
             {

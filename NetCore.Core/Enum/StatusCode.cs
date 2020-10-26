@@ -4,6 +4,10 @@ using System.Text;
 
 namespace NetCore.Core.Enum
 {
+
+    /// <summary>
+    /// 状态码 枚举
+    /// </summary>
     public enum StatusCode
     {
         //
@@ -212,7 +216,41 @@ namespace NetCore.Core.Enum
         // 摘要:
         //     等效于 HTTP 状态 505。 System.Net.HttpStatusCode.HttpVersionNotSupported 指示服务器不支持请求的
         //     HTTP 版本。
-        HttpVersionNotSupported = 505
+        HttpVersionNotSupported = 505,
+
+        //由《透明内容协商协议》（RFC 2295）扩展，代表服务器存在内部配置错误：被请求的协商变元资源被配置为在透明内容协商中使用自己，因此在一个协商处理中不是一个合适的重点
+        VariantAlsoNegotiates = 506,
+
+        //服务器无法存储完成请求所必须的内容。这个状况被认为是临时的
+        InsufficientStorage = 507,
+
+        //服务器达到带宽限制。这不是一个官方的状态码，但是仍被广泛使用。
+        BandwidthLimitExceeded = 509,
+
+        //获取资源所需要的策略并没有被满足
+        NotExtended = 510,
+
+        //源站没有返回响应头部，只返回实体内容
+        UnparseableResponseHeaders = 600,
+
+
+        #region 自定义业务状态码
+
+        /// <summary>
+        /// 密码错误
+        /// </summary>
+        PasswordError=10000,
+
+        /// <summary>
+        /// 用户名不存在
+        /// </summary>
+        UserNotExist=10001,
+
+        /// <summary>
+        /// 刷新的token错误
+        /// </summary>
+        RefreshTokenError = 10002,
+        #endregion
 
     }
 }

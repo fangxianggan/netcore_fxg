@@ -36,10 +36,10 @@ namespace NetCore.Services.S_Test
 
         //  [Transactional]
 
-        public async Task<HttpReponseViewModel<TestViewModel>> AddOrEditService1(TestViewModel entity)
+        public async Task<HttpReponseObjViewModel<TestViewModel>> AddOrEditService1(TestViewModel entity)
         {
 
-            HttpReponseViewModel<TestViewModel> res = new HttpReponseViewModel<TestViewModel>();
+            HttpReponseObjViewModel<TestViewModel> res = new HttpReponseObjViewModel<TestViewModel>();
             var t1 = entity.MapTo<Test>();
             var flag = await _userDomain.AddDomain(t1);
 

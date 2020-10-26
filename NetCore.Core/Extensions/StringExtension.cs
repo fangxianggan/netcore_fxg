@@ -167,5 +167,15 @@ namespace NetCore.Core.Extensions
             return res;
         }
 
+
+        public static int ToInt(this string s)
+        {
+            return Convert.ToInt32(s);
+        }
+
+        public static bool ToBool(this string s)
+        {
+            return Convert.ToBoolean(s);
+        }
     }
 }

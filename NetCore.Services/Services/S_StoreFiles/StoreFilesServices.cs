@@ -36,7 +36,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 httpReponse = new HttpReponseViewModel(f);
             }
             else {
-                httpReponse = new HttpReponseViewModel(false,"","文件未删除");
+                httpReponse = new HttpReponseViewModel(false,"");
             }
             return httpReponse;
 

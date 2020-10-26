@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Core.EntityModel.ReponseModels;
@@ -17,6 +18,7 @@ namespace NetCoreApp.Controllers
     /// </summary>
     [Route("dev-api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LoginController : ControllerBase
     {
         private readonly IUserLoginServices _userLoginServices;
@@ -38,8 +40,10 @@ namespace NetCoreApp.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         /// 
-        [HttpPost,Route("GetValidateLogon")]
-        public async Task<HttpReponseViewModel<ComplexTokenViewModel>> GetValidateLogon(UserLoginViewModel model)
+
+        [AllowAnonymous]
+        [HttpPost, Route("GetValidateLogon")]
+        public async Task<HttpReponseObjViewModel<ComplexTokenViewModel>> GetValidateLogon(UserLoginViewModel model)
         {
             return await Task.Run(() =>
             {
@@ -50,14 +54,14 @@ namespace NetCoreApp.Controllers
         /// <summary>
         /// 获取用户信息
         /// </summary>
-        /// <param name="tokenModel"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        [HttpPost, Route("GetUserInfoData")]
-        public async Task<HttpReponseViewModel<UserInfoViewModel>> GetUserInfoData(TokenViewModel tokenModel)
+        [HttpGet, Route("GetUserInfoData")]
+        public async Task<HttpReponseObjViewModel<UserInfoViewModel>> GetUserInfoData(string token)
         {
             return await Task.Run(() =>
             {
-                return _userLoginServices.GetUserInfoData(tokenModel);
+                return _userLoginServices.GetUserInfoData(token);
             });
         }
 
@@ -67,11 +71,27 @@ namespace NetCoreApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost, Route("GetLogout")]
-        public async Task<HttpReponseViewModel<string>> GetLogout(string token)
+        public async Task<HttpReponseViewModel> GetLogout(string token)
         {
             return await Task.Run(() =>
             {
                 return _userLoginServices.GetLogout(token);
+            });
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpGet, Route("GetRefreshToken")]
+        public async Task<HttpReponseObjViewModel<TokenViewModel>> GetRefreshToken(string refreshToken)
+        {
+            return await Task.Run(() =>
+            {
+                return _userLoginServices.GetRefreshTokenData(refreshToken);
             });
         }
 

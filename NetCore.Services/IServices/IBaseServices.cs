@@ -15,7 +15,7 @@ namespace NetCore.Services.Interface
 
         Task<HttpReponseViewModel> DeleteService(object id);
 
-        Task<HttpReponseViewModel<List<TView>>> GetPageListService(QueryModel queryModel);
+        Task<HttpReponsePageViewModel<List<TView>>> GetPageListService(QueryModel queryModel);
 
       
     }

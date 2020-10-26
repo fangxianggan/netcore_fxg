@@ -75,7 +75,7 @@ namespace NetCore.Services.Services.S_TaskJob
                     errorMsg = "任务启动失败！";
                 }
             }
-            return new HttpReponseViewModel(flag, errorMsg, "", "");
+            return new HttpReponseViewModel(flag, "");
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace NetCore.Services.Services.S_TaskJob
         /// <returns></returns>
         public async Task JobSchedulerSetUp()
         {
-            var list = await _baseDomain.GetList(p => p.TaskState != TaskState.Init.ToInt());
+            var list = await _baseDomain.GetList(p => p.TaskState != TaskState.Init.ToInt()&&p.EndRunTime>=DateTime.Now);
             var qdList = list.Where(p => p.TaskState == TaskState.Start.ToInt());
             var ztList = list.Where(p => p.TaskState == TaskState.Stop.ToInt());
            await qdList.ToAsyncEnumerable().ForEachAsync(async item =>

@@ -338,6 +338,8 @@ let myAction = {
       duration: 2000
     })
   },
+
+  
   /**
    * 大写金额
    * @param {any} num

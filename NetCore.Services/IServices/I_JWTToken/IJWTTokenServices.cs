@@ -1,4 +1,5 @@
-﻿using NetCore.DTO.ReponseViewModel.Login;
+﻿using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.DTO.ReponseViewModel.Login;
 using NetCore.DTO.RequestViewModel.Login;
 using NetCore.DTO.ViewModel;
 using System;
@@ -12,6 +13,6 @@ namespace NetCore.Services.IServices.I_JWTToken
     {
         ComplexTokenViewModel CreateToken(UserInfoViewModel user);
         ComplexTokenViewModel CreateToken(Claim[] claims);
-        TokenViewModel RefreshToken(ClaimsPrincipal claimsPrincipal);
+        TokenViewModel RefreshToken(UserInfoViewModel user);
     }
 }

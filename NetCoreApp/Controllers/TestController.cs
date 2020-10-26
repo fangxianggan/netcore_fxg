@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +22,7 @@ namespace NetCoreApp.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // 添加授权特性
+  //  [Authorize] // 添加授权特性
     public class TestController : ControllerBase
     {
         private readonly ITestServices _testService;
@@ -43,7 +44,7 @@ namespace NetCoreApp.Controllers
         /// <returns></returns>
         [Route("/fff")]
         [HttpGet]
-        public async Task<HttpReponseViewModel<TestViewModel>> GetT()
+        public async Task<HttpReponseObjViewModel<TestViewModel>> GetT()
         {
             TestViewModel model = new TestViewModel();
             model.ID = Guid.NewGuid();
@@ -99,6 +100,27 @@ namespace NetCoreApp.Controllers
             var bb = _contextAccessor.HttpContext.User.Claims.ToList();
             var cc = bb;
             return JsonUtil.JsonSerialize(cc);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        [AllowAnonymous]
+        [CacheResourceFilterAttribute]
+        //[TypeFilter(typeof(CustomerExceptionFilter))]
+        [Route("/fff4")]
+        [HttpGet]
+        [ResultFilter("X-Value", "Y-Value")]
+        public IActionResult fff4()
+        {
+            Thread.Sleep(1000);
+            var bb = 0;
+            var cc = bb / 100;
+            return Content("ok");
+
+           
         }
     }
 

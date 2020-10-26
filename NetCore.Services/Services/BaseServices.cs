@@ -70,11 +70,11 @@ namespace NetCore.Services.Services
             return new HttpReponseViewModel(flag);
         }
 
-        public async Task<HttpReponseViewModel<List<TView>>> GetPageListService(QueryModel queryModel)
+        public async Task<HttpReponsePageViewModel<List<TView>>> GetPageListService(QueryModel queryModel)
         {
             var pageData = await _baseDomain.GetPageList(queryModel);
             var list= pageData.DataList.MapToList<TView>();
-            HttpReponseViewModel<List<TView>> httpReponse = new HttpReponseViewModel<List<TView>>(list, queryModel.PageIndex, queryModel.PageSize, pageData.Total, pageData.EXESql);
+            HttpReponsePageViewModel<List<TView>> httpReponse = new HttpReponsePageViewModel<List<TView>>(list, queryModel.PageIndex, queryModel.PageSize, pageData.Total, pageData.EXESql);
             return httpReponse;
         }
     }

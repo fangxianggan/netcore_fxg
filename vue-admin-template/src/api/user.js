@@ -16,6 +16,15 @@ export function getInfo(token) {
   })
 }
 
+
+export function getRefreshTokenData(refreshToken) {
+  return request({
+    url: '/Login/GetRefreshToken',
+    method: 'get',
+    params: { refreshToken }
+  })
+}
+
 export function logout(data) {
   return request({
     url: '/Login/GetLogout',

@@ -18,9 +18,9 @@ namespace NetCore.Services.IServices.I_StoreFiles
 
         List<FileRangeViewModel> GetFileRangeData(long totalSize);
 
-        Task<HttpReponseViewModel<string>> GetDownloadSmallFiles(Guid id,HttpContext httpContext);
+        Task<HttpReponseObjViewModel<string>> GetDownloadSmallFiles(Guid id,HttpContext httpContext);
 
-        Task<HttpReponseViewModel<GenerateMD5ToBurstResViewModel>> GetMD5ToBurstData(Guid id);
+        Task<HttpReponseObjViewModel<GenerateMD5ToBurstResViewModel>> GetMD5ToBurstData(Guid id);
 
         Task GetDownloadBigFiles(string path, HttpContext httpContext);
 

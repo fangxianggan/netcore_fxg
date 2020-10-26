@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.DTO.ReponseViewModel.TaskJob;
@@ -15,6 +16,7 @@ namespace NetCoreApp.Controllers
     /// </summary>
     [Route("dev-api/[controller]")]
     [ApiController]
+    [Authorize]
     public class JobsController : ControllerBase
     {
         /// <summary>
@@ -38,7 +40,7 @@ namespace NetCoreApp.Controllers
         /// <returns></returns>
         [TypeFilter(typeof(CustomerExceptionFilter))]
         [HttpPost, Route("GetPageList")]
-        public async Task<HttpReponseViewModel<List<TaskJobViewModel>>> GetPageList(QueryModel queryModel)
+        public async Task<HttpReponsePageViewModel<List<TaskJobViewModel>>> GetPageList(QueryModel queryModel)
         {
             return await Task.Run(() =>
             {

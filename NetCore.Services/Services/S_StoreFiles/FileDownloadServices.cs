@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Net.Http.Headers;
 using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.Core.Enum;
 using NetCore.Core.Util;
 using NetCore.Domain.Interface;
 using NetCore.DTO.ReponseViewModel;
@@ -153,9 +154,9 @@ namespace NetCore.Services.Services.S_StoreFiles
         }
 
 
-        public async Task<HttpReponseViewModel<string>> GetDownloadSmallFiles(Guid id, HttpContext httpContext)
+        public async Task<HttpReponseObjViewModel<string>> GetDownloadSmallFiles(Guid id, HttpContext httpContext)
         {
-            HttpReponseViewModel<string> res = new HttpReponseViewModel<string>();
+            HttpReponseObjViewModel<string> res = new HttpReponseObjViewModel<string>();
             var t = await _baseDomain.GetEntity(id);
             if (t != null)
             {
@@ -203,14 +204,14 @@ namespace NetCore.Services.Services.S_StoreFiles
             {
                 res.Data = "该文件不存在";
             }
-            res.Code = 200;
+            res.StatusCode = StatusCode.OK;
             return res;
         }
 
 
-        public async Task<HttpReponseViewModel<GenerateMD5ToBurstResViewModel>> GetMD5ToBurstData(Guid id)
+        public async Task<HttpReponseObjViewModel<GenerateMD5ToBurstResViewModel>> GetMD5ToBurstData(Guid id)
         {
-            HttpReponseViewModel<GenerateMD5ToBurstResViewModel> res = new HttpReponseViewModel<GenerateMD5ToBurstResViewModel>();
+            HttpReponseObjViewModel<GenerateMD5ToBurstResViewModel> res = new HttpReponseObjViewModel<GenerateMD5ToBurstResViewModel>();
             var t = await _baseDomain.GetEntity(id);
             if (t != null)
             {
@@ -231,7 +232,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 res.Data = null;
                 res.Message = "该文件不存在";
             }
-            res.Code = 200;
+            res.StatusCode = StatusCode.OK;
             res.ResultSign = Core.Enum.ResultSign.Info;
             return res;
         }

@@ -68,7 +68,7 @@ namespace NetCoreApp.Filters
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public override  Task OnExceptionAsync(ExceptionContext context)
+        public override Task OnExceptionAsync(ExceptionContext context)
         {
            return  base.OnExceptionAsync(context);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.Core.Extensions;
 using NetCore.Domain.Interface;
 using NetCore.DTO.Enum;
@@ -17,7 +18,7 @@ using System.Text;
 
 namespace NetCore.Services.Services.S_JWTToken
 {
-    public class JWTTokenServices : BaseServices<UserInfo,UserInfoViewModel>, IJWTTokenServices
+    public class JWTTokenServices : BaseServices<UserInfo, UserInfoViewModel>, IJWTTokenServices
     {
 
         private readonly IBaseDomain<UserInfo> _baseDomain;
@@ -28,26 +29,20 @@ namespace NetCore.Services.Services.S_JWTToken
             _options = options;
         }
 
-        public TokenViewModel CreateAccessToken(UserInfoViewModel user)
-        {
-            Claim[] claims = new Claim[] {
-                new Claim(ClaimTypes.NameIdentifier, user.UserCode),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
-            return CreateToken(claims, TokenType.AccessToken);
-        }
-
         public ComplexTokenViewModel CreateToken(UserInfoViewModel user)
         {
-            Claim[] claims = new Claim[] {
+            List<Claim> claimsList = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.UserCode),
-                new Claim(ClaimTypes.Name, user.UserName)
-                //下面两个Claim用于测试在Token中存储用户的角色信息
-                , new Claim(ClaimTypes.Role, "TestPutBookRole"),
-                new Claim(ClaimTypes.Role, "TestPutStudentRole")
-            };
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Expired,user.Expires.ToString("yyyy-MM-dd hh:mm:ss")),
 
-            return CreateToken(claims);
+            };
+            foreach (var item in user.Roles)
+            {
+                var c = new Claim(ClaimTypes.Role, item);
+                claimsList.Add(c);
+            }
+            return CreateToken(claimsList.ToArray());
         }
 
         public ComplexTokenViewModel CreateToken(Claim[] claims)
@@ -67,7 +62,8 @@ namespace NetCore.Services.Services.S_JWTToken
         private TokenViewModel CreateToken(Claim[] claims, TokenType tokenType)
         {
             var now = DateTime.Now;
-            var expires = now.Add(TimeSpan.FromMinutes(tokenType.Equals(TokenType.AccessToken) ? _options.Value.AccessTokenExpiresMinutes : _options.Value.RefreshTokenExpiresMinutes));//设置不同的过期时间
+            var expires = now.Add(TimeSpan.FromSeconds(tokenType.Equals(TokenType.AccessToken) ? _options.Value.AccessTokenExpiresMinutes : _options.Value.RefreshTokenExpiresMinutes));//设置不同的过期时间
+                                                                                                                                                                                        // var expires = now.Add(TimeSpan.FromMinutes(tokenType.Equals(TokenType.AccessToken) ? _options.Value.AccessTokenExpiresMinutes : _options.Value.RefreshTokenExpiresMinutes));//设置不同的过期时间
             var token = new JwtSecurityToken(
                 issuer: _options.Value.Issuer,
                 audience: tokenType.Equals(TokenType.AccessToken) ? _options.Value.Audience : _options.Value.RefreshTokenAudience,//设置不同的接受者
@@ -78,18 +74,20 @@ namespace NetCore.Services.Services.S_JWTToken
             return new TokenViewModel { TokenContent = new JwtSecurityTokenHandler().WriteToken(token), Expires = expires };
         }
 
-        public TokenViewModel RefreshToken(ClaimsPrincipal claimsPrincipal)
+        public TokenViewModel RefreshToken(UserInfoViewModel user)
         {
-            var code = claimsPrincipal.Claims.FirstOrDefault(m => m.Type.Equals(ClaimTypes.NameIdentifier));
-            if (null != code)
+            HttpReponseObjViewModel<TokenViewModel> httpReponse = new HttpReponseObjViewModel<TokenViewModel>();
+            List<Claim> claimsList = new List<Claim> {
+                new Claim(ClaimTypes.NameIdentifier, user.UserCode),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Expired,user.Expires.ToString("yyyy-MM-dd hh:mm:ss"))
+            };
+            foreach (var item in user.Roles)
             {
-                var ent = _baseDomain.GetEntity(p => p.UserCode == code.Value.ToString());
-                return CreateAccessToken(ent.MapTo<UserInfoViewModel>());
+                var c = new Claim(ClaimTypes.Role, item);
+                claimsList.Add(c);
             }
-            else
-            {
-                return null;
-            }
+            return CreateToken(claimsList.ToArray(), TokenType.AccessToken);
         }
     }
 }

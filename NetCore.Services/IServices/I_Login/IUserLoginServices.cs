@@ -8,11 +8,13 @@ namespace NetCore.Services.IServices.I_Login
 {
     public interface IUserLoginServices
     {
-        Task<HttpReponseViewModel<ComplexTokenViewModel>> GetValidateLogon(UserLoginViewModel model);
+        Task<HttpReponseObjViewModel<ComplexTokenViewModel>> GetValidateLogon(UserLoginViewModel model);
 
-        Task<HttpReponseViewModel<UserInfoViewModel>> GetUserInfoData(TokenViewModel tokenModel);
+        Task<HttpReponseObjViewModel<UserInfoViewModel>> GetUserInfoData(string token);
 
-         HttpReponseViewModel<string> GetLogout(string token);
+        HttpReponseViewModel GetLogout(string token);
+
+        HttpReponseObjViewModel<TokenViewModel> GetRefreshTokenData(string refreshToken);
 
     }
 }

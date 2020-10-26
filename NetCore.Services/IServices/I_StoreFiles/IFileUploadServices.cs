@@ -10,11 +10,11 @@ namespace NetCore.Services.IServices.I_StoreFiles
 {
     public interface IFileUploadServices
     {
-        HttpReponseViewModel<List<int>> CheckFileState(HttpRequest request);
+        HttpReponseObjViewModel<List<int>> CheckFileState(HttpRequest request);
 
-        Task<HttpReponseViewModel<bool>> ChunkUpload(IFormFile file, HttpRequest request);
+        Task<HttpReponseObjViewModel<bool>> ChunkUpload(IFormFile file, HttpRequest request);
 
-        Task<HttpReponseViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload);
+        Task<HttpReponseObjViewModel<StoreFilesViewModel>> MergeFiles(FileUploadReqViewModel fileUpload);
 
         
 

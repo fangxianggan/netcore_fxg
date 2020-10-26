@@ -1,23 +1,34 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken ,setRefreshToken,removeRefreshToken} from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
+    refreshToken:'',
+    expires:'',
+    refreshExpires:'',
     name: '',
     avatar: ''
   }
 }
 
 const state = getDefaultState()
-
 const mutations = {
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
   },
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_EXPIRES: (state, expires) => {
+    state.expires = expires
+  },
+  SET_REFRESHTOKEN: (state, refreshToken) => {
+    state.refreshToken = refreshToken
+  },
+  SET_REFRESHEXPIRES: (state, refreshExpires) => {
+    state.refreshExpires = refreshExpires
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -34,8 +45,12 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+        commit('SET_TOKEN', data.accessToken.tokenContent)
+        commit('SET_EXPIRES', data.accessToken.expires)
+        commit('SET_REFRESHTOKEN', data.refreshToken.tokenContent)
+        commit('SET_REFRESHEXPIRES', data.refreshToken.expires)
+        setToken(data.accessToken.tokenContent,data.accessToken.expires);
+        setRefreshToken(data.refreshToken.tokenContent,data.refreshToken.expires);
         resolve()
       }).catch(error => {
         reject(error)
@@ -52,9 +67,7 @@ const actions = {
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
-
         const { name, avatar } = data
-
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
         resolve(data)
@@ -69,6 +82,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         removeToken() // must remove  token  first
+        removeRefreshToken()
         resetRouter()
         commit('RESET_STATE')
         resolve()
