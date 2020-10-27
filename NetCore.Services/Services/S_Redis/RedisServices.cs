@@ -63,5 +63,12 @@ namespace NetCore.Services.Services.S_Redis
         {
             return doRedisHash.GetValueFromHash(hashId, key);
         }
+
+        public Dictionary<string,string> GetAllEntriesFromHash()
+        {
+            return doRedisHash.GetAllEntriesFromHash(hashId);
+        }
+
+        
     }
 }

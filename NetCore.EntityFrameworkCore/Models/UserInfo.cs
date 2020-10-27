@@ -55,6 +55,13 @@ namespace NetCore.EntityFrameworkCore.Models
         /// </summary>
         [DisplayName("状态")]
         public int State { set; get; }
-       
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DisplayName("头标")]
+        public string Avatar { set; get; }
+
+
     }
 }

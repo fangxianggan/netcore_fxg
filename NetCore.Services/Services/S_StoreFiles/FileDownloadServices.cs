@@ -218,22 +218,33 @@ namespace NetCore.Services.Services.S_StoreFiles
                 var filePath = t.RelationFilePath;
                 var fileName = t.FileName+"."+t.FileExt;
                 var len = FileUtil.GetLength(filePath);
-                res.Data = new GenerateMD5ToBurstResViewModel()
+                if (len > 0)
                 {
-                    Identifier = FileUploadUtil.GetMD5HashFromFile(filePath),
-                    TotalSize = len,
-                    FilePathUrl = filePath,
-                    FileName =fileName,
-                    FileRanges = GetFileRangeData(len)
-                };
+                    res.Data = new GenerateMD5ToBurstResViewModel()
+                    {
+                        Identifier = FileUploadUtil.GetMD5HashFromFile(filePath),
+                        TotalSize = len,
+                        FilePathUrl = filePath,
+                        FileName = fileName,
+                        FileRanges = GetFileRangeData(len)
+                    };
+                    res.StatusCode = StatusCode.OK;
+                    res.ResultSign = ResultSign.Success;
+                }
+                else {
+                    res.Data = null;
+                    res.Message = "该文件不存在";
+                    res.StatusCode = StatusCode.FileNoExistent;
+                    res.ResultSign = ResultSign.Error;
+                }
             }
             else
             {
                 res.Data = null;
                 res.Message = "该文件不存在";
+                res.StatusCode = StatusCode.FileNoExistent;
+                res.ResultSign = ResultSign.Error;
             }
-            res.StatusCode = StatusCode.OK;
-            res.ResultSign = Core.Enum.ResultSign.Info;
             return res;
         }
 

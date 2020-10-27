@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace NetCoreApp.Controllers
 {
     /// <summary>
-    /// 
+    /// 产品
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class OrderController : ControllerBase
+    public class ProductInfoController : ControllerBase
     {
 
     }

@@ -244,7 +244,7 @@ export default {
         // 服务器分片校验函数，秒传及断点续传基础
         checkChunkUploadedByResponse: function(chunk, res) {
           let d = JSON.parse(res);
-          if (d.flag) {
+          if (d.statusCode == 200) {
             var data = d.data;
             //秒传  已经存在该文件
             if (d.resultSign == 2) {
@@ -354,7 +354,7 @@ export default {
         false
       );
       getPageList(param).then(response => {
-        this.list = response.data;
+        this.list = response.pageData;
         this.total = response.total;
 
         // Just to simulate the time of the request
@@ -395,6 +395,10 @@ export default {
       var $this = this;
       //拆分信息
       getMD5ToBurstData(id).then(res => {
+        if (res.resultSign !== 0) {
+          this.dialogprogressVisible = false;
+          return false;
+        }
         var d = res.data;
         $this.downloadmd5 = d.identifier;
         let totalSize = d.fileRanges.length;
@@ -534,7 +538,7 @@ export default {
       //console.log(file);
       let res = JSON.parse(response);
       // 服务器自定义的错误，这种错误是Uploader无法拦截的
-      if (!res.flag) {
+      if (res.statusCode !== 200) {
         this.$message({ message: res.message, type: "error" });
         // 文件状态设为“失败”
         statusSet(this, file.id, "error");

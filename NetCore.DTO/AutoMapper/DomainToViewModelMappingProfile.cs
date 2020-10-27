@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using NetCore.DTO.ReponseViewModel;
 using NetCore.DTO.ReponseViewModel.Login;
+using NetCore.DTO.ReponseViewModel.ProductInfo;
 using NetCore.DTO.ReponseViewModel.StoreFiles;
 using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.DTO.TestModel;
 using NetCore.EntityFrameworkCore.Models;
+using NetCore.DTO.ReponseViewModel.OrderInfo;
 
 namespace NetCore.DTO.AutoMapper
 {
@@ -35,7 +36,10 @@ namespace NetCore.DTO.AutoMapper
             CreateMap<TaskJobLog, TaskJobLogViewModel>();
 
             CreateMap<UserInfo, UserInfoViewModel>();
-              
+
+            CreateMap<ProductInfo, ProductInfoViewModel>();
+
+            CreateMap<OrderInfo, OrderInfoViewModel>();
 
         }
     }

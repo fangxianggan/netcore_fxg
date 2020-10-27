@@ -250,6 +250,11 @@ namespace NetCore.Core.Enum
         /// 刷新的token错误
         /// </summary>
         RefreshTokenError = 10002,
+
+        /// <summary>
+        /// 文件不存在
+        /// </summary>
+        FileNoExistent=10003
         #endregion
 
     }

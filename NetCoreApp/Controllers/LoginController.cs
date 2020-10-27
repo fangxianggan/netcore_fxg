@@ -52,16 +52,15 @@ namespace NetCoreApp.Controllers
         }
 
         /// <summary>
-        /// 获取用户信息
+        /// 前端接口 获取用户信息
         /// </summary>
-        /// <param name="token"></param>
         /// <returns></returns>
         [HttpGet, Route("GetUserInfoData")]
-        public async Task<HttpReponseObjViewModel<UserInfoViewModel>> GetUserInfoData(string token)
+        public async Task<HttpReponseObjViewModel<ResBaseUserInfoViewModel>> GetUserInfoData()
         {
             return await Task.Run(() =>
             {
-                return _userLoginServices.GetUserInfoData(token);
+                return _userLoginServices.GetUserInfoData();
             });
         }
 
@@ -71,7 +70,7 @@ namespace NetCoreApp.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost, Route("GetLogout")]
-        public async Task<HttpReponseViewModel> GetLogout(string token)
+        public async Task<HttpReponseViewModel> GetLogout([FromBody] string token)
         {
             return await Task.Run(() =>
             {
@@ -81,7 +80,7 @@ namespace NetCoreApp.Controllers
 
 
         /// <summary>
-        /// 
+        /// 刷新新的token
         /// </summary>
         /// <param name="refreshToken"></param>
         /// <returns></returns>

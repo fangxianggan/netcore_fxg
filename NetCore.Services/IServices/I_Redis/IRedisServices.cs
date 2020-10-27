@@ -14,5 +14,7 @@ namespace NetCore.Services.IServices.I_Redis
 
         string GetValueFromHash(string key);
 
+        Dictionary<string,string> GetAllEntriesFromHash();
+
     }
 }

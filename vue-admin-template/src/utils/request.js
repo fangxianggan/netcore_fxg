@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken, setToken, getRefreshToken, setRefreshToken } from '@/utils/auth'
+import { getToken, setToken,setTokenExpires, getRefreshToken, setRefreshToken } from '@/utils/auth'
 import { getRefreshTokenData } from '@/api/user'
 
 
@@ -46,7 +46,7 @@ service.interceptors.request.use(
       if (config.url.indexOf("/login") >= 0 || config.url.indexOf("/GetRefreshToken")>=0) {
         return config;
       }
-
+      console.log(store.getters.expires);
       //token 是否在超過有效期內 但是在刷新的有效期內 獲取新的token
       if (store.getters.expires&&store.getters.token) {
         const now = Date.now();
@@ -60,6 +60,7 @@ service.interceptors.request.use(
                 window.isRefreshing = false;
                 if (res.statusCode === 200) {
                   const data = res.data
+                  setTokenExpires(data.expires)
                   setToken(data.tokenContent, data.expires);
                   return data.tokenContent
                 }
@@ -143,8 +144,6 @@ service.interceptors.response.use(
         })
       }
       return res;
-
-
     } else {
 
       return res;

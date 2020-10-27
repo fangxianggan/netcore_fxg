@@ -10,7 +10,7 @@ namespace NetCore.Services.IServices.I_Login
     {
         Task<HttpReponseObjViewModel<ComplexTokenViewModel>> GetValidateLogon(UserLoginViewModel model);
 
-        Task<HttpReponseObjViewModel<UserInfoViewModel>> GetUserInfoData(string token);
+        HttpReponseObjViewModel<ResBaseUserInfoViewModel> GetUserInfoData();
 
         HttpReponseViewModel GetLogout(string token);
 

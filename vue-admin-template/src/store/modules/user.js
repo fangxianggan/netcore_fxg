@@ -1,12 +1,13 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken ,setRefreshToken,removeRefreshToken} from '@/utils/auth'
+import { getToken, setToken, removeToken ,
+  setRefreshToken,removeRefreshToken,getTokenExpires,setTokenExpires} from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
     refreshToken:'',
-    expires:'',
+    expires:getTokenExpires(),
     refreshExpires:'',
     name: '',
     avatar: ''
@@ -61,7 +62,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo().then(response => {
         const { data } = response
 
         if (!data) {
@@ -80,7 +81,8 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      let data = '"' + state.token + '"';
+      logout(data).then(() => {
         removeToken() // must remove  token  first
         removeRefreshToken()
         resetRouter()

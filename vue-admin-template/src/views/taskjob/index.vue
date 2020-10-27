@@ -387,7 +387,7 @@ export default {
         false
       );
       getPageList(param).then(response => {
-        this.list = response.data;
+        this.list = response.pageData;
         this.total = response.total;
 
         // Just to simulate the time of the request

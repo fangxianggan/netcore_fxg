@@ -14,6 +14,7 @@ using NetCore.Services.IServices.I_Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace NetCore.Services.Services.S_Login
@@ -50,18 +51,17 @@ namespace NetCore.Services.Services.S_Login
                     u.Roles = new List<string>() { "abc", "nnn" };
                     ComplexTokenViewModel t = _jWTTokenServices.CreateToken(u);
 
-                    //key
-                    string key = t.RefreshToken.TokenContent;
+                    //key 
+                    string key = ent.ID.ToString(); 
                     if (_redisService.GetIsExistKey(key))
                     {
                         //删除
                         _redisService.RemoveRefreshTokenValue(key);
-
-                        
                     }
                     //更新 过期的时间
                     u.Expires = t.AccessToken.Expires;
                     u.RefreshExpires = t.RefreshToken.Expires;
+                    u.TokenContent= t.RefreshToken.TokenContent;
                     //存储刷新的token  存入redis
                     string value = JsonUtil.JsonSerialize(u);
                     _redisService.SetRefreshTokenValue(key, value);
@@ -92,25 +92,40 @@ namespace NetCore.Services.Services.S_Login
         /// <summary>
         /// 获取用户信息
         /// </summary>
-        /// <param name="tokenModel"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<HttpReponseObjViewModel<UserInfoViewModel>> GetUserInfoData(string tokenModel)
+        public HttpReponseObjViewModel<ResBaseUserInfoViewModel> GetUserInfoData()
         {
-            var user = _contextAccessor.HttpContext.User ;
-
-
-            return new HttpReponseObjViewModel<UserInfoViewModel>()
+            var user = _contextAccessor.HttpContext.User;
+            var identity = user.Identities;
+            var claims = user.Claims.ToList();
+            if (claims.Count() > 0)
             {
-                StatusCode = StatusCode.OK,
-                Message = HttpReponseMessage.SuccessMsg,
-                ResultSign = ResultSign.Success,
-                Data = new UserInfoViewModel()
+                return new HttpReponseObjViewModel<ResBaseUserInfoViewModel>()
                 {
-                    UserName = "yxd",
-                    Avatar = "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
-                    Roles = new List<string>() { "admin" }
-                }
-            };
+                    StatusCode = StatusCode.OK,
+                    Message = HttpReponseMessage.SuccessMsg,
+                    ResultSign = ResultSign.Success,
+                    Data = new ResBaseUserInfoViewModel()
+                    {
+                        UserName = claims.Where(p => p.Type == ClaimTypes.Name).FirstOrDefault().Value,
+                        Avatar = claims.Where(p => p.Type == "Avatar").FirstOrDefault().Value,
+                        Roles = claims.Where(p => p.Type == ClaimTypes.Role).Select(p => p.Value).ToList()
+                    }
+                };
+            }
+            else {
+                return new HttpReponseObjViewModel<ResBaseUserInfoViewModel>()
+                {
+                    StatusCode = StatusCode.Unauthorized,
+                    Message = HttpReponseMessage.ErrorMsg,
+                    ResultSign = ResultSign.Error,
+                    Data = new ResBaseUserInfoViewModel()
+                    {
+                       
+                    }
+                };
+            }
         }
 
 
@@ -121,12 +136,21 @@ namespace NetCore.Services.Services.S_Login
         /// <returns></returns>
         public HttpReponseViewModel GetLogout(string token)
         {
-            //清除 redis 用户token数据
-            string key = token;
-            if (_redisService.GetIsExistKey(key))
+            Dictionary<string, string> keysList = _redisService.GetAllEntriesFromHash();
+            foreach (var item in keysList)
             {
-                //删除
-                _redisService.RemoveRefreshTokenValue(key);
+                UserInfoViewModel userInfoView = JsonUtil.JsonDeserializeObject<UserInfoViewModel>(item.Value);
+                if (userInfoView.TokenContent == token)
+                {
+                    //清除 redis 用户token数据
+                    string key = userInfoView.ID;
+                    if (_redisService.GetIsExistKey(key))
+                    {
+                        //删除
+                        _redisService.RemoveRefreshTokenValue(key);
+                    }
+                    break;
+                }
             }
             return new HttpReponseViewModel();
         }
@@ -139,32 +163,44 @@ namespace NetCore.Services.Services.S_Login
         public HttpReponseObjViewModel<TokenViewModel> GetRefreshTokenData(string refreshToken)
         {
             HttpReponseObjViewModel<TokenViewModel> httpReponse = new HttpReponseObjViewModel<TokenViewModel>();
-            var str = _redisService.GetValueFromHash(refreshToken);
-            UserInfoViewModel userInfoView = JsonUtil.JsonDeserializeObject<UserInfoViewModel>(str);
-            var dt = DateTime.Now;
-            if (userInfoView.Expires < dt && dt < userInfoView.RefreshExpires)
+            Dictionary<string,string> keysList=  _redisService.GetAllEntriesFromHash();
+            foreach (var item in keysList)
             {
-                var  t= _jWTTokenServices.RefreshToken(userInfoView);
-                httpReponse.Data = t;
-
-                string key = refreshToken;
-                if (_redisService.GetIsExistKey(key))
+                UserInfoViewModel userInfoView = JsonUtil.JsonDeserializeObject<UserInfoViewModel>(item.Value);
+                if (userInfoView.TokenContent==refreshToken)
                 {
-                    //删除
-                    _redisService.RemoveRefreshTokenValue(key);
+                    var dt = DateTime.Now;
+                    LogUtil.Info(userInfoView.Expires.ToString("yyyy-MM-dd hh:mm:ss"));
+                    LogUtil.Info(dt.ToString("yyyy-MM-dd hh:mm:ss"));
+                    LogUtil.Info(userInfoView.RefreshExpires.ToString("yyyy-MM-dd hh:mm:ss"));
+                    if (userInfoView.Expires < dt && dt < userInfoView.RefreshExpires)
+                    {
+                        var t = _jWTTokenServices.RefreshToken(userInfoView);
+                        httpReponse.Data = t;
+
+                        string key = userInfoView.ID;
+                        if (_redisService.GetIsExistKey(key))
+                        {
+                            //删除
+                            _redisService.RemoveRefreshTokenValue(key);
+                        }
+                        //更新 过期的时间
+                        userInfoView.Expires = t.Expires;
+                        //存储刷新的token  存入redis
+                        string value = JsonUtil.JsonSerialize(userInfoView);
+                        _redisService.SetRefreshTokenValue(key, value);
+                    }
+                    else
+                    {
+                        httpReponse.Data = new TokenViewModel();
+                        httpReponse.StatusCode = StatusCode.RefreshTokenError;
+                        httpReponse.Message = "刷新token发生错误";
+                        httpReponse.ResultSign = ResultSign.Error;
+                    }
+
+                    break;
                 }
-                //更新 过期的时间
-                userInfoView.Expires = t.Expires;
-                //存储刷新的token  存入redis
-                string value = JsonUtil.JsonSerialize(userInfoView);
-                _redisService.SetRefreshTokenValue(key, value);
-            }
-            else
-            {
-                httpReponse.Data = new TokenViewModel();
-                httpReponse.StatusCode = StatusCode.RefreshTokenError;
-                httpReponse.Message = "刷新token发生错误";
-                httpReponse.ResultSign = ResultSign.Error;
+               
             }
             return httpReponse;
         }

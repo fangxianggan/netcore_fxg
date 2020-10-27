@@ -29,25 +29,36 @@ namespace NetCore.Services.Services.S_JWTToken
             _options = options;
         }
 
-        public ComplexTokenViewModel CreateToken(UserInfoViewModel user)
+
+        private Claim[] GetClaims(UserInfoViewModel user)
         {
             List<Claim> claimsList = new List<Claim> {
+                new Claim(ClaimTypes.PrimarySid, user.ID),
                 new Claim(ClaimTypes.NameIdentifier, user.UserCode),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Expired,user.Expires.ToString("yyyy-MM-dd hh:mm:ss")),
-
+                new Claim("Avatar",user.Avatar)
             };
             foreach (var item in user.Roles)
             {
                 var c = new Claim(ClaimTypes.Role, item);
                 claimsList.Add(c);
             }
-            return CreateToken(claimsList.ToArray());
+            return claimsList.ToArray();
+        }
+
+
+        public ComplexTokenViewModel CreateToken(UserInfoViewModel user)
+        {
+            return CreateToken(GetClaims(user));
         }
 
         public ComplexTokenViewModel CreateToken(Claim[] claims)
         {
-            return new ComplexTokenViewModel { AccessToken = CreateToken(claims, TokenType.AccessToken), RefreshToken = CreateToken(claims, TokenType.RefreshToken) };
+            return new ComplexTokenViewModel
+            {
+                AccessToken = CreateToken(claims, TokenType.AccessToken),
+                RefreshToken = CreateToken(claims, TokenType.RefreshToken)
+            };
         }
 
         /// <summary>
@@ -62,7 +73,7 @@ namespace NetCore.Services.Services.S_JWTToken
         private TokenViewModel CreateToken(Claim[] claims, TokenType tokenType)
         {
             var now = DateTime.Now;
-            var expires = now.Add(TimeSpan.FromSeconds(tokenType.Equals(TokenType.AccessToken) ? _options.Value.AccessTokenExpiresMinutes : _options.Value.RefreshTokenExpiresMinutes));//设置不同的过期时间
+            var expires = now.Add(TimeSpan.FromMinutes(tokenType.Equals(TokenType.AccessToken) ? _options.Value.AccessTokenExpiresMinutes : _options.Value.RefreshTokenExpiresMinutes));//设置不同的过期时间
                                                                                                                                                                                         // var expires = now.Add(TimeSpan.FromMinutes(tokenType.Equals(TokenType.AccessToken) ? _options.Value.AccessTokenExpiresMinutes : _options.Value.RefreshTokenExpiresMinutes));//设置不同的过期时间
             var token = new JwtSecurityToken(
                 issuer: _options.Value.Issuer,
@@ -71,23 +82,17 @@ namespace NetCore.Services.Services.S_JWTToken
                 notBefore: now,
                 expires: expires,
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Value.IssuerSigningKey)), SecurityAlgorithms.HmacSha256));
-            return new TokenViewModel { TokenContent = new JwtSecurityTokenHandler().WriteToken(token), Expires = expires };
+            return new TokenViewModel
+            {
+                TokenContent = new JwtSecurityTokenHandler().WriteToken(token),
+                Expires = expires
+            };
         }
 
         public TokenViewModel RefreshToken(UserInfoViewModel user)
         {
             HttpReponseObjViewModel<TokenViewModel> httpReponse = new HttpReponseObjViewModel<TokenViewModel>();
-            List<Claim> claimsList = new List<Claim> {
-                new Claim(ClaimTypes.NameIdentifier, user.UserCode),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Expired,user.Expires.ToString("yyyy-MM-dd hh:mm:ss"))
-            };
-            foreach (var item in user.Roles)
-            {
-                var c = new Claim(ClaimTypes.Role, item);
-                claimsList.Add(c);
-            }
-            return CreateToken(claimsList.ToArray(), TokenType.AccessToken);
+            return CreateToken(GetClaims(user), TokenType.AccessToken);
         }
     }
 }

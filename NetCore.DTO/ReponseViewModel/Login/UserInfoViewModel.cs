@@ -4,16 +4,11 @@ using System.Text;
 
 namespace NetCore.DTO.ReponseViewModel.Login
 {
-   public  class UserInfoViewModel
+   public  class UserInfoViewModel:ResBaseUserInfoViewModel
     {
         public string ID { set; get; }
+
         public string UserCode { set; get; }
-        public string UserName { set; get; }
-
-        public string Avatar { set; get; }
-
-        public List<string> Roles { set; get; }
-
         /// <summary>
         /// 过期时间
         /// </summary>
@@ -24,7 +19,26 @@ namespace NetCore.DTO.ReponseViewModel.Login
         /// </summary>
         public DateTime RefreshExpires { set; get; }
 
+        /// <summary>
+        /// token
+        /// </summary>
+        public string TokenContent { set; get; }
+
     }
 
-   
+    /// <summary>
+    /// 返回前端页面上
+    /// </summary>
+    public class ResBaseUserInfoViewModel
+    {
+      
+        public string UserName { set; get; }
+
+        public string Avatar { set; get; }
+
+        public List<string> Roles { set; get; }
+    }
+
+
+
 }

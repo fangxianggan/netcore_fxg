@@ -8,11 +8,11 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+export function getInfo() {
   return request({
     url: '/Login/GetUserInfoData',
     method: 'get',
-    params: { token }
+    params: {  }
   })
 }
 
@@ -29,6 +29,9 @@ export function logout(data) {
   return request({
     url: '/Login/GetLogout',
     method: 'post',
+    headers: {
+      'content-type': 'application/json;charset=UTF-8'
+    }, 
     data
   })
 }

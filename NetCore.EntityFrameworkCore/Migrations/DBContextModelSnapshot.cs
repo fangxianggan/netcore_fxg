@@ -262,6 +262,8 @@ namespace NetCore.EntityFrameworkCore.Migrations
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Avatar");
+
                     b.Property<string>("CreateBy")
                         .HasMaxLength(32);
 
