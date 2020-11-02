@@ -53,18 +53,18 @@ namespace NetCore.Services.Services.S_Login
 
                     //key 
                     string key = ent.ID.ToString(); 
-                    if (_redisService.GetIsExistKey(key))
+                    if (_redisService.IsExistKeyHash(key))
                     {
                         //删除
-                        _redisService.RemoveRefreshTokenValue(key);
+                        _redisService.RemoveHash(key);
                     }
                     //更新 过期的时间
                     u.Expires = t.AccessToken.Expires;
                     u.RefreshExpires = t.RefreshToken.Expires;
-                    u.TokenContent= t.RefreshToken.TokenContent;
+                    u.RefreshTokenContent = t.RefreshToken.TokenContent;
                     //存储刷新的token  存入redis
                     string value = JsonUtil.JsonSerialize(u);
-                    _redisService.SetRefreshTokenValue(key, value);
+                    _redisService.SetValueHash(key, value);
 
                     httpReponse.Data = t;
                     httpReponse.ResultSign = ResultSign.Success;
@@ -136,22 +136,11 @@ namespace NetCore.Services.Services.S_Login
         /// <returns></returns>
         public HttpReponseViewModel GetLogout(string token)
         {
-            Dictionary<string, string> keysList = _redisService.GetAllEntriesFromHash();
-            foreach (var item in keysList)
-            {
-                UserInfoViewModel userInfoView = JsonUtil.JsonDeserializeObject<UserInfoViewModel>(item.Value);
-                if (userInfoView.TokenContent == token)
-                {
-                    //清除 redis 用户token数据
-                    string key = userInfoView.ID;
-                    if (_redisService.GetIsExistKey(key))
-                    {
-                        //删除
-                        _redisService.RemoveRefreshTokenValue(key);
-                    }
-                    break;
-                }
-            }
+            var user = _contextAccessor.HttpContext.User;
+            var identity = user.Identities;
+            var claims = user.Claims.ToList();
+            var key = claims.Where(p => p.Type == ClaimTypes.PrimarySid).FirstOrDefault().Value;
+            _redisService.RemoveHash(key);
             return new HttpReponseViewModel();
         }
 
@@ -163,11 +152,11 @@ namespace NetCore.Services.Services.S_Login
         public HttpReponseObjViewModel<TokenViewModel> GetRefreshTokenData(string refreshToken)
         {
             HttpReponseObjViewModel<TokenViewModel> httpReponse = new HttpReponseObjViewModel<TokenViewModel>();
-            Dictionary<string,string> keysList=  _redisService.GetAllEntriesFromHash();
+            Dictionary<string,string> keysList=  _redisService.GetAllHashById();
             foreach (var item in keysList)
             {
                 UserInfoViewModel userInfoView = JsonUtil.JsonDeserializeObject<UserInfoViewModel>(item.Value);
-                if (userInfoView.TokenContent==refreshToken)
+                if (userInfoView.RefreshTokenContent == refreshToken)
                 {
                     var dt = DateTime.Now;
                     LogUtil.Info(userInfoView.Expires.ToString("yyyy-MM-dd hh:mm:ss"));
@@ -179,21 +168,22 @@ namespace NetCore.Services.Services.S_Login
                         httpReponse.Data = t;
 
                         string key = userInfoView.ID;
-                        if (_redisService.GetIsExistKey(key))
+                        if (_redisService.IsExistKeyHash(key))
                         {
                             //删除
-                            _redisService.RemoveRefreshTokenValue(key);
+                            _redisService.RemoveHash(key);
                         }
                         //更新 过期的时间
                         userInfoView.Expires = t.Expires;
                         //存储刷新的token  存入redis
                         string value = JsonUtil.JsonSerialize(userInfoView);
-                        _redisService.SetRefreshTokenValue(key, value);
+                        _redisService.SetValueHash(key, value);
                     }
                     else
                     {
+                        //过期  未授权  从新登陆
                         httpReponse.Data = new TokenViewModel();
-                        httpReponse.StatusCode = StatusCode.RefreshTokenError;
+                        httpReponse.StatusCode = StatusCode.Unauthorized;
                         httpReponse.Message = "刷新token发生错误";
                         httpReponse.ResultSign = ResultSign.Error;
                     }
@@ -204,6 +194,9 @@ namespace NetCore.Services.Services.S_Login
             }
             return httpReponse;
         }
+
+
+       
 
     }
 }

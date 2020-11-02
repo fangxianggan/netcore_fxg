@@ -3,35 +3,35 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Core.EntityModel.ReponseModels;
-using NetCore.DTO.ReponseViewModel;
 using NetCore.DTO.ReponseViewModel.Login;
-using NetCore.DTO.RequestViewModel;
 using NetCore.DTO.RequestViewModel.Login;
 using NetCore.DTO.ViewModel;
-using NetCore.Services.IServices;
 using NetCore.Services.IServices.I_Login;
+using NetCoreApp.Filters;
 
 namespace NetCoreApp.Controllers
 {
     /// <summary>
-    /// 
+    /// 用户登录 /注册  
     /// </summary>
     [Route("dev-api/[controller]")]
     [ApiController]
-    [Authorize]
+   
     public class LoginController : ControllerBase
     {
         private readonly IUserLoginServices _userLoginServices;
+        private readonly IUserLogonServices _userLogonServices;
         private readonly IHttpContextAccessor _contextAccessor;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="userLoginServices"></param>
         /// <param name="contextAccessor"></param>
-        public LoginController(IUserLoginServices userLoginServices, IHttpContextAccessor contextAccessor)
+        public LoginController(IUserLogonServices userLogonServices,IUserLoginServices userLoginServices, IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
             _userLoginServices = userLoginServices;
+            _userLogonServices = userLogonServices;
         }
 
         /// <summary>
@@ -93,6 +93,24 @@ namespace NetCoreApp.Controllers
                 return _userLoginServices.GetRefreshTokenData(refreshToken);
             });
         }
+
+
+        /// <summary>
+        /// 用户注册
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// 
+        [AllowAnonymous]
+        [HttpPost, Route("GetUserLogonData")]
+        public async Task<HttpReponseViewModel> GetUserLogonData(UserLogonViewModel model)
+        {
+            return await Task.Run(() =>
+            {
+                return _userLogonServices.GetUserLogonData(model);
+            });
+        }
+
 
     }
 }

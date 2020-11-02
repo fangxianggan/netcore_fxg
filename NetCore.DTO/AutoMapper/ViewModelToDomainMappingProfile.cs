@@ -4,6 +4,7 @@ using NetCore.DTO.ReponseViewModel.OrderInfo;
 using NetCore.DTO.ReponseViewModel.ProductInfo;
 using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.DTO.RequestViewModel.FileUpload;
+using NetCore.DTO.RequestViewModel.Login;
 using NetCore.DTO.TestModel;
 using NetCore.EntityFrameworkCore.Models;
 
@@ -51,6 +52,8 @@ namespace NetCore.DTO.AutoMapper
             CreateMap<TaskJobLogViewModel, TaskJobLog>();
 
             CreateMap<UserInfoViewModel, UserInfo>();
+
+            CreateMap<UserLogonViewModel, UserInfo>();
 
             CreateMap<ProductInfoViewModel,ProductInfo >();
 

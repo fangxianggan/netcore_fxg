@@ -307,7 +307,7 @@ import {
   addJob,
   stopJob,
   resumeJob,
-  deleteJob
+  del
 } from "@/api/taskjob";
 import myAction from "@/utils/baseutil";
 export default {
@@ -442,9 +442,8 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           var data = this.temp;
-
-          addOrEdit(data).then(response => {
-            this.temp.id = response.primaryKeyValue;
+            addOrEdit(data).then(response => {
+            this.temp.id = response.data;
             this.list.unshift(this.temp);
             this.total++;
             this.dialogFormVisible = false;
@@ -487,7 +486,7 @@ export default {
       })
         .then(() => {
           let data = '"' + row.id + '"';
-          deleteJob(data).then(response => {
+          del(data).then(response => {
             if (response.resultSign == 0) {
               this.list.splice(index, 1);
               this.total--;

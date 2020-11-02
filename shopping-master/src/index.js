@@ -4,7 +4,7 @@ import Routers from './router';
 import Vuex from 'vuex';
 import App from './app.vue';
 import './style.css';
-import product_data from './product';
+import { getPageList} from './api/product';
 import util from './util';
 Vue.use(VueRouter);
 Vue.use(Vuex);
@@ -39,6 +39,8 @@ const store = new Vuex.Store({
         username: window.localStorage.getItem('username'),
         //登录状态
         loginStatus: !!window.localStorage.getItem('loginStatus'),
+
+        token:''
     },
     getters: {
         //品牌、颜色筛选
@@ -90,14 +92,19 @@ const store = new Vuex.Store({
         },
         getLoginStatus(state, flag){
             state.loginStatus = flag;
-        }
+        },
+       
     },
     actions: {
         //异步请求商品列表，暂且使用setTimeout
         getProductList(context){
-            setTimeout(() => {
-                context.commit('setProductList', product_data)
-            }, 500);
+            var obj={"pageSize":20,"pageIndex":1,"total":10,"items":[{"field":"ProductName","method":"Contains","value":"","prefix":"","operator":"And"},{"field":"OpeningTime","method":"Between","value":"","prefix":"","operator":"And"}],"orderList":[{"field":"ID","isDesc":true}],"isReport":false}
+               
+            getPageList(obj).then((d)=>{
+
+                context.commit('setProductList', d.pageData)
+            })
+           
         },
         //购买
         buy(context){
@@ -109,6 +116,8 @@ const store = new Vuex.Store({
                 }, 500);
             });
         },
+      
+
     }
 });
 const app = new Vue({

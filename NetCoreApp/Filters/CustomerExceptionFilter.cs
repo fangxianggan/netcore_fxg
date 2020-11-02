@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.Core.Enum;
 using NetCore.Core.Util;
 using System;
 using System.Collections.Generic;
@@ -41,12 +44,19 @@ namespace NetCoreApp.Filters
                 if (_hostingEnvironment.IsDevelopment())//如果是开发环境
                 {
 
+                    //比如 记录到数据库  错误信息
+
+
                     LogUtil.Error($"错误日志:{context.Exception.Message}");
-                    //var result = new ViewResult { ViewName = "../Handle/Index" };
-                    //result.ViewData = new ViewDataDictionary(_modelMetadataProvider,
-                    //                                            context.ModelState);
-                    //result.ViewData.Add("Exception", context.Exception);//传递数据
-                    //context.Result = result;
+                    context.Result = new JsonResult(new HttpReponseViewModel()
+                    {
+                        ExeSql = "",
+                        Message = "" + context.Exception.Message,
+                        ResultSign = ResultSign.Error,
+                        StatusCode =StatusCode.InternalServerError
+                    });
+
+                   
                 }
                 else
                 {

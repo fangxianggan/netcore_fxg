@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NetCore.Core.EntityModel.ReponseModels;
 using NetCore.Core.Util;
 using NetCore.DTO.TestModel;
@@ -27,15 +28,18 @@ namespace NetCoreApp.Controllers
     {
         private readonly ITestServices _testService;
         private readonly IHttpContextAccessor _contextAccessor;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="testService"></param>
-        /// <param name="contextAccessor"></param>
-        public TestController(ITestServices testService, IHttpContextAccessor contextAccessor)
+        private readonly ILogger logger;
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="loggerFactory"></param>
+       /// <param name="testService"></param>
+       /// <param name="contextAccessor"></param>
+        public TestController(ILoggerFactory loggerFactory,ITestServices testService, IHttpContextAccessor contextAccessor)
         {
             _testService = testService;
             _contextAccessor = contextAccessor;
+            logger = loggerFactory.CreateLogger<TestController>();
         }
 
         /// <summary>
@@ -122,6 +126,30 @@ namespace NetCoreApp.Controllers
 
            
         }
+
+        /// <summary>
+        /// 消息队列测试
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+
+        [Route("/fff4")]
+        [HttpGet]
+        public IActionResult fff5(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+            {
+                //发送消息,这里也可以检验日志级别的过滤
+                logger.LogCritical($"Log from Critical:{message}");
+                logger.LogDebug($"Log from Debug:{message}");
+                logger.LogError($"Log from Error:{message}");
+                logger.LogInformation($"Log from Information:{message}");
+                logger.LogTrace($"Log from Trace:{message}");
+                logger.LogWarning($"Log from Warning:{message}");
+            }
+            return Content(message);
+        }
+
     }
 
 

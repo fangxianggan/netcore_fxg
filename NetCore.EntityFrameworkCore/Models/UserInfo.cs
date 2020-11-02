@@ -19,16 +19,22 @@ namespace NetCore.EntityFrameworkCore.Models
         /// <summary>
         /// 用户编号
         /// </summary>
+        /// 
+        [DisplayName("用户编号"), MaxLength(32)]
         public string UserCode { set; get; }
 
         /// <summary>
         /// 用户名
         /// </summary>
+        /// 
+        [DisplayName("用户名"), MaxLength(64)]
         public string UserName { set; get; }
 
         /// <summary>
         /// 昵称
         /// </summary>
+        /// 
+        [DisplayName("昵称"), MaxLength(64)]
         public string NickName { set; get; }
 
         /// <summary>
@@ -47,8 +53,15 @@ namespace NetCore.EntityFrameworkCore.Models
         /// 手机号
         /// </summary>
         /// 
-        [DisplayName("手机号")]
+        [DisplayName("手机号"), MaxLength(32)]
         public string PhoneNumber { set; get; }
+
+        /// <summary>
+        /// 邮箱
+        /// </summary>
+        /// 
+        [DisplayName("邮箱"), MaxLength(64)]
+        public string Email { set; get; }
 
         /// <summary>
         /// 状态
@@ -59,7 +72,7 @@ namespace NetCore.EntityFrameworkCore.Models
         /// <summary>
         /// 
         /// </summary>
-        [DisplayName("头标")]
+        [DisplayName("头标"),MaxLength(200)]
         public string Avatar { set; get; }
 
 

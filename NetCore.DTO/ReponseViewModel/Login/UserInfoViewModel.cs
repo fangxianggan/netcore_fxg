@@ -22,7 +22,7 @@ namespace NetCore.DTO.ReponseViewModel.Login
         /// <summary>
         /// token
         /// </summary>
-        public string TokenContent { set; get; }
+        public string RefreshTokenContent { set; get; }
 
     }
 

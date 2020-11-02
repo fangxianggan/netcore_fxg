@@ -6,6 +6,7 @@ using NetCore.DTO.ReponseViewModel.TaskJob;
 using NetCore.DTO.TestModel;
 using NetCore.EntityFrameworkCore.Models;
 using NetCore.DTO.ReponseViewModel.OrderInfo;
+using NetCore.DTO.RequestViewModel.Login;
 
 namespace NetCore.DTO.AutoMapper
 {

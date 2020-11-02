@@ -1,14 +1,18 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken ,
-  setRefreshToken,removeRefreshToken,getTokenExpires,setTokenExpires} from '@/utils/auth'
+import { login, logout, getInfo, getRefreshTokenData } from '@/api/user'
+import {
+  getToken,
+  setToken, removeToken,
+  setRefreshToken, removeRefreshToken,
+  getTokenExpires, setTokenExpires
+} from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
-    refreshToken:'',
-    expires:getTokenExpires(),
-    refreshExpires:'',
+    refreshToken: '',
+    expires: getTokenExpires(),
+    refreshExpires: '',
     name: '',
     avatar: ''
   }
@@ -50,8 +54,8 @@ const actions = {
         commit('SET_EXPIRES', data.accessToken.expires)
         commit('SET_REFRESHTOKEN', data.refreshToken.tokenContent)
         commit('SET_REFRESHEXPIRES', data.refreshToken.expires)
-        setToken(data.accessToken.tokenContent,data.accessToken.expires);
-        setRefreshToken(data.refreshToken.tokenContent,data.refreshToken.expires);
+        setToken(data.accessToken.tokenContent, data.accessToken.expires);
+        setRefreshToken(data.refreshToken.tokenContent, data.refreshToken.expires);
         resolve()
       }).catch(error => {
         reject(error)
@@ -101,8 +105,32 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
+  },
+
+
+
+  //刷新 token 存储
+  refreshToken({ commit },d) {
+    return new Promise((resolve, reject) => {
+      getRefreshTokenData(d).then(res => {
+        if (res.statusCode === 200) {
+          const data = res.data
+          commit('SET_EXPIRES', data.expires)
+          commit('SET_TOKEN', data.tokenContent)
+          removeToken();
+          setToken(data.tokenContent, data.expires);
+        }
+        resolve(res)
+      }).catch(error => {
+        reject(error)
+      })
+    })
   }
+
+
 }
+
+
 
 export default {
   namespaced: true,

@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NetCore.Core.EntityModel.ReponseModels;
-using NetCore.Core.Extensions;
 using NetCore.Domain.Interface;
 using NetCore.DTO.Enum;
 using NetCore.DTO.ReponseViewModel.Login;
-using NetCore.DTO.RequestViewModel.Login;
 using NetCore.DTO.ViewModel;
 using NetCore.EntityFrameworkCore.Models;
 using NetCore.Services.IServices.I_JWTToken;

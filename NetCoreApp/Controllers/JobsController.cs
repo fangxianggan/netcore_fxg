@@ -16,7 +16,6 @@ namespace NetCoreApp.Controllers
     /// </summary>
     [Route("dev-api/[controller]")]
     [ApiController]
-    [Authorize]
     public class JobsController : ControllerBase
     {
         /// <summary>
@@ -57,7 +56,7 @@ namespace NetCoreApp.Controllers
         /// 
         [TypeFilter(typeof(CustomerExceptionFilter))]
         [HttpPost, Route("AddOrEditTaskJob")]
-        public async Task<HttpReponseViewModel> AddOrEditTaskJob(TaskJobViewModel model)
+        public async Task<HttpReponseObjViewModel<string>> AddOrEditTaskJob(TaskJobViewModel model)
         {
             return await Task.Run(() =>
             {

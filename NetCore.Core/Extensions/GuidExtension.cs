@@ -38,5 +38,8 @@ namespace NetCore.Core.Extensions
         {
             return guid == null || guid == Guid.Empty;
         }
+
+
+        
     }
 }

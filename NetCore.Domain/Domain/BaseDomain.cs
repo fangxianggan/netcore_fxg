@@ -11,7 +11,6 @@ namespace NetCore.Domain.Domain
 {
     public class BaseDomain<T> : IBaseDomain<T> where T : class, new()
     {
-       
         private readonly IRepository<T> _repository;
         public BaseDomain(IRepository<T> repository)
         {

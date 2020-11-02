@@ -4,17 +4,35 @@ using System.Text;
 
 namespace NetCore.Services.IServices.I_Redis
 {
-   public interface IRedisServices
+    public interface IRedisServices
     {
-        bool SetRefreshTokenValue(string key, string value);
 
-        bool RemoveRefreshTokenValue(string key);
+        #region hash存储操作
+        string hashId { set; get; }
+        bool SetValueHash(string key, string value);
 
-        bool GetIsExistKey(string key);
+        bool RemoveHash(string key);
 
-        string GetValueFromHash(string key);
+        bool IsExistKeyHash(string key);
 
-        Dictionary<string,string> GetAllEntriesFromHash();
+        string GetValueHash(string key);
+
+        Dictionary<string, string> GetAllHashById();
+
+        #endregion
+
+        #region list操作
+
+        bool SetValueList(string key,string value);
+
+        bool RemoveList(string key);
+
+        string GetValueList(string key);
+
+        #endregion
+
+
+
 
     }
 }

@@ -74,7 +74,17 @@ export const constantRoutes = [
       },
     ]
   },
-
+  
+  {
+    path: '/product',
+    component: Layout,
+    children: [{
+      path: 'product',
+      name: '商品列表',
+      component: () => import('@/views/product/index'),
+      meta: { title: '商品列表', icon: 'form' },
+    }]
+  },
   {
     path: '/taskjob',
     component: Layout,
@@ -82,7 +92,7 @@ export const constantRoutes = [
       path: 'taskjob',
       name: '任务管理',
       component: () => import('@/views/taskjob/index'),
-      meta: { title: '任务管理', icon: 'icon' }
+      meta: { title: '任务管理', icon: 'form' }
     }]
   },
 

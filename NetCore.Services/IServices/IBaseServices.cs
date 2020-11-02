@@ -11,9 +11,13 @@ namespace NetCore.Services.Interface
        
         Task<bool> AddListService(List<TView> entity);
 
-        Task<HttpReponseViewModel> AddOrEditService(TView entity);
+        Task<HttpReponseObjViewModel<string>> AddOrEditService(TView entity);
+
+        Task<HttpReponseObjViewModel<string>> AddOrEditService(TView entity,bool isRedis,string hashId);
 
         Task<HttpReponseViewModel> DeleteService(object id);
+
+        Task<HttpReponseViewModel> DeleteService(object id, bool isRedis, string hashId);
 
         Task<HttpReponsePageViewModel<List<TView>>> GetPageListService(QueryModel queryModel);
 

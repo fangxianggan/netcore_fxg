@@ -1,9 +1,6 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken, setToken,setTokenExpires, getRefreshToken, setRefreshToken } from '@/utils/auth'
-import { getRefreshTokenData } from '@/api/user'
-
 
 
 
@@ -11,18 +8,13 @@ import { getRefreshTokenData } from '@/api/user'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-
   timeout: 300000 // request timeout
 })
-
-
 
 // 是否有请求在刷新token
 window.isRefreshing = false
 // 被挂起的请求数组
 let requests = []
-
-
 
 /* 请求拦截器 */
 // request interceptor
@@ -34,60 +26,58 @@ service.interceptors.request.use(
     } else {
       config.params = config.params || {}
     }
+    // let each request carry token
+    // ['X-Token'] is a custom headers key
+    // please modify it according to the actual situation
 
-  
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      //jwt
-      config.headers['Authorization'] = "Bearer " + getToken()
+    //登录和刷新token
+    if (config.url.indexOf("/login") >= 0 || config.url.indexOf("/GetRefreshToken") >= 0) {
+      return config;
+    }
 
-      //登录和刷新token
-      if (config.url.indexOf("/login") >= 0 || config.url.indexOf("/GetRefreshToken")>=0) {
-        return config;
-      }
-      console.log(store.getters.expires);
-      //token 是否在超過有效期內 但是在刷新的有效期內 獲取新的token
-      if (store.getters.expires&&store.getters.token) {
-        const now = Date.now();
-        const expires=new Date(store.getters.expires).getTime();
-        if (now >= expires ) {
-          //立即刷新token
-          if (!window.isRefreshing) {
-            window.isRefreshing = true
-            getRefreshTokenData(store.getters.refreshToken)
-              .then((res) => {
-                window.isRefreshing = false;
-                if (res.statusCode === 200) {
-                  const data = res.data
-                  setTokenExpires(data.expires)
-                  setToken(data.tokenContent, data.expires);
-                  return data.tokenContent
-                }
-              }).then((token) => {
-                console.log("刷新token成功 执行队列");
-                requests.forEach(element => {
-                  element(token)
-                });
-                requests = [];
-              }).catch((res) => {
-                console.error("refesh token error", res);
-              })
-          }
-          const retry = new Promise((resolve, reject) => {
-            requests.push((token) => {
-              config.headers['Authorization'] = "Bearer " + token;
-              resolve(config)
+    //jwt
+    config.headers['Authorization'] = "Bearer " + store.getters.token
+
+    //token 是否在超過有效期內 但是在刷新的有效期內 獲取新的token
+    if (store.getters.expires && store.getters.token) {
+      // console.log(store.getters.expires);
+      //  console.log(store.getters.token);
+      const now = Date.now();
+      const expires = new Date(store.getters.expires).getTime();
+      if (now >= expires) {
+        //立即刷新token
+        if (!window.isRefreshing) {
+          window.isRefreshing = true
+          store.dispatch("user/refreshToken", store.getters.refreshToken)
+            .then((res) => {
+              window.isRefreshing = false;
+              if (res.statusCode === 200) {
+                const data = res.data
+                return data.tokenContent
+              }
+            }).then((token) => {
+              // console.log("刷新token成功 执行队列");
+              requests.forEach(element => {
+                element(token)
+              });
+              requests = [];
+            }).catch((res) => {
+              console.error("refesh token error", res);
             })
-          })
-          return retry
         }
+        const retry = new Promise((resolve, reject) => {
+          requests.push((token) => {
+            config.headers['Authorization'] = "Bearer " + token;
+            resolve(config)
+          })
+        })
+        return retry
       }
-
-      if (!config.headers['Authorization']) {
-        delete config.headers['Authorization']
-      }
-      return config
+    }
+    if (!config.headers['Authorization']) {
+      delete config.headers['Authorization']
+    }
+    return config
   },
   error => {
     // do something with request error
@@ -102,7 +92,6 @@ service.interceptors.response.use(
    * If you want to get http information such as headers or status
    * Please return  response => response
   */
-
   /**
    * Determine the request status by custom code
    * Here is just an example
@@ -110,42 +99,45 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
+    const statusCode = res.statusCode
     // if the custom code is not 20000, it is judged as an error.
-    if (res.statusCode !== 200) {
-
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.statusCode === 401) {
-        // to re-login
-        var i = 5;
-        var txt = i;
-        var mes = "长时间未操作页面已经失效<span style='font-size:20px;' id='aa'>" + txt + "</span>秒后跳回登录页面！"
-        Message({
-          message: mes,
-          type: 'error',
-          dangerouslyUseHTMLString: true,
-          duration: i * 1000
-        })
-        var dd = setInterval(function () {
-          $("#aa").html(txt--);
-          // console.log("ffff")
-        }, 1000);
-
-        setTimeout(function () {
-          clearInterval(dd);
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
+    if (statusCode !== 200) {
+      var mes = res.message;
+      var s = 5000;
+      switch (statusCode) {
+        case 401:
+          var i = 5;
+          var txt = i;
+          mes = "长时间未操作页面已经失效<span style='font-size:20px;' id='aa'>" + txt + "</span>秒后跳回登录页面！"
+          var dd = setInterval(function () {
+            $("#aa").html(txt--);
+            // console.log("ffff")
+          }, 1000);
+          Message({
+            message: mes,
+            type: 'error',
+            dangerouslyUseHTMLString: true,
+            duration: s
           })
-        }, i * 1000);
-
-      } else {
-        Message({
-          message: res.message,
-          type: 'error'
-        })
+          setTimeout(function () {
+            clearInterval(dd);
+            store.dispatch('user/resetToken').then(() => {
+              location.reload()
+            })
+          }, i * 1000);
+          break
+        default:
+          s = 5000;
+          Message({
+            message: mes,
+            type: 'error',
+            dangerouslyUseHTMLString: true,
+            duration: s
+          })
+          break
       }
-      return res;
+      return Promise.reject(res.message)
     } else {
-
       return res;
     }
   },
@@ -208,7 +200,6 @@ service.interceptors.response.use(
     } else {
       msg = "连接到服务器失败";
     }
-
     // console.log('err' + error) // for debug
     Message({
       message: msg,
@@ -218,9 +209,4 @@ service.interceptors.response.use(
     return Promise.reject(error)
   }
 )
-
-
-
-
-
 export default service

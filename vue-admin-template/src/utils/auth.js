@@ -24,7 +24,7 @@ export function getTokenExpires() {
 }
 export function setTokenExpires(cookieExpires) 
 {
-  return Cookies.set(TokenKey, cookieExpires)
+  return Cookies.set(TokenExpires, cookieExpires)
 }
 
 export function removeTokenExpires() {

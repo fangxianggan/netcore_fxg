@@ -31,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Services", "NetCore
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Core", "NetCore.Core\NetCore.Core.csproj", "{1B7BE426-6D04-4E37-94B4-FE14295BB93C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.Core.RedisUtil", "NetCore.Core.RedisUtil\NetCore.Core.RedisUtil.csproj", "{21F03DE0-9E66-4856-84A3-6EF449C8EB0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Core.RedisUtil", "NetCore.Core.RedisUtil\NetCore.Core.RedisUtil.csproj", "{21F03DE0-9E66-4856-84A3-6EF449C8EB0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.Core.RabbitMQ", "NetCore.Core.RabbitMQ\NetCore.Core.RabbitMQ.csproj", "{5D2203FF-965D-4855-9B3F-49F8DEC66C7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,10 @@ Global
 		{21F03DE0-9E66-4856-84A3-6EF449C8EB0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21F03DE0-9E66-4856-84A3-6EF449C8EB0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21F03DE0-9E66-4856-84A3-6EF449C8EB0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D2203FF-965D-4855-9B3F-49F8DEC66C7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D2203FF-965D-4855-9B3F-49F8DEC66C7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D2203FF-965D-4855-9B3F-49F8DEC66C7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D2203FF-965D-4855-9B3F-49F8DEC66C7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +94,7 @@ Global
 		{03BF7C57-4F6D-4CCD-89F1-33845F7A50E7} = {811AEFE0-890D-4EBB-859D-076798AC332A}
 		{1B7BE426-6D04-4E37-94B4-FE14295BB93C} = {FB7DDD0E-2483-453A-BCE2-0959B83116AE}
 		{21F03DE0-9E66-4856-84A3-6EF449C8EB0B} = {FB7DDD0E-2483-453A-BCE2-0959B83116AE}
+		{5D2203FF-965D-4855-9B3F-49F8DEC66C7F} = {FB7DDD0E-2483-453A-BCE2-0959B83116AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB23531D-4FE0-4AF9-BAB0-C8073F4D2F90}

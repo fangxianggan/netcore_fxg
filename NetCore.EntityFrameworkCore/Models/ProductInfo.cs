@@ -46,7 +46,19 @@ namespace NetCore.EntityFrameworkCore.Models
         [DisplayName("产品价格")]
         public decimal Price { get; set; }
 
+        /// <summary>
+        /// 产品颜色
+        /// </summary>
+        /// 
+        [DisplayName("产品颜色"), MaxLength(32)]
+        public string Color { get; set; }
 
+        /// <summary>
+        /// 品牌
+        /// </summary>
+        /// 
+        [DisplayName("品牌"), MaxLength(32)]
+        public string Brand { get; set; }
         /// <summary>
         /// 产品描述
         /// </summary>
@@ -59,9 +71,14 @@ namespace NetCore.EntityFrameworkCore.Models
         /// </summary>
         /// 
         [DisplayName("产品图片"), MaxLength(300)]
-        public string Url { get; set; }
+        public string Image { get; set; }
 
-
+        /// <summary>
+        /// 产品图片
+        /// </summary>
+        /// 
+        [DisplayName("图片详情"), MaxLength(300)]
+        public string ImageDetail { get; set; }
         /// <summary>
         /// 开团时间
         /// </summary>

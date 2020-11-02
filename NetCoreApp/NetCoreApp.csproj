@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NetCore.Core.RabbitMQ\NetCore.Core.RabbitMQ.csproj" />
     <ProjectReference Include="..\NetCore.Core.RedisUtil\NetCore.Core.RedisUtil.csproj" />
     <ProjectReference Include="..\NetCore.Core\NetCore.Core.csproj" />
     <ProjectReference Include="..\NetCore.Domain\NetCore.Domain.csproj" />

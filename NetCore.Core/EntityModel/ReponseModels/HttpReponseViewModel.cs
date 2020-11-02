@@ -28,6 +28,14 @@ namespace NetCore.Core.EntityModel.ReponseModels
         /// </summary>
         public StatusCode StatusCode { set; get; }
 
+        public HttpReponseViewModel()
+        {
+            ResultSign = ResultSign.Success;
+            Message = HttpReponseMessage.SuccessMsg;
+            StatusCode = StatusCode.OK;
+            ExeSql = "";
+        }
+
         public HttpReponseViewModel(string exeSql = "")
         {
             ResultSign = ResultSign.Success;
@@ -116,7 +124,6 @@ namespace NetCore.Core.EntityModel.ReponseModels
             Data = default(T);
             ExeSql = exeSql;
         }
-
     }
 
 

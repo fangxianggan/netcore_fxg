@@ -9,8 +9,8 @@ using NetCore.EntityFrameworkCore.Context;
 namespace NetCore.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20201027024852_v2.1")]
-    partial class v21
+    [Migration("20201030060946_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -57,6 +57,74 @@ namespace NetCore.EntityFrameworkCore.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Menu");
+                });
+
+            modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.OrderInfo", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CreateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<int>("OrderStatus");
+
+                    b.Property<DateTime>("PayOutTime");
+
+                    b.Property<Guid>("ProductId");
+
+                    b.Property<int>("PurchaseNum");
+
+                    b.Property<string>("UpdateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("UpdateTime");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("OrderInfo");
+                });
+
+            modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.ProductInfo", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CreateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("CreateTime");
+
+                    b.Property<string>("Des")
+                        .HasMaxLength(300);
+
+                    b.Property<int>("LimitedNum");
+
+                    b.Property<DateTime>("OpeningTime");
+
+                    b.Property<decimal>("Price");
+
+                    b.Property<string>("ProductCode")
+                        .HasMaxLength(64);
+
+                    b.Property<string>("ProductName")
+                        .HasMaxLength(64);
+
+                    b.Property<int>("StockNum");
+
+                    b.Property<string>("UpdateBy")
+                        .HasMaxLength(32);
+
+                    b.Property<DateTime?>("UpdateTime");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(300);
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ProductInfo");
                 });
 
             modelBuilder.Entity("NetCore.EntityFrameworkCore.Models.Role", b =>
@@ -264,21 +332,27 @@ namespace NetCore.EntityFrameworkCore.Migrations
                     b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Avatar");
+                    b.Property<string>("Avatar")
+                        .HasMaxLength(200);
 
                     b.Property<string>("CreateBy")
                         .HasMaxLength(32);
 
                     b.Property<DateTime?>("CreateTime");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(64);
+
                     b.Property<int>("Gender");
 
-                    b.Property<string>("NickName");
+                    b.Property<string>("NickName")
+                        .HasMaxLength(64);
 
                     b.Property<string>("Password")
                         .HasMaxLength(64);
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(32);
 
                     b.Property<int>("State");
 
@@ -287,9 +361,11 @@ namespace NetCore.EntityFrameworkCore.Migrations
 
                     b.Property<DateTime?>("UpdateTime");
 
-                    b.Property<string>("UserCode");
+                    b.Property<string>("UserCode")
+                        .HasMaxLength(32);
 
-                    b.Property<string>("UserName");
+                    b.Property<string>("UserName")
+                        .HasMaxLength(64);
 
                     b.HasKey("ID");
 

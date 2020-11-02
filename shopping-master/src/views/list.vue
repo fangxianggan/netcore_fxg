@@ -22,17 +22,17 @@
                       :class="{on: order === ''}"
                       @click="handleOrderDefault">默认</span>
                 <span class="list-control-order-item"
-                      :class="{on: order === 'sales'}"
-                      @click="handleOrderSales">
+                      :class="{on: order === 'stockNum'}"
+                      @click="handleOrderstockNum">
                     销量
-                    <template v-if="order === 'sales'">↓</template>
+                    <template v-if="order === 'stockNum'">↓</template>
                 </span>
                 <span class="list-control-order-item"
-                      :class="{on: order.indexOf('cost') > -1}"
-                      @click="handleOrderCost">
+                      :class="{on: order.indexOf('price') > -1}"
+                      @click="handleOrderprice">
                     价格
-                    <template v-if="order === 'cost-desc'">↓</template>
-                    <template v-if="order === 'cost-asc'">↑</template>
+                    <template v-if="order === 'price-desc'">↓</template>
+                    <template v-if="order === 'price-asc'">↑</template>
                 </span>
             </div>
         </div>
@@ -71,12 +71,12 @@
                 }
                 //排序
                 if(this.order !== ''){
-                    if(this.order === 'sales'){
-                        list = list.sort((a, b) => b.sales - a.sales);
-                    }else if(this.order === 'cost-desc'){
-                        list = list.sort((a, b) => b.cost - a.cost);
-                    }else if(this.order === 'cost-asc'){
-                        list = list.sort((a, b) => a.cost - b.cost);
+                    if(this.order === 'stockNum'){
+                        list = list.sort((a, b) => b.stockNum - a.stockNum);
+                    }else if(this.order === 'price-desc'){
+                        list = list.sort((a, b) => b.price - a.price);
+                    }else if(this.order === 'price-asc'){
+                        list = list.sort((a, b) => a.price - b.price);
                     }
                 }
                 return list;
@@ -89,12 +89,13 @@
                 //颜色过滤
                 filterColor: '',
                 //排序依据，可选值：
-                //cost-desc价格降序
-                //cost-asc价格升序
-                //sales销量
+                //price-desc价格降序
+                //price-asc价格升序
+                //stockNum销量
                 order: ''
             }
         },
+       
         methods: {
             //品牌筛选
             handleFilterBrand(brand){
@@ -117,17 +118,18 @@
             handleOrderDefault(){
                 this.order = '';
             },
-            handleOrderSales(){
-                this.order = 'sales';
+            handleOrderstockNum(){
+                this.order = 'stockNum';
             },
-            handleOrderCost(){
+            handleOrderprice(){
                 //当点击升序时将箭头更新↓,降序设置为↑
-                if(this.order === 'cost-desc'){
-                    this.order = 'cost-asc';
+                if(this.order === 'price-desc'){
+                    this.order = 'price-asc';
                 }else{
-                    this.order = 'cost-desc';
+                    this.order = 'price-desc';
                 }
             },
+          
 
         },
         mounted(){

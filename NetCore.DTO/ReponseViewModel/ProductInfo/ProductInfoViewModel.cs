@@ -13,7 +13,12 @@ namespace NetCore.DTO.ReponseViewModel.ProductInfo
         public int LimitedNum { get; set; }
         public decimal Price { get; set; }
         public string Des { get; set; }
-        public string Url { get; set; }
+        public string Color { get; set; }
+
+        public string Brand { get; set; }
+        public string Image { get; set; }
+
+        public string ImageDetail { set; get; }
 
         public DateTime OpeningTime { set; get; }
     }

@@ -36,6 +36,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NetCore.DTO.ViewModel;
 using NetCore.Core.RedisUtil;
+using NetCore.Core.RabbitMQ;
+using Microsoft.Extensions.Logging;
+
 
 namespace NetCoreApp
 {
@@ -113,15 +116,23 @@ namespace NetCoreApp
             #endregion
 
             #region 全局注册 异常过滤器  全局设置
-            //services.AddMvc(option =>
-            //{
-            //    option.Filters.Add<AuthorizationFilter>();
-            //    //option.Filters.Add<ResourceFilter>();
-            //    option.Filters.Add<CustomerExceptionFilter>();
-            //    option.Filters.Add<ActionFilter>();
-            //    // option.Filters.Add<ResultFilter>();
-            //    option.Filters.Add(new AddHeaderResultFilterAttribute("name", "Jesen"));
-            //});
+            //取消自动校验模型  netcore  大于 2.0 自动校验模型
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
+            services.AddMvc(option =>
+            {
+                option.Filters.Add<AuthorizationFilter>();
+                //option.Filters.Add<ResourceFilter>();
+                option.Filters.Add<CustomerExceptionFilter>();
+                option.Filters.Add<ActionFilter>();
+                // option.Filters.Add<ResultFilter>();
+                // option.Filters.Add(new AddHeaderResultFilterAttribute("name", "Jesen"));
+            });
+
+          
             //全局配置Json序列化处理
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -217,6 +228,47 @@ namespace NetCoreApp
                 #endregion
 
             });
+
+            #endregion
+
+
+            #region rabbitmq 配置
+            //配置消息发布
+            services.Configure<RabbitMQLoggerOptions>(options =>
+            {
+                options.Category = "Rabbit";
+                options.Hosts = new string[] { "192.168.187.129" };
+                options.MinLevel = LogLevel.Information;
+                options.Password = "123456";
+                options.Port = 5672;
+                options.Queue = "queue1";
+                options.UserName = "admin";
+                options.VirtualHost = "/";
+                options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+                options.AutoDelete = false;
+                options.Durable = true;
+            });
+            //将RabbitLoggerProvider加入到容器中
+            services.AddSingleton<ILoggerProvider, RabbitLoggerProvider>();
+
+
+            //配置消息消费
+            services.Configure<RabbitMQConsumerOptions>(options =>
+            {
+                options.Hosts = new string[] { "192.168.187.129" };
+                options.Password = "123456";
+                options.Port = 5672;
+                options.Queue = "queue1";
+                options.UserName = "admin";
+                options.VirtualHost = "/";
+                options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+                options.AutoDelete = false;
+                options.Durable = true;
+                options.AutoAck = false;
+            });
+            //注入消费者
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, RabbitHostedService>();
+
 
             #endregion
 

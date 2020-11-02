@@ -254,7 +254,13 @@ namespace NetCore.Core.Enum
         /// <summary>
         /// 文件不存在
         /// </summary>
-        FileNoExistent=10003
+        FileNoExistent=10003,
+
+        /// <summary>
+        /// 模型验证失败
+        /// </summary>
+        ModelStateError=10004
+        
         #endregion
 
     }

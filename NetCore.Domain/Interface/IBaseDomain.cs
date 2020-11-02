@@ -21,7 +21,6 @@ namespace NetCore.Domain.Interface
         Task<PageData<T>> GetPageList(QueryModel queryModel);
         Task<List<T>> GetList(Expression<Func<T, bool>> whereLambda);
         Task<T>  GetEntity(object keyValues);
-
         Task<T> GetEntity(Expression<Func<T, bool>> whereLambda);
     }
 }
