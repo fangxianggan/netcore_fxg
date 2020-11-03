@@ -37,8 +37,9 @@ using System.Text;
 using NetCore.DTO.ViewModel;
 using NetCore.Core.RedisUtil;
 using NetCore.Core.RabbitMQ;
+using NetCore.Services.IServices.I_RabbitMq;
+using NetCore.Services.Services.S_RabbitMq;
 using Microsoft.Extensions.Logging;
-
 
 namespace NetCoreApp
 {
@@ -48,7 +49,7 @@ namespace NetCoreApp
     public class Startup
     {
 
-       
+
         /// <summary>
         /// /
         /// </summary>
@@ -92,7 +93,7 @@ namespace NetCoreApp
         {
 
             #region 读取配置信息
-          
+
             services.Configure<JWTConfigViewModel>(Configuration.GetSection("JWT"));
             JWTConfigViewModel config = new JWTConfigViewModel();
             Configuration.GetSection("JWT").Bind(config);
@@ -132,7 +133,7 @@ namespace NetCoreApp
                 // option.Filters.Add(new AddHeaderResultFilterAttribute("name", "Jesen"));
             });
 
-          
+
             //全局配置Json序列化处理
             services.AddMvc().AddJsonOptions(options =>
             {
@@ -173,7 +174,7 @@ namespace NetCoreApp
             #endregion
 
             #region  监测性能
-            services.AddMiniProfiler(options =>options.RouteBasePath = "/profiler");
+            services.AddMiniProfiler(options => options.RouteBasePath = "/profiler");
             #endregion
 
             #region Swagger所需要的配置项
@@ -222,9 +223,9 @@ namespace NetCoreApp
                     Name = "Authorization",//jwt默认的参数名称
                     In = "header",//jwt默认存放Authorization信息的位置(请求头中)
                     Type = "apiKey"
-             
+
                 });
-               
+
                 #endregion
 
             });
@@ -233,42 +234,61 @@ namespace NetCoreApp
 
 
             #region rabbitmq 配置
-            //配置消息发布
-            services.Configure<RabbitMQLoggerOptions>(options =>
-            {
-                options.Category = "Rabbit";
-                options.Hosts = new string[] { "192.168.187.129" };
-                options.MinLevel = LogLevel.Information;
-                options.Password = "123456";
-                options.Port = 5672;
-                options.Queue = "queue1";
-                options.UserName = "admin";
-                options.VirtualHost = "/";
-                options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
-                options.AutoDelete = false;
-                options.Durable = true;
-            });
-            //将RabbitLoggerProvider加入到容器中
-            services.AddSingleton<ILoggerProvider, RabbitLoggerProvider>();
+            //RabbitMQLoggerOptions producer = new RabbitMQLoggerOptions();
+            //producer = Configuration.GetSection("ProducterMQ").Get<RabbitMQLoggerOptions>();
+            //producer.Arguments= new Dictionary<string, object>() { { "x-queue-type", "classic" } };
 
+
+            services.AddOptions<RabbitMQLoggerOptions>().Bind(Configuration.GetSection("ProducterMQ"));
+            services.AddOptions<RabbitMQConsumerOptions>().Bind(Configuration.GetSection("ConsumerMQ"));
+            //配置消息发布
+            //services.Configure<RabbitMQLoggerOptions>(options =>
+            //{
+            //    options.Category = "Rabbit";
+            //    options.Hosts = new string[] { "192.168.187.129" };
+            //     options.MinLevel = LogLevel.Information;
+            //    options.Password = "123456";
+            //    options.Port = 5672;
+            //    options.Queue = "queue1";
+            //    options.UserName = "admin";
+            //    options.VirtualHost = "/";
+            //    options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+            //    options.AutoDelete = false;
+            //    options.Durable = true;
+            //});
+            //将RabbitLoggerProvider加入到容器中
+            //  services.AddSingleton<ILoggerProvider, RabbitLoggerProvider>();
+
+            //services.Configure<RabbitMQLoggerOptions>(Configuration.GetSection("ProducterMQ"));
+            //RabbitMQLoggerOptions producer = new RabbitMQLoggerOptions();
+            //producer.Arguments= new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+            //Configuration.GetSection("ProducterMQ").Bind(producer);
+            // services.AddSingleton<IProducerMqServices, ProducerMqServices>();
 
             //配置消息消费
-            services.Configure<RabbitMQConsumerOptions>(options =>
-            {
-                options.Hosts = new string[] { "192.168.187.129" };
-                options.Password = "123456";
-                options.Port = 5672;
-                options.Queue = "queue1";
-                options.UserName = "admin";
-                options.VirtualHost = "/";
-                options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
-                options.AutoDelete = false;
-                options.Durable = true;
-                options.AutoAck = false;
-            });
-            //注入消费者
-            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, RabbitHostedService>();
+            //services.Configure<RabbitMQConsumerOptions>(options =>
+            //{
+            //    options.Hosts = new string[] { "192.168.187.129" };
+            //    options.Password = "123456";
+            //    options.Port = 5672;
+            //    options.Queue = "queue1";
+            //    options.UserName = "admin";
+            //    options.VirtualHost = "/";
+            //    options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+            //    options.AutoDelete = false;
+            //    options.Durable = true;
+            //    options.AutoAck = false;
+            //});
 
+            //services.Configure<RabbitMQConsumerOptions>(Configuration.GetSection("ConsumerMQ"));
+            //RabbitMQConsumerOptions consumer = new RabbitMQConsumerOptions();
+            //Configuration.GetSection("ConsumerMQ").Bind(consumer);
+            ////注入消费者
+            //services.AddSingleton<IConsumerMqServices, ConsumerMqServices>();
+
+            //注册单例 生产者和消费者
+             services.AddSingleton<IProducerMqServices, ProducerMqServices>();
+            //services.AddSingleton<IConsumerMqServices, ConsumerMqServices>();
 
             #endregion
 
@@ -289,11 +309,17 @@ namespace NetCoreApp
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IDapperRepository<>), typeof(DapperRepository<>));
 
+            var ignoredList = new List<string>() { "IProducerMqServices", "IConsumerMqServices" };
+
             foreach (var itemClass in GetClassInterfacePairs("NetCore.Services"))
             {
                 foreach (var itemInterface in itemClass.Value)
                 {
-                    services.AddScoped(itemInterface, itemClass.Key);
+                    var name = itemInterface.Name;
+                    if (!ignoredList.Contains(name))
+                    {
+                        services.AddScoped(itemInterface, itemClass.Key);
+                    }
                 }
             }
 
@@ -317,21 +343,21 @@ namespace NetCoreApp
             #endregion
 
         }
-       /// <summary>
-       /// 
-       /// </summary>
-       /// <param name="app"></param>
-       /// <param name="env"></param>
-       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
-           
+
 
             //---
             AppConfigUtil._serviceProvider = app.ApplicationServices;
 
-         
+
 
 
             if (env.IsDevelopment())
@@ -363,7 +389,7 @@ namespace NetCoreApp
             //
             app.UseMiniProfiler();
 
-           
+
             //跨域 策略
             app.UseCors(MyAllowSpecificOrigins);
 

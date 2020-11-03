@@ -7,11 +7,14 @@ using System.Threading;
 
 namespace NetCore.Core.RabbitMQ
 {
+    /// <summary>
+    /// 消费者
+    /// </summary>
     public class RabbitMQConsumer : RabbitBase
     {
-        public RabbitMQConsumer(params string[] hosts) : base(hosts)
+        public RabbitMQConsumer(int port,params string[] hosts) : base(port,hosts)
         {
-
+              
         }
         public RabbitMQConsumer(params (string, int)[] hostAndPorts) : base(hostAndPorts)
         {

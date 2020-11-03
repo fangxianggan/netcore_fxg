@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NetCore.Core.RabbitMQ
 {
-    public class RabbitLoggerProvider : ILoggerProvider
+    public class RabbitLoggerProvider : ILoggerProvider,IDisposable
     {
         RabbitMQLoggerOptions loggerOptions;
 
@@ -31,7 +31,7 @@ namespace NetCore.Core.RabbitMQ
         /// </summary>
         public void Dispose()
         {
-
+            GC.Collect();
         }
     }
 }

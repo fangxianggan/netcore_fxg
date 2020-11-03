@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NetCore.Core.RabbitMQ\NetCore.Core.RabbitMQ.csproj" />
     <ProjectReference Include="..\NetCore.Core.RedisUtil\NetCore.Core.RedisUtil.csproj" />
     <ProjectReference Include="..\NetCore.Domain\NetCore.Domain.csproj" />
     <ProjectReference Include="..\NetCore.DTO\NetCore.DTO.csproj" />

@@ -27,7 +27,7 @@ namespace NetCore.Services.IServices.I_Redis
 
         bool RemoveList(string key);
 
-        string GetValueList(string key);
+        List<string> GetValueList(string key);
 
         #endregion
 

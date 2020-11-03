@@ -17,19 +17,16 @@ namespace NetCoreApp.Controllers
     public class OrderInfoController : ControllerBase
     {
 
-        /// <summary>
-        /// 购买提交
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost, Route("SumbitOrderData")]
-        public async Task<HttpReponseViewModel> SumbitOrderData(QGProductViewModel model)
-        {
-            return await Task.Run(()=> {
-
-                return "";
-            });
-        }
+        ///// <summary>
+        ///// 购买提交
+        ///// </summary>
+        ///// <param name="model"></param>
+        ///// <returns></returns>
+        //[HttpPost, Route("SumbitOrderData")]
+        //public async Task<HttpReponseViewModel> SumbitOrderData(QGProductViewModel model)
+        //{
+            
+        //}
 
     }
 }

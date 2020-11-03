@@ -5,6 +5,9 @@ using System.Text;
 
 namespace NetCore.Core.RabbitMQ
 {
+    /// <summary>
+    /// 消息生产者  通过日志
+    /// </summary>
     public class RabbitLogger : ILogger, IDisposable
     {
         string category;
@@ -16,7 +19,7 @@ namespace NetCore.Core.RabbitMQ
             this.category = category;
             this.loggerOptions = options;
 
-            producer = new RabbitMQProducer(options.Hosts);
+            producer = new RabbitMQProducer(options.Port,options.Hosts);
             producer.Password = options.Password;
             producer.UserName = options.UserName;
             producer.Port = options.Port;

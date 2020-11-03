@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace NetCore.Core.RabbitMQ
 {
+    /// <summary>
+    /// 消息消费
+    /// </summary>
     public class RabbitHostedService : IHostedService
     {
         RabbitMQConsumerOptions consumerOptions;

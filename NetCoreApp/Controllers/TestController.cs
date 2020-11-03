@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NetCore.Core.EntityModel.ReponseModels;
+using NetCore.Core.RabbitMQ;
 using NetCore.Core.Util;
 using NetCore.DTO.TestModel;
 using NetCore.IServices.I_Test;
 using NetCore.Services.Interface;
+using NetCore.Services.IServices.I_RabbitMq;
 using NetCoreApp.Filters;
 
 namespace NetCoreApp.Controllers
@@ -23,23 +25,27 @@ namespace NetCoreApp.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+   
   //  [Authorize] // 添加授权特性
     public class TestController : ControllerBase
     {
         private readonly ITestServices _testService;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger logger;
-       /// <summary>
-       /// 
-       /// </summary>
-       /// <param name="loggerFactory"></param>
-       /// <param name="testService"></param>
-       /// <param name="contextAccessor"></param>
-        public TestController(ILoggerFactory loggerFactory,ITestServices testService, IHttpContextAccessor contextAccessor)
+        private readonly IProducerMqServices _producerMqServices;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="producerMqServices"></param>
+        /// <param name="loggerFactory"></param>
+        /// <param name="testService"></param>
+        /// <param name="contextAccessor"></param>
+        public TestController(IProducerMqServices producerMqServices,ILoggerFactory loggerFactory,ITestServices testService, IHttpContextAccessor contextAccessor)
         {
             _testService = testService;
             _contextAccessor = contextAccessor;
-            logger = loggerFactory.CreateLogger<TestController>();
+            logger = loggerFactory.CreateLogger<RabbitLogger>();
+            _producerMqServices = producerMqServices;
         }
 
         /// <summary>
@@ -133,8 +139,9 @@ namespace NetCoreApp.Controllers
         /// <param name="message"></param>
         /// <returns></returns>
 
-        [Route("/fff4")]
+        [Route("/fff5")]
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult fff5(string message)
         {
             if (!string.IsNullOrEmpty(message))
@@ -148,6 +155,19 @@ namespace NetCoreApp.Controllers
                 logger.LogWarning($"Log from Warning:{message}");
             }
             return Content(message);
+        }
+
+        /// <summary>
+        /// 消息队列测试  new
+        /// </summary>
+        /// <returns></returns>
+        [Route("/fff6")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult fff6()
+        {
+            _producerMqServices.ProducerMesTest();
+            return Content("ok");
         }
 
     }

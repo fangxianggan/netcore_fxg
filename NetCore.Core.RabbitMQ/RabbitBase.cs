@@ -11,17 +11,17 @@ namespace NetCore.Core.RabbitMQ
         List<AmqpTcpEndpoint> amqpList;
         IConnection connection;
 
-        protected RabbitBase(params string[] hosts)
+        protected RabbitBase(int port,params string[] hosts)
         {
             if (hosts == null || hosts.Length == 0)
             {
                 throw new ArgumentException("invalid hosts！", nameof(hosts));
             }
-
+           // Port = port;
             this.amqpList = new List<AmqpTcpEndpoint>();
             this.amqpList.AddRange(hosts.Select(host => new AmqpTcpEndpoint(host, Port)));
         }
-        protected RabbitBase(params (string, int)[] hostAndPorts)
+        protected RabbitBase( params (string, int)[] hostAndPorts)
         {
             if (hostAndPorts == null || hostAndPorts.Length == 0)
             {
@@ -35,7 +35,7 @@ namespace NetCore.Core.RabbitMQ
         /// <summary>
         /// 端口
         /// </summary>
-        public int Port { get; set; } = 5672;
+        public int Port { get; set; }= 5672;
         /// <summary>
         /// 账号
         /// </summary>

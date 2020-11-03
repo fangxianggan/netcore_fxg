@@ -5,9 +5,12 @@ using System.Text;
 
 namespace NetCore.Core.RabbitMQ
 {
+    /// <summary>
+    /// 生产者
+    /// </summary>
     public class RabbitMQProducer : RabbitBase
     {
-        public RabbitMQProducer(params string[] hosts) : base(hosts)
+        public RabbitMQProducer(int port,params string[] hosts) : base(port,hosts)
         {
 
         }
