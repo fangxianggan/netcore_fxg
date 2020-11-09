@@ -100,7 +100,7 @@ namespace NetCore.Services.Services.S_RabbitMq
 
                 // Thread.Sleep(10);
                 // }
-
+              
                 _Channel.WaitForConfirmsOrDie();
 
                 // _Channel.TxCommit();

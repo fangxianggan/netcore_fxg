@@ -101,6 +101,9 @@ namespace NetCore.Core.RabbitMQ
                 }
             }
             var buffer = Encoding.UTF8.GetBytes(message);
+
+         
+
             _Channel.BasicPublish(exchange, routingKey, true, null, buffer);
             // channel.Close();
         }
