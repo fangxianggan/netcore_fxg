@@ -12,6 +12,7 @@ namespace NetCore.Services.Services.S_Redis
         private readonly DoRedisString doRedisString;
         private readonly DoRedisHash doRedisHash;
 
+       
         private string _hashId;
 
         public string hashId

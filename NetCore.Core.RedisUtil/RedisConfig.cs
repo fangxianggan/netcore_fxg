@@ -51,6 +51,18 @@ namespace NetCore.Core.RedisUtil
             }
         }
 
+
+        private static int _DB = 0;
+
+        public static int DB
+        {
+            get
+            {
+                _DB = _configuration["ConnectionRedis:DB"].ToInt();
+                return _DB;
+            }
+        }
+
         private static int _MaxWritePoolSize = 5;
 
         public static int MaxWritePoolSize

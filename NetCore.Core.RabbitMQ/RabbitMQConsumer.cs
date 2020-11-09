@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using NetCore.Core.Util;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace NetCore.Core.RabbitMQ
     /// </summary>
     public class RabbitMQConsumer : RabbitBase
     {
-        public RabbitMQConsumer(int port,params string[] hosts) : base(port,hosts)
+        public RabbitMQConsumer(params string[] hosts) : base(hosts)
         {
               
         }
@@ -44,9 +45,12 @@ namespace NetCore.Core.RabbitMQ
                             channel.BasicAck(e.DeliveryTag, false);
                         });
                     }
+                   
                     Received?.Invoke(new RecieveResult(e, cancellationTokenSource));
                 }
-                catch { }
+                catch (Exception ea){
+                    LogUtil.Error(ea.Message);
+                }
             };
             if (options.FetchCount != null)
             {

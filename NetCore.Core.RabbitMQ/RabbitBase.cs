@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using NetCore.Core.Util;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,13 @@ namespace NetCore.Core.RabbitMQ
         List<AmqpTcpEndpoint> amqpList;
         IConnection connection;
 
-        protected RabbitBase(int port,params string[] hosts)
+        protected RabbitBase(params string[] hosts)
         {
             if (hosts == null || hosts.Length == 0)
             {
                 throw new ArgumentException("invalid hosts！", nameof(hosts));
             }
-           // Port = port;
+           
             this.amqpList = new List<AmqpTcpEndpoint>();
             this.amqpList.AddRange(hosts.Select(host => new AmqpTcpEndpoint(host, Port)));
         }
@@ -32,6 +33,8 @@ namespace NetCore.Core.RabbitMQ
             this.amqpList.AddRange(hostAndPorts.Select(tuple => new AmqpTcpEndpoint(tuple.Item1, tuple.Item2)));
         }
 
+
+        public string HostName { set; get; }
         /// <summary>
         /// 端口
         /// </summary>
@@ -79,12 +82,18 @@ namespace NetCore.Core.RabbitMQ
                 {
                     if (connection == null)
                     {
-                        var factory = new ConnectionFactory();
-                        factory.Port = Port;
-                        factory.UserName = UserName;
-                        factory.VirtualHost = VirtualHost;
-                        factory.Password = Password;
-                        connection = factory.CreateConnection(this.amqpList);
+                        try
+                        {
+                            var factory = new ConnectionFactory();
+                            factory.Port = Port;
+                            factory.UserName = UserName;
+                            factory.VirtualHost = VirtualHost;
+                            factory.Password = Password;
+                            connection = factory.CreateConnection(this.amqpList);
+                        } catch (Exception e) {
+
+                            LogUtil.Error(e.Message);
+                        }
                     }
                 }
             }

@@ -19,7 +19,7 @@ namespace NetCore.Core.RabbitMQ
             this.category = category;
             this.loggerOptions = options;
 
-            producer = new RabbitMQProducer(options.Port,options.Hosts);
+            producer = new RabbitMQProducer(options.Hosts);
             producer.Password = options.Password;
             producer.UserName = options.UserName;
             producer.Port = options.Port;

@@ -25,6 +25,8 @@
 
   <ItemGroup>
     <None Remove="index.html" />
+    <None Remove="logs\20201106.log" />
+    <None Remove="logs\20201108.log" />
   </ItemGroup>
 
   <ItemGroup>

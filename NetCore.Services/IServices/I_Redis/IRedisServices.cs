@@ -7,6 +7,8 @@ namespace NetCore.Services.IServices.I_Redis
     public interface IRedisServices
     {
 
+
+
         #region hash存储操作
         string hashId { set; get; }
         bool SetValueHash(string key, string value);

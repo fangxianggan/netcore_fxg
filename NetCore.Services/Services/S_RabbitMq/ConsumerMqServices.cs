@@ -19,7 +19,7 @@ namespace NetCore.Services.Services.S_RabbitMq
         {
             _options = options;
             var v = _options.Value;
-            _consumer = new RabbitMQConsumer(v.Port,v.Hosts);
+            _consumer = new RabbitMQConsumer(v.Hosts);
             _consumer.Password = v.Password;
             _consumer.UserName = v.UserName;
             _consumer.VirtualHost = v.VirtualHost;
@@ -34,22 +34,71 @@ namespace NetCore.Services.Services.S_RabbitMq
         {
             await Task.Run(() =>
             {
-                _consumer.Received += new Action<RecieveResult>(result =>
-                {
-                    string message = $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}接收到消息：{result.Body}{Environment.NewLine}";
-                    LogUtil.Info(message);
-                    //提交
-                    result.Commit();
-                });
+                //  Thread.Sleep((new Random().Next(1, 6)) * 1000);//随机等待,实现能者多劳,
 
                 var v = _options.Value;
-                _consumer.Listen(v.Queue, options =>
+                //for (int i = 0; i < 1; i++)
+                //{
+                //    _consumer.Listen(v.Queue, options =>
+                //    {
+                //        options.AutoAck = v.AutoAck;
+                //        options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+                //        options.AutoDelete = v.AutoDelete;
+                //        options.Durable = v.Durable;
+                //        options.FetchCount = 2;
+                //    });
+                //}
+                string exchangeName = "TestTopicChange";
+                string routeKey = "TestRouteKey.*";
+              //  var type = RabbitMQExchangeType.Topic;
+                for (int i = 0; i < 1; i++)
                 {
-                    options.AutoAck = v.AutoAck;
-                  //  options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
-                    options.AutoDelete = v.AutoDelete;
-                  //  options.Durable = v.Durable;
-                });
+                    _consumer.Listen(exchangeName, v.Queue, options =>
+                    {
+                        options.RoutingKeys =new string[] {  routeKey  };
+                        options.AutoAck = v.AutoAck;
+                        options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+                        options.AutoDelete = v.AutoDelete;
+                        options.Durable = v.Durable;
+                        options.FetchCount = 1;
+                    });
+                }
+
+                _consumer.Received += new Action<RecieveResult>(result =>
+            {
+                string message = $"{result.DeliveryTag}-{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }'-'{result.ConsumerTag}接收到消息：{result.Body}";
+                //  $"{Environment.NewLine}";
+                LogUtil.Info(message);
+
+
+                //提交
+                result.Commit();
+            });
+
+
+
+
+
+
+                // _consumer.Received += new Action<RecieveResult>(result =>
+                // {
+                //     string message = $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}接收到消息33：{result.Body}{Environment.NewLine}";
+                //     LogUtil.Info(message);
+                //     //提交
+                //     result.Commit();
+                // });
+
+
+                //// var v = _options.Value;
+                // _consumer.Listen(v.Queue, options =>
+                // {
+                //     options.AutoAck = v.AutoAck;
+                //     options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
+                //     options.AutoDelete = v.AutoDelete;
+                //     options.Durable = v.Durable;
+                //     options.FetchCount = 1;
+                // });
+
             });
         }
 

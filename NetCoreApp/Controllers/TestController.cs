@@ -33,6 +33,7 @@ namespace NetCoreApp.Controllers
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger logger;
         private readonly IProducerMqServices _producerMqServices;
+       // private readonly IRabbitMQClientTest _rabbitMQClientTest;
         /// <summary>
         /// 
         /// </summary>
@@ -42,6 +43,7 @@ namespace NetCoreApp.Controllers
         /// <param name="contextAccessor"></param>
         public TestController(IProducerMqServices producerMqServices,ILoggerFactory loggerFactory,ITestServices testService, IHttpContextAccessor contextAccessor)
         {
+           // _rabbitMQClientTest = rabbitMQClientTest;
             _testService = testService;
             _contextAccessor = contextAccessor;
             logger = loggerFactory.CreateLogger<RabbitLogger>();
@@ -167,6 +169,19 @@ namespace NetCoreApp.Controllers
         public IActionResult fff6()
         {
             _producerMqServices.ProducerMesTest();
+            return Content("ok");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Route("/fff7")]
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult fff7()
+        {
+          //  _rabbitMQClientTest.test();
             return Content("ok");
         }
 

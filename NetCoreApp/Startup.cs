@@ -287,9 +287,14 @@ namespace NetCoreApp
             //services.AddSingleton<IConsumerMqServices, ConsumerMqServices>();
 
             //注册单例 生产者和消费者
-             services.AddSingleton<IProducerMqServices, ProducerMqServices>();
-            //services.AddSingleton<IConsumerMqServices, ConsumerMqServices>();
+            services.AddSingleton<IProducerMqServices, ProducerMqServices>();
+           // services.AddSingleton<IConsumerMqServices, ConsumerMqServices>();
 
+            // services.AddHostedService<ConsumerMqServices>();
+
+           // services.AddHostedService<ConsumerMqServices>();
+            // services.AddSingleton<IChapterListerTest, ChapterLister>();
+            //  services.AddSingleton<IRabbitMQClientTest, RabbitMQClient>();
             #endregion
 
 
@@ -309,7 +314,7 @@ namespace NetCoreApp
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IDapperRepository<>), typeof(DapperRepository<>));
 
-            var ignoredList = new List<string>() { "IProducerMqServices", "IConsumerMqServices" };
+            var ignoredList = new List<string>() { "IProducerMqServices", "IConsumerMqServices", "IChapterListerTest", "IRabbitMQClientTest" };
 
             foreach (var itemClass in GetClassInterfacePairs("NetCore.Services"))
             {

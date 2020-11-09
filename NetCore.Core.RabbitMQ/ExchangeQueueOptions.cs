@@ -13,7 +13,9 @@ namespace NetCore.Core.RabbitMQ
         /// <summary>
         /// 队列及路由值
         /// </summary>
-        public (string, string)[] QueueAndRoutingKey { get; set; }
+        //public (string, string)[] QueueAndRoutingKey { get; set; }
+        // 
+        public IDictionary<string, string> QueueAndRoutingKey { get; set; }= new Dictionary<string, string>();
         /// <summary>
         /// 参数
         /// </summary>

@@ -1,6 +1,8 @@
-﻿using RabbitMQ.Client;
+﻿using NetCore.Core.Util;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace NetCore.Core.RabbitMQ
@@ -10,13 +12,33 @@ namespace NetCore.Core.RabbitMQ
     /// </summary>
     public class RabbitMQProducer : RabbitBase
     {
-        public RabbitMQProducer(int port,params string[] hosts) : base(port,hosts)
-        {
 
+        public RabbitMQProducer(params string[] hosts) : base(hosts)
+        {
+           
         }
         public RabbitMQProducer(params (string, int)[] hostAndPorts) : base(hostAndPorts)
         {
+          
+        }
 
+
+        public IModel _Channel { set; get; }
+
+        public IModel GetModelChannel()
+        {
+            _Channel = GetChannel();
+            return _Channel;
+        }
+
+
+
+        public void CloseChannel()
+        {
+            if (!_Channel.IsClosed)
+            {
+                _Channel.Close();
+            }
         }
 
         #region 普通模式、Work模式
@@ -29,11 +51,17 @@ namespace NetCore.Core.RabbitMQ
         public void Publish(string queue, string message, QueueOptions options = null)
         {
             options = options ?? new QueueOptions();
-            var channel = GetChannel();
-            channel.QueueDeclare(queue, options.Durable, false, options.AutoDelete, options.Arguments ?? new Dictionary<string, object>());
+           
+            _Channel.QueueDeclare(queue, options.Durable, false, options.AutoDelete, options.Arguments ?? new Dictionary<string, object>());
             var buffer = Encoding.UTF8.GetBytes(message);
-            channel.BasicPublish("", queue, null, buffer);
-            channel.Close();
+
+
+
+            _Channel.BasicPublish("", queue, null, buffer);
+
+
+
+            // channel.Close();
         }
         /// <summary>
         /// 发布消息
@@ -60,21 +88,21 @@ namespace NetCore.Core.RabbitMQ
         public void Publish(string exchange, string routingKey, string message, ExchangeQueueOptions options = null)
         {
             options = options ?? new ExchangeQueueOptions();
-            var channel = GetChannel();
-            channel.ExchangeDeclare(exchange, string.IsNullOrEmpty(options.Type) ? RabbitMQExchangeType.Fanout : options.Type, options.Durable, options.AutoDelete, options.Arguments ?? new Dictionary<string, object>());
+         
+            _Channel.ExchangeDeclare(exchange, string.IsNullOrEmpty(options.Type) ? RabbitMQExchangeType.Fanout : options.Type, options.Durable, options.AutoDelete, options.Arguments ?? new Dictionary<string, object>());
             if (options.QueueAndRoutingKey != null)
             {
                 foreach (var t in options.QueueAndRoutingKey)
                 {
-                    if (!string.IsNullOrEmpty(t.Item1))
+                    if (!string.IsNullOrEmpty(t.Key))
                     {
-                        channel.QueueBind(t.Item1, exchange, t.Item2 ?? "", options.BindArguments ?? new Dictionary<string, object>());
+                        _Channel.QueueBind(t.Key, exchange, t.Value ?? "", options.BindArguments ?? new Dictionary<string, object>());
                     }
                 }
             }
             var buffer = Encoding.UTF8.GetBytes(message);
-            channel.BasicPublish(exchange, routingKey, null, buffer);
-            channel.Close();
+            _Channel.BasicPublish(exchange, routingKey, true, null, buffer);
+            // channel.Close();
         }
         /// <summary>
         /// 发布消息
@@ -87,8 +115,11 @@ namespace NetCore.Core.RabbitMQ
         {
             ExchangeQueueOptions options = new ExchangeQueueOptions();
             configure?.Invoke(options);
-            Publish(exchange, routingKey, message, options);
+            Publish(exchange, routingKey, message,  options);
         }
         #endregion
+
+
+       
     }
 }

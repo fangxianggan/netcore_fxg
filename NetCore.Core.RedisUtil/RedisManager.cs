@@ -37,6 +37,7 @@ namespace NetCore.Core.RedisUtil
                                  MaxWritePoolSize = RedisConfig.MaxWritePoolSize,
                                  MaxReadPoolSize = RedisConfig.MaxReadPoolSize,
                                  AutoStart = RedisConfig.AutoStart,
+                                  DefaultDb= RedisConfig.DB
                              });
         }
 
