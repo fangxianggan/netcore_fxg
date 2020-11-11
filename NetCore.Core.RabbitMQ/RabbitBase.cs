@@ -89,6 +89,9 @@ namespace NetCore.Core.RabbitMQ
                             factory.UserName = UserName;
                             factory.VirtualHost = VirtualHost;
                             factory.Password = Password;
+                            
+                         
+
                             connection = factory.CreateConnection(this.amqpList);
                         } catch (Exception e) {
 

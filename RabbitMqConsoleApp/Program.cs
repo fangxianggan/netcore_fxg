@@ -8,7 +8,12 @@ namespace RabbitMqConsoleApp
         {
 
             MQTest test = new MQTest();
-            test.PDMQ();
+
+            //test.PDMQ();
+
+            test.SXMQ();
+
+           
 
             Console.WriteLine("Hello World!");
         }

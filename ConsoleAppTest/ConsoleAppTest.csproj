@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NetCore.Core.RabbitMQ\NetCore.Core.RabbitMQ.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\NetCore.Core.RedisUtil\NetDLL\ServiceStack.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

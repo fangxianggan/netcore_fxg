@@ -169,6 +169,7 @@ namespace NetCoreApp.Controllers
         public IActionResult fff6()
         {
             _producerMqServices.ProducerMesTest();
+           // _producerMqServices.ProducerMesTest2();
             return Content("ok");
         }
 

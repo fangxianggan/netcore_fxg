@@ -60,7 +60,7 @@ namespace NetCore.Services.Services.S_RabbitMq
                         options.Arguments = new Dictionary<string, object>() { { "x-queue-type", "classic" } };
                         options.AutoDelete = v.AutoDelete;
                         options.Durable = v.Durable;
-                        options.FetchCount = 1;
+                       // options.FetchCount = 1;
                     });
                 }
 
@@ -68,8 +68,14 @@ namespace NetCore.Services.Services.S_RabbitMq
             {
                 string message = $"{result.DeliveryTag}-{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") }'-'{result.ConsumerTag}接收到消息：{result.Body}";
                 //  $"{Environment.NewLine}";
-                LogUtil.Info(message);
+                // LogUtil.Info(message);
 
+                //发邮件通知
+
+                //修改 mysql数据库 订单信息 
+
+
+                Console.WriteLine(result.Body);
 
                 //提交
                 result.Commit();

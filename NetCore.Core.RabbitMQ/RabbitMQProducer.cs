@@ -87,24 +87,32 @@ namespace NetCore.Core.RabbitMQ
         /// <param name="options"></param>
         public void Publish(string exchange, string routingKey, string message, ExchangeQueueOptions options = null)
         {
-            options = options ?? new ExchangeQueueOptions();
-         
-            _Channel.ExchangeDeclare(exchange, string.IsNullOrEmpty(options.Type) ? RabbitMQExchangeType.Fanout : options.Type, options.Durable, options.AutoDelete, options.Arguments ?? new Dictionary<string, object>());
-            if (options.QueueAndRoutingKey != null)
-            {
-                foreach (var t in options.QueueAndRoutingKey)
+            try {
+
+                options = options ?? new ExchangeQueueOptions();
+
+                _Channel.ExchangeDeclare(exchange, string.IsNullOrEmpty(options.Type) ? RabbitMQExchangeType.Fanout : options.Type, options.Durable, options.AutoDelete, options.Arguments ?? new Dictionary<string, object>());
+                if (options.QueueAndRoutingKey != null)
                 {
-                    if (!string.IsNullOrEmpty(t.Key))
+                    foreach (var t in options.QueueAndRoutingKey)
                     {
-                        _Channel.QueueBind(t.Key, exchange, t.Value ?? "", options.BindArguments ?? new Dictionary<string, object>());
+                        if (!string.IsNullOrEmpty(t.Key))
+                        {
+                            _Channel.QueueBind(t.Key, exchange, t.Value ?? "", options.BindArguments ?? new Dictionary<string, object>());
+                        }
                     }
                 }
+                var buffer = Encoding.UTF8.GetBytes(message);
+
+                _Channel.BasicPublish(exchange, routingKey, true, null, buffer);
+
+                
+            } catch (Exception ex) {
+
+                LogUtil.Error(message);
             }
-            var buffer = Encoding.UTF8.GetBytes(message);
 
-         
-
-            _Channel.BasicPublish(exchange, routingKey, true, null, buffer);
+           
             // channel.Close();
         }
         /// <summary>
