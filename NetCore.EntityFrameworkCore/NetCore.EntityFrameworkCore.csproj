@@ -16,4 +16,10 @@
     <ProjectReference Include="..\NetCore.Core\NetCore.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="NetCore.EntityFrameworkCore.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
