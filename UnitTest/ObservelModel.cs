@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace UnitTest
@@ -44,6 +45,12 @@ namespace UnitTest
         {
             observersList.Remove(observer);
         }
+
+        public void aa()
+        {
+            List<string> nn = new List<string>();
+            observersList.Any(p=>nn.Contains(p.name));
+        }
     }
 
     //具体主题 ，秘书类
@@ -76,7 +83,7 @@ namespace UnitTest
     public abstract class Observer
     {
         //名字
-        protected string name;
+        public string name;
         //观察者要知道自己订阅了那个主题
         protected ISubject sub;
         public Observer(string name, ISubject sub)

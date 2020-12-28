@@ -73,9 +73,33 @@ namespace UnitTest
 
             //#endregion
 
-            #region 观察者模式
+            //#region 观察者模式
 
-            UnitTest.ObserverPattern.TestRun run = new ObserverPattern.TestRun();
+            //UnitTest.ObserverPattern.TestRun run = new ObserverPattern.TestRun();
+
+            //#endregion
+
+            //#region 装饰者模式
+
+            //UnitTest.DecoratorPattern.TestRun run = new DecoratorPattern.TestRun();
+
+            //#endregion
+
+            //#region 代理模式
+
+            //UnitTest.ProxyPattern.TestRun run = new ProxyPattern.TestRun();
+
+            //#endregion
+
+            //#region 责任链模式
+
+            //UnitTest.ChainPattern.TestRun run = new ChainPattern.TestRun();
+
+            //#endregion
+
+            #region 对象比较大小
+
+            UnitTest.ObjectSort.TestRun run = new ObjectSort.TestRun();
 
             #endregion
 
