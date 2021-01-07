@@ -97,9 +97,15 @@ namespace UnitTest
 
             //#endregion
 
-            #region 对象比较大小
+            //#region 对象比较大小
 
-            UnitTest.ObjectSort.TestRun run = new ObjectSort.TestRun();
+            //UnitTest.ObjectSort.TestRun run = new ObjectSort.TestRun();
+
+            //#endregion
+
+            #region 单例模式 
+
+            UnitTest.Singleton.TaskRun run = new Singleton.TaskRun();
 
             #endregion
 
