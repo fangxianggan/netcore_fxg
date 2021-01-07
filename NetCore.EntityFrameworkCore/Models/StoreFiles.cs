@@ -39,7 +39,7 @@ namespace NetCore.EntityFrameworkCore.Models
 
 
         /// <summary>
-        /// 文件大小 b
+        /// 文件大小 kb
         /// </summary>
         /// 
         [DisplayName("文件大小")]

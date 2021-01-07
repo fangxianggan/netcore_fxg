@@ -53,7 +53,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                     }
                     if (item.Key == "totalSize")
                     {
-                        fileUpload.TotalSize = Convert.ToInt32(item.Value);
+                        fileUpload.TotalSize = Convert.ToInt64(item.Value);
                     }
                     if (item.Key == "identifier")
                     {
@@ -163,7 +163,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                 }
                 if (item == "totalSize")
                 {
-                    fileUpload.TotalSize = Convert.ToInt32(request.Form["totalSize"].ToString());
+                    fileUpload.TotalSize = Convert.ToInt64(request.Form["totalSize"].ToString());
                 }
                 if (item == "relativePath")
                 {
@@ -279,6 +279,7 @@ namespace NetCore.Services.Services.S_StoreFiles
                     storeFiles.RelationFilePath = newFilePath;
                     storeFiles.CreateBy = "";
                     storeFiles.FileName = fileName.Replace("." + storeFiles.FileExt, "");
+                    storeFiles.FileBytes = storeFiles.FileBytes / 1024; //kb
                     var flag = await _baseDomain.AddDomain(storeFiles);
                     if (flag)
                     {

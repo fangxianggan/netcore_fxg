@@ -36,7 +36,7 @@ namespace NetCore.DTO.RequestViewModel.FileUpload
         /// <summary>
         /// 文件总大小
         /// </summary>
-        public int TotalSize { set; get; }
+        public long TotalSize { set; get; }
 
         /// <summary>
         /// 唯一标识 md5
